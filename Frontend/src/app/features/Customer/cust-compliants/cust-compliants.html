@@ -1,0 +1,132 @@
+<div class="accounting-container py-4">
+  <div class="accounting-wrapper">
+    
+    <!-- Top Header Strip -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex align-items-center gap-3">
+        <div class="icon-avatar bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center shadow-sm" style="width: 44px; height: 44px;">
+          <i class="bi bi-shield-exclamation fs-5"></i>
+        </div>
+        <div>
+          <span class="text-primary fw-bold text-uppercase text-xs tracking-wider d-block">SUPPORT CENTER</span>
+          <h3 class="fw-bold text-dark m-0">Customer Support & Complaints</h3>
+        </div>
+      </div>
+      
+      <button type="button" class="btn btn-primary rounded-pill px-4 py-2 text-uppercase fw-bold text-xs tracking-wider d-flex align-items-center gap-2 shadow-sm" (click)="onRefresh()" [disabled]="isLoading">
+        <i class="bi bi-arrow-clockwise" [class.spin-icon]="isLoading"></i> REFRESH
+      </button>
+    </div>
+
+    <!-- Table Container Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4 bg-white">
+      <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+          <thead class="bg-light border-bottom">
+            <tr>
+              <th class="py-3 px-4 text-secondary text-uppercase text-xs fw-bold tracking-wider">COMPLAINT REF ID</th>
+              <th class="py-3 px-4 text-secondary text-uppercase text-xs fw-bold tracking-wider">BOOKING SEQUENCE ASSOCIATION</th>
+              <th class="py-3 px-4 text-secondary text-uppercase text-xs fw-bold tracking-wider">ISSUE SUBJECT & DETAILS</th>
+              <th class="py-3 px-4 text-secondary text-uppercase text-xs fw-bold tracking-wider">RAISED TIMESTAMP</th>
+              <th class="py-3 px-4 text-secondary text-uppercase text-xs fw-bold tracking-wider text-center">DISPUTE STATUS</th>
+              <th class="py-3 px-4 text-secondary text-uppercase text-xs fw-bold tracking-wider text-center">RESOLUTION / NOTES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loading State -->
+            <tr *ngIf="isLoading">
+              <td colspan="6" class="text-center py-5">
+                <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+                <span class="text-muted small">Loading statement entries...</span>
+              </td>
+            </tr>
+
+            <!-- Error State -->
+            <tr *ngIf="!isLoading && errorMessage">
+              <td colspan="6" class="text-center py-4 text-danger small">
+                <i class="bi bi-exclamation-triangle me-1"></i> {{ errorMessage }}
+              </td>
+            </tr>
+
+            <!-- Empty State -->
+            <tr *ngIf="!isLoading && !errorMessage && complaints.length === 0">
+              <td colspan="6" class="text-center py-5 text-muted small">
+                No complaint records found in system.
+              </td>
+            </tr>
+
+            <!-- Data Rows -->
+            <tr *ngFor="let item of complaints" class="border-bottom-light">
+              <!-- Complaint Ref ID -->
+              <td class="py-3 px-4 fw-bold text-secondary text-xs">
+                #{{ item.complaintId }}
+              </td>
+
+              <!-- Booking Sequence Association -->
+              <td class="py-3 px-4">
+                <span *ngIf="item.relatedBookingId" class="badge bg-light text-dark border px-3 py-2 rounded-pill font-monospace text-xs fw-semibold">
+                  Booking Ref: #{{ item.relatedBookingId }}
+                </span>
+                <span *ngIf="!item.relatedBookingId" class="text-muted text-xs">N/A</span>
+              </td>
+
+              <!-- Issue Subject & Details -->
+              <td class="py-3 px-4">
+                <div class="fw-bold text-dark text-sm">{{ item.subject }}</div>
+                <small class="text-muted text-xs d-block text-truncate" style="max-width: 280px;">{{ item.description }}</small>
+              </td>
+
+              <!-- Raised Timestamp -->
+              <td class="py-3 px-4 text-secondary text-xs font-monospace">
+                <i class="bi bi-calendar3 me-1 text-muted"></i>
+                {{ item.createdAt | date:'MMM dd, yyyy' }}
+              </td>
+
+              <!-- Dispute Status -->
+              <td class="py-3 px-4 text-center">
+                <span class="status-pill text-xs fw-bold text-uppercase px-3 py-1 rounded-pill d-inline-block" [ngClass]="{
+                  'status-open': item.status === 'OPEN',
+                  'status-in-progress': item.status === 'IN_PROGRESS',
+                  'status-resolved': item.status === 'RESOLVED'
+                }">
+                  {{ item.status === 'IN_PROGRESS' ? 'IN PROGRESS' : item.status }}
+                </span>
+              </td>
+
+              <!-- Resolution / Notes -->
+              <td class="py-3 px-4 text-center">
+                <span *ngIf="item.resolutionNote" class="text-success text-xs fw-semibold" title="{{ item.resolutionNote }}">
+                  <i class="bi bi-check-circle-fill me-1"></i> {{ item.resolutionNote }}
+                </span>
+                <span *ngIf="!item.resolutionNote" class="text-muted text-xs">--</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Summary & Pagination Footer Card -->
+    <div *ngIf="!isLoading && complaints.length > 0" class="card border-0 shadow-sm rounded-4 p-3 bg-white d-flex flex-row justify-content-between align-items-center">
+      <div class="text-uppercase text-xs fw-bold text-secondary tracking-wider">
+        TOTAL STATEMENT ENTRIES: <span class="text-primary">{{ totalElements }}</span> | PAGE <span class="text-dark">{{ currentPage + 1 }}</span> OF <span class="text-dark">{{ totalPages }}</span>
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="d-flex align-items-center gap-2">
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-xs fw-bold" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">
+          &lt; Prev
+        </button>
+        
+        <button *ngFor="let page of getPageNumbers()" type="button" class="btn btn-sm rounded-circle text-xs fw-bold d-flex align-items-center justify-content-center" [ngClass]="page === currentPage ? 'btn-primary' : 'btn-light text-dark'" (click)="onPageChange(page)" style="width: 32px; height: 32px;">
+          {{ page + 1 }}
+        </button>
+
+        <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill px-3 text-xs fw-bold" [disabled]="currentPage === totalPages - 1" (click)="onPageChange(currentPage + 1)">
+          Next &gt;
+        </button>
+      </div>
+    </div>
+
+  </div>
+</div>

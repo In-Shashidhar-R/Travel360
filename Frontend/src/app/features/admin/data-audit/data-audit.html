@@ -1,0 +1,293 @@
+<div class="audit-workspace-container">
+  <div class="view-segment-navigation">
+    <button class="nav-segment-btn" [class.active-segment]="subViewTab === 'users'" (click)="subViewTab = 'users'; cdr.detectChanges()">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+      Users Directory Logs
+    </button>
+    <button class="nav-segment-btn" [class.active-segment]="subViewTab === 'inventories'" (click)="subViewTab = 'inventories'; cdr.detectChanges()">
+      <svg class="icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"></rect><rect x="14" y="3" width="7" height="5"></rect><rect x="14" y="12" width="7" height="9"></rect><rect x="3" y="16" width="7" height="5"></rect></svg>
+      REST Query Filter Matrix
+    </button>
+  </div>
+
+  @if (subViewTab === 'users') {
+    <section class="workspace-canvas fade-in">
+      <div class="panel-header-strip">
+        <div>
+          <h2>System Users Directory Logs</h2>
+          <p class="panel-subtitle">Auditing profile entities across global role levels.</p>
+        </div>
+      </div>
+
+      <div class="search-filtering-control-panel-strip">
+        <div class="filter-input-wrapper">
+          <label>Filter via Unique User ID</label>
+          <input type="text" [(ngModel)]="userSearchId" (input)="cdr.detectChanges()" placeholder="e.g., 102">
+        </div>
+        <div class="filter-input-wrapper">
+          <label>System Role Context</label>
+          <select [(ngModel)]="userSearchRole" (change)="cdr.detectChanges()">
+            <option value="">-- All Target Roles --</option>
+            <option value="CUSTOMER">CUSTOMER</option>
+            <option value="TRAVEL_AGENT">TRAVEL_AGENT</option>
+            <option value="FINANCE_OFFICER">FINANCE_OFFICER</option>
+            <option value="COMPLIANCE_OFFICER">COMPLIANCE_OFFICER</option>
+            <option value="PARTNER">PARTNER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="responsive-cards-container-grid">
+        @for (u of filteredUsers; track u.userId) {
+          <div class="interactive-display-card profile-card">
+            <div class="card-primary-header">
+              <div class="header-main-meta">
+                <span class="id-badge-token">ID #{{u.userId}}</span>
+                <h3>{{u.name | uppercase}}</h3>
+              </div>
+              <span class="badge-role-pill" [ngClass]="u.role.toLowerCase()">{{u.role}}</span>
+            </div>
+
+            <div class="card-essential-body-details">
+              <div class="grid-attribute-row"><strong>Gender:</strong> <span>{{u.gender || 'Not Specified'}}</span></div>
+              <div class="grid-attribute-row"><strong>Email Coordinate:</strong> <span>{{u.email}}</span></div>
+              <div class="grid-attribute-row"><strong>Phone Terminal:</strong> <span>{{u.phone}}</span></div>
+              <div class="grid-attribute-row"><strong>Location Matrix:</strong> <span>{{u.address}}, {{u.city}}, {{u.state}}, {{u.country}}</span></div>
+
+              @if (u.role === 'TRAVEL_AGENT') {
+                <div class="extended-role-nested-box agent-box">
+                  <div class="grid-attribute-row"><strong>Tenure Experience:</strong> <span>{{u.agentExperienceYears}} Years</span></div>
+                  <div class="grid-attribute-row"><strong>Professional Profile Bio:</strong> <span class="bio-text">{{u.agentBio}}</span></div>
+                </div>
+              }
+
+              @if (u.role === 'PARTNER') {
+                <div class="extended-role-nested-box partner-box">
+                  <div class="grid-attribute-row"><strong>Partner Category:</strong> <span>{{u.partnerType}}</span></div>
+                  <div class="grid-attribute-row"><strong>Corporate GSTIN:</strong> <span class="code-font">{{u.gstNumber}}</span></div>
+                  <div class="grid-attribute-row"><strong>Commission Profile:</strong> <span>{{u.commissionRate}} %</span></div>
+                </div>
+              }
+            </div>
+          </div>
+        } @empty {
+          <div class="empty-state-notice-card">
+            <p>No system user records discovered matching search context vectors.</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (subViewTab === 'inventories') {
+    <section class="workspace-canvas fade-in">
+      <div class="panel-header-strip">
+        <div>
+          <h2>Advanced REST Query Filter Matrix</h2>
+          <p class="panel-subtitle">Direct operational query mapping targeting upstream resource engines.</p>
+        </div>
+      </div>
+
+      <div class="advanced-matrix-filtering-layout-grid">
+        <div class="filter-input-wrapper">
+          <label>Item Type Mapping (itemType)</label>
+          <select [(ngModel)]="filterItemType" (change)="onFilterSearchTrigger()">
+            <option value="">-- All Framework Types --</option>
+            <option value="FLIGHT">FLIGHT CHANNELS</option>
+            <option value="BUS">BUS TRANSIT</option>
+            <option value="CAB">CAB LOGISTICS</option>
+            <option value="HOTEL">HOTEL PROPERTIES</option>
+            <option value="TOUR_PACKAGE">TOUR PACKAGES</option>
+          </select>
+        </div>
+        
+        @if (filterItemType === '' || filterItemType === 'CAB' || filterItemType === 'HOTEL') {
+          <div class="filter-input-wrapper"><label>State Node</label><input type="text" [(ngModel)]="filterState" (input)="onFilterSearchTrigger()" placeholder="e.g., Karnataka"></div>
+          <div class="filter-input-wrapper"><label>District Node</label><input type="text" [(ngModel)]="filterDistrict" (input)="onFilterSearchTrigger()" placeholder="e.g., Bangalore"></div>
+        }
+        
+        @if (filterItemType === '' || filterItemType === 'HOTEL') {
+          <div class="filter-input-wrapper"><label>City Node</label><input type="text" [(ngModel)]="filterCity" (input)="onFilterSearchTrigger()" placeholder="e.g., Bengaluru"></div>
+        }
+        
+        @if (filterItemType === '' || filterItemType === 'FLIGHT' || filterItemType === 'BUS') {
+          <div class="filter-input-wrapper"><label>Source Terminal</label><input type="text" [(ngModel)]="filterSource" (input)="onFilterSearchTrigger()" placeholder="e.g., BLR"></div>
+          <div class="filter-input-wrapper"><label>Destination Terminal</label><input type="text" [(ngModel)]="filterDestination" (input)="onFilterSearchTrigger()" placeholder="e.g., DXB"></div>
+        }
+        
+        <div class="filter-input-wrapper"><label>Max Price Ceiling</label><input type="number" [(ngModel)]="filterMaxPrice" (input)="onFilterSearchTrigger()" placeholder="Enter ceiling limit..."></div>
+      </div>
+
+      <div class="responsive-cards-container-grid">
+        @for (inv of backendFilteredInventories; track inv.inventoryId) {
+          <div class="interactive-display-card inventory-dynamic-card" [class.card-state-expanded]="inv.uiExpanded" (click)="toggleCard(inv)">
+            
+            <div class="card-primary-header">
+              <div class="header-main-meta">
+                <span class="id-badge-token">REF #{{inv.inventoryId}}</span>
+                <div class="dynamic-icon-badge" [ngClass]="inv.itemType.toLowerCase() || 'hotel'">
+                  @if(inv.itemType === 'FLIGHT') { <svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"></path></svg> }
+                  @if(inv.itemType === 'BUS') { <svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="4" width="14" height="16" rx="2"></rect><line x1="9" y1="18" x2="9" y2="18"></line><line x1="15" y1="18" x2="15" y2="18"></line></svg> }
+                  @if(inv.itemType === 'HOTEL') { <svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg> }
+                  @if(inv.itemType === 'CAB') { <svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 1 13v3c0 .6.4 1 1 1h2"></path><circle cx="7" cy="17" r="2"></circle><circle cx="17" cy="17" r="2"></circle></svg> }
+                  @if(inv.itemType === 'TOUR_PACKAGE') { <svg class="type-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l-7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg> }
+                  <span>{{inv.itemType || 'HOTEL'}}</span>
+                </div>
+              </div>
+              <div class="card-header-financials">
+                <span class="currency-label">INR</span> {{ inv.basePricePerSeat | number:'1.2-2' }}
+              </div>
+            </div>
+
+            <div class="card-essential-body-details">
+              <h4 class="partner-title-node">
+                <svg class="mini-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+                {{inv.partnerName}} <small class="sub-token">(Partner ID: {{inv.partnerId}})</small>
+              </h4>
+              
+              <div class="preview-snapshot-string">
+                @if (inv.itemType === 'FLIGHT') { <span>{{ asFlight(inv).airlineName }} &middot; Code: {{ asFlight(inv).flightNumber }} ({{ asFlight(inv).departureAirport }} &rarr; {{ asFlight(inv).arrivalAirport }})</span> }
+                @if (inv.itemType === 'BUS') { <span>{{ asBus(inv).operatorName }} [{{ asBus(inv).busNumberPlate }}] &middot; Route: {{ asBus(inv).routeFrom }} &rarr; {{ asBus(inv).routeTo }}</span> }
+                @if (inv.itemType === 'HOTEL') { <span>{{ asHotel(inv).hotelName }} &middot; Room Class: {{ asHotel(inv).roomType }} ({{ asHotel(inv).totalRooms }} Units)</span> }
+                @if (inv.itemType === 'CAB') { <span>Model Asset: {{ asCab(inv).carModel }} &middot; Limit: {{ asCab(inv).seaterCount }} Seats</span> }
+                @if (inv.itemType === 'TOUR_PACKAGE') { <span>Bundle: {{ asTour(inv).packageName }} &middot; Duration: {{ asTour(inv).durationDays }} Days</span> }
+              </div>
+
+              <div class="card-lifecycle-actions-strip" (click)="$event.stopPropagation()">
+                <button type="button" class="action-btn-node edit-trigger" (click)="onEditInventory(inv, $event)">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  <span>Modify Specs</span>
+                </button>
+
+                <button type="button" class="action-btn-node state-toggle-trigger" [class.state-active]="inv.isActive" (click)="onToggleActivation(inv, $event)">
+                  @if (inv.isActive) {
+                    <svg class="btn-icon text-danger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                    <span>Deactivate</span>
+                  } @else {
+                    <svg class="btn-icon text-success" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                    <span>Activate Run</span>
+                  }
+                </button>
+
+                <button type="button" class="action-btn-node destructive-purge-trigger" (click)="onDeleteInventory(inv, $event)">
+                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                  <span>Purge Node</span>
+                </button>
+              </div>
+              
+              <div class="interactive-action-indicator-footer">
+                <span class="action-hint-label">Click container layout to toggle complete API payload metadata specifications</span>
+                <svg class="chevron-indicator-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
+
+            <div class="card-drawer-extended-details-panel" (click)="$event.stopPropagation()">
+              <h5 class="panel-section-title">Strict Nested Collection Parameters Payload</h5>
+              <div class="payload-metadata-grid-canvas">
+                
+                @if (inv.itemType === 'FLIGHT') {
+                  <div class="data-grouping-grid">
+                    <p><strong>Airline Carrier Node:</strong> {{ asFlight(inv).airlineName }}</p>
+                    <p><strong>Route Specifications:</strong> Airport {{ asFlight(inv).departureAirport }} to {{ asFlight(inv).arrivalAirport }}</p>
+                    <p><strong>Timeline Synchronization:</strong> Departs: {{ asFlight(inv).startTime }} | Arrives: {{ asFlight(inv).endTime }} ({{ asFlight(inv).numberOfHours | number:'1.1-2' }} hrs)</p>
+                    <p><strong>Layovers Model:</strong> {{ asFlight(inv).isConnecting ? 'Transitional Connecting (' + asFlight(inv).layoverDetails + ')' : 'Non-Stop Direct Pathing' }}</p>
+                    
+                    <div class="nested-collection-block">
+                      <h6>Configured Seat Tiers Matrix ({{ asFlight(inv).totalSeats }} Seats Total)</h6>
+                      <div class="sub-table-header"><span>Tier Class</span><span>Allocated Count</span><span>Calculated Price</span></div>
+                      @for (tier of asFlight(inv).seatTiers; track tier.seatType) {
+                        <div class="sub-table-row">
+                          <span class="highlight-txt">{{ tier.seatType }}</span>
+                          <span>{{ tier.totalSeatsAllocated }} Seats</span>
+                          <span class="code-font">INR {{ (inv.basePricePerSeat * tier.priceMultiplier) | number:'1.2-2' }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+                
+                @if (inv.itemType === 'BUS') {
+                  <div class="data-grouping-grid">
+                    <p><strong>Operator Fleet Service:</strong> {{ asBus(inv).operatorName }} [Reg: {{ asBus(inv).busNumberPlate }}]</p>
+                    <p><strong>Terminal Nodes Mapping:</strong> Terminal {{ asBus(inv).routeFrom }} &rarr; {{ asBus(inv).routeTo }} Hub</p>
+                    <p><strong>Schedule Configurations:</strong> Dispatch: {{ asBus(inv).startTime }} | Arrival: {{ asBus(inv).endTime }}</p>
+                    
+                    <div class="nested-collection-block">
+                      <h6>Transit Timeline Schedule & Intermediate Routing Stops</h6>
+                      <div class="sub-table-header"><span>Terminal Station Name</span><span>Stop Variant</span><span>Scheduled Time</span></div>
+                      @for (stop of asBus(inv).routeStops; track stop.stopName + stop.scheduledTime) {
+                        <div class="sub-table-row">
+                          <span class="highlight-txt">{{ stop.stopName }}</span>
+                          <span class="badge-role-pill inline-pill" [ngClass]="stop.stopType.toLowerCase()">{{ stop.stopType }}</span>
+                          <span>{{ stop.scheduledTime }}</span>
+                        </div>
+                      }
+                    </div>
+
+                    <div class="nested-collection-block">
+                      <h6>Configured Seat Tiers Matrix ({{ asBus(inv).totalSeats }} Seats Total)</h6>
+                      <div class="sub-table-header"><span>Tier Variant</span><span>Capacity Unit</span><span>Calculated Price</span></div>
+                      @for (tier of asBus(inv).seatTiers; track tier.seatType) {
+                        <div class="sub-table-row">
+                          <span class="highlight-txt">{{ tier.seatType }}</span>
+                          <span>{{ tier.totalSeatsAllocated }} Units</span>
+                          <span class="code-font">
+                            INR {{ (inv.basePricePerSeat * tier.priceMultiplier) | number:'1.2-2' }}
+                          </span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+                
+                @if (inv.itemType === 'HOTEL') {
+                  <div class="data-grouping-grid">
+                    <p><strong>Property Handle Entity:</strong> {{ asHotel(inv).hotelName }}</p>
+                    <p><strong>Room Structural Code:</strong> {{ asHotel(inv).roomType }} ({{ asHotel(inv).totalRooms }} Rooms)</p>
+                    <p><strong>Location Coordinates:</strong> {{ asHotel(inv).addressLocation }}, {{ asHotel(inv).district }}, {{ asHotel(inv).state }}</p>
+                    <p><strong>Verified Grade:</strong> {{ asHotel(inv).hotelRating }} / 5 Stars</p>
+                  </div>
+                }
+                
+                @if (inv.itemType === 'CAB') {
+                  <div class="data-grouping-grid">
+                    <p><strong>Vehicle Architecture Model:</strong> {{ asCab(inv).carModel }}</p>
+                    <p><strong>Registration Tracking Index:</strong> License Plate: {{ asCab(inv).vehicleRegistrationNumber }}</p>
+                    <p><strong>Engine Power Variant:</strong> Fuel Standard: {{ asCab(inv).fuelType }} ({{ asCab(inv).seaterCount }} Seater)</p>
+                    <p><strong>Operational Boundaries:</strong> Zone Restriction: {{ asCab(inv).district }}, {{ asCab(inv).state }}</p>
+                  </div>
+                }
+                
+                @if (inv.itemType === 'TOUR_PACKAGE') {
+                  <div class="data-grouping-grid">
+                    <p><strong>Vacation Bundle Layout:</strong> {{ asTour(inv).packageName }} ({{ asTour(inv).durationDays }} Days)</p>
+                    <p><strong>Fulfillment Agent Handle:</strong> Agent Node ID #{{ asTour(inv).travelAgentId }} ({{ asTour(inv).travelAgentName }})</p>
+                    <div class="full-itinerary-render-block">
+                      <strong>Itinerary Details Logs Data:</strong>
+                      <div class="nested-itinerary-pane">{{ asTour(inv).fullItineraryDetails }}</div>
+                    </div>
+                  </div>
+                }
+
+              </div>
+            </div>
+
+          </div>
+        } @empty {
+          <div class="empty-state-notice-card">
+            <p>No backend resource component inventories discovered matching criteria matrix parameters.</p>
+          </div>
+        }
+      </div>
+    </section>
+  }
+
+  @if (isEditing && editingItem) {
+    <app-inventory-edit-modal 
+      [item]="editingItem" 
+      (close)="onModalDismiss()" 
+      (saved)="onModalSaveSuccess()">
+    </app-inventory-edit-modal>
+  }
+</div>

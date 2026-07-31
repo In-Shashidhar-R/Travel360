@@ -1,0 +1,236 @@
+<section class="fade-in workspace-wrapper animate__animated animate__fadeIn">
+  
+  <!-- Main Header & Welcome Block -->
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-5 gap-3">
+    <div>
+      <h1 class="h2 text-contrast fw-black tracking-tight mb-1">Welcome back, {{ userName }}!</h1>
+      <p class="text-muted mb-0 small-caps tracking-wider text-uppercase text-xs">
+        Here is a real-time overview of your platform's performance today.
+      </p>
+    </div>
+    
+    <!-- System Status Badge -->
+    <div class="d-flex align-items-center bg-white border shadow-xs px-3 py-2 rounded-pill">
+      <span class="status-indicator me-2" [ngClass]="systemStatus === 'Operational' ? 'bg-emerald' : 'bg-rose'"></span>
+      <span class="fw-bold text-dark font-monospace text-xs me-3">System: {{ systemStatus | uppercase }}</span>
+      <button (click)="fetchDashboardData()" class="btn btn-link p-0 text-muted hover-primary transition-all line-height-0 border-0 bg-transparent" title="Refresh dashboard data">
+        <i class="bi bi-arrow-clockwise fs-5" [class.spin-animate]="loading"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Key Metrics Grid -->
+  @if (loading) {
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+      @for (placeholder of [1, 2, 3, 4]; track placeholder) {
+        <div class="col">
+          <div class="skeleton-card"></div>
+        </div>
+      }
+    </div>
+  } @else {
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4 mb-5">
+      
+      <!-- KPI 1: Gross Revenue -->
+      <div class="col">
+        <div class="kpi-card glass-card p-4 border-0 shadow-sm position-relative overflow-hidden h-100">
+          <div class="kpi-decor bg-emerald-blur"></div>
+          <p class="kpi-label text-muted text-uppercase fw-bold font-monospace tracking-widest mb-1 text-xs">Total Revenue</p>
+          <h3 class="kpi-value text-dark fw-black mb-0">
+            {{ grossRevenue | currency:'INR':'symbol':'1.2-2' }}
+          </h3>
+          <span class="badge bg-emerald-soft text-emerald font-monospace mt-2 d-inline-flex align-items-center text-xxs">
+            <i class="bi bi-graph-up-arrow me-1"></i> Live Audited
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI 2: Active Users -->
+      <div class="col">
+        <div class="kpi-card glass-card p-4 border-0 shadow-sm position-relative overflow-hidden h-100">
+          <div class="kpi-decor bg-indigo-blur"></div>
+          <p class="kpi-label text-muted text-uppercase fw-bold font-monospace tracking-widest mb-1 text-xs">Active Accounts</p>
+          <h3 class="kpi-value text-dark fw-black mb-0">{{ totalUsersCount | number }}</h3>
+          <p class="text-muted text-xs mb-0 mt-2">Registered Customer & Users</p>
+        </div>
+      </div>
+
+      <!-- KPI 3: Pending Approvals -->
+      <div class="col">
+        <div class="kpi-card glass-card p-4 border-0 shadow-sm position-relative overflow-hidden h-100">
+          <div class="kpi-decor bg-amber-blur"></div>
+          <p class="kpi-label text-muted text-uppercase fw-bold font-monospace tracking-widest mb-1 text-xs">Pending Bookings</p>
+          <h3 class="kpi-value text-dark fw-black mb-0">{{ pendingRequestsCount }}</h3>
+          <span class="badge font-monospace mt-2 d-inline-flex align-items-center text-xxs" [ngClass]="pendingRequestsCount > 0 ? 'bg-amber-soft text-amber' : 'bg-slate-soft text-slate'">
+            <i class="bi me-1" [ngClass]="pendingRequestsCount > 0 ? 'bi-exclamation-circle-fill' : 'bi-check-circle-fill'"></i>
+            {{ pendingRequestsCount > 0 ? 'Requires Action' : 'All Cleared' }}
+          </span>
+        </div>
+      </div>
+
+      <!-- KPI 4: Total Bookings Tracked -->
+      <div class="col">
+        <div class="kpi-card glass-card p-4 border-0 shadow-sm position-relative overflow-hidden h-100">
+          <div class="kpi-decor bg-purple-blur"></div>
+          <p class="kpi-label text-muted text-uppercase fw-bold font-monospace tracking-widest mb-1 text-xs">Total Bookings</p>
+          <h3 class="kpi-value text-dark fw-black mb-0">{{ totalBookingsCount | number }}</h3>
+          <p class="text-muted text-xs mb-0 mt-2">Active and completed travel schedules</p>
+        </div>
+      </div>
+
+    </div>
+  }
+
+  <!-- Split Core Layout Matrix -->
+  <div class="row g-4">
+    <!-- Primary Subsystems Column -->
+    <div class="col-lg-8">
+      <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-layers text-primary fs-4 me-2"></i>
+        <h2 class="h5 text-dark fw-bold mb-0">Management Hub Modules</h2>
+      </div>
+
+      <div class="d-flex flex-column gap-3">
+        <!-- Module 1: Booking Management -->
+        <div class="module-strip-card bg-white border rounded-3 p-3 shadow-sm transition-all" routerLink="/admin-dashboard/booking-requests">
+          <div class="d-flex align-items-center gap-3">
+            <div class="module-icon-box rounded bg-pink-soft text-pink"><i class="bi bi-calendar2-range-fill"></i></div>
+            <div class="flex-grow-1">
+              <h4 class="h6 fw-bold text-dark mb-1">Booking Operations</h4>
+              <p class="text-muted text-xs mb-0">Track user reservations, handle cancellations, and monitor active travel itineraries.</p>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-5 pe-2"></i>
+          </div>
+        </div>
+
+        <!-- Module 2: Financial Systems -->
+        <div class="module-strip-card bg-white border rounded-3 p-3 shadow-sm transition-all" routerLink="/admin-dashboard/finance">
+          <div class="d-flex align-items-center gap-3">
+            <div class="module-icon-box rounded bg-emerald-soft text-emerald"><i class="bi bi-wallet2"></i></div>
+            <div class="flex-grow-1">
+              <h4 class="h6 fw-bold text-dark mb-1">Finance & Invoicing</h4>
+              <p class="text-muted text-xs mb-0">Analyze revenue streams, verify payment gateway logs, and manage client settlements.</p>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-5 pe-2"></i>
+          </div>
+        </div>
+
+        <!-- Module 3: Compliance & Security -->
+        <div class="module-strip-card bg-white border rounded-3 p-3 shadow-sm transition-all" routerLink="/admin-dashboard/compliance">
+          <div class="d-flex align-items-center gap-3">
+            <div class="module-icon-box rounded bg-amber-soft text-amber"><i class="bi bi-shield-lock-fill"></i></div>
+            <div class="flex-grow-1">
+              <h4 class="h6 fw-bold text-dark mb-1">Security & Compliance</h4>
+              <p class="text-muted text-xs mb-0">Review system activity logs, investigate flagged accounts, and ensure platform safety protocols.</p>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-5 pe-2"></i>
+          </div>
+        </div>
+
+        <!-- Module 4: User Directories -->
+        <div class="module-strip-card bg-white border rounded-3 p-3 shadow-sm transition-all" routerLink="/admin-dashboard/users">
+          <div class="d-flex align-items-center gap-3">
+            <div class="module-icon-box rounded bg-purple-soft text-purple"><i class="bi bi-person-lines-fill"></i></div>
+            <div class="flex-grow-1">
+              <h4 class="h6 fw-bold text-dark mb-1">User & Agent Directory</h4>
+              <p class="text-muted text-xs mb-0">Manage global client profiles, configure travel agent access levels, and adjust regional portal permissions.</p>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-5 pe-2"></i>
+          </div>
+        </div>
+
+        <!-- Module 5: Global Inventories -->
+        <div class="module-strip-card bg-white border rounded-3 p-3 shadow-sm transition-all" routerLink="/admin-dashboard/inventories">
+          <div class="d-flex align-items-center gap-3">
+            <div class="module-icon-box rounded bg-indigo-soft text-indigo"><i class="bi bi-box-seam-fill"></i></div>
+            <div class="flex-grow-1">
+              <h4 class="h6 fw-bold text-dark mb-1">Supply & Inventory Management</h4>
+              <p class="text-muted text-xs mb-0">Update live ticket listings, add hotel properties, and adjust pricing matrices across transport sectors.</p>
+            </div>
+            <i class="bi bi-chevron-right text-muted fs-5 pe-2"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Quick Action Console -->
+    <div class="col-lg-4">
+      <div class="d-flex align-items-center mb-4">
+        <i class="bi bi-lightning-charge text-amber fs-4 me-2"></i>
+        <h2 class="h5 text-dark fw-bold mb-0">Quick Actions</h2>
+      </div>
+
+      <div class="action-dock p-4 bg-dark rounded-4 shadow-lg border border-secondary text-white position-relative overflow-hidden">
+        <div class="dock-ambient-glow"></div>
+        <p class="text-light small-caps font-monospace tracking-widest text-uppercase text-xxs mb-3 opacity-75">Common Workflows</p>
+        
+        <div class="d-flex flex-column gap-2 relative-content">
+          <!-- Quick Action: Onboard Partner Node -->
+          <a class="btn btn-action-matrix text-start d-flex align-items-center justify-content-between p-3 rounded-3 border-0" 
+             [routerLink]="['/admin-dashboard/users']" [queryParams]="{ tab: 'add-partner' }">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-person-badge text-purple fs-5"></i>
+              <div>
+                <span class="d-block text-xs fw-bold text-white mb-0 line-height-1">Onboard New Supplier</span>
+                <span class="text-white-50 text-xxs">Add corporate supply partner accounts</span>
+              </div>
+            </div>
+            <i class="bi bi-plus-circle-fill text-purple opacity-75"></i>
+          </a>
+
+          <!-- Quick Action: Register Travel Agent -->
+          <a class="btn btn-action-matrix text-start d-flex align-items-center justify-content-between p-3 rounded-3 border-0" 
+             [routerLink]="['/admin-dashboard/users']" [queryParams]="{ tab: 'add-agent' }">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-person-plus text-purple fs-5"></i>
+              <div>
+                <span class="d-block text-xs fw-bold text-white mb-0 line-height-1">Register Travel Agent</span>
+                <span class="text-white-50 text-xxs">Issue credentials to a downstream agency</span>
+              </div>
+            </div>
+            <i class="bi bi-plus-circle-fill text-purple opacity-75"></i>
+          </a>
+
+          <!-- Quick Action: Create New Inventory -->
+          <a class="btn btn-action-matrix text-start d-flex align-items-center justify-content-between p-3 rounded-3 border-0" 
+             [routerLink]="['/admin-dashboard/inventories']" [queryParams]="{ tab: 'add' }">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-plus-circle text-indigo fs-5"></i>
+              <div>
+                <span class="d-block text-xs fw-bold text-white mb-0 line-height-1">Add New Inventory</span>
+                <span class="text-white-50 text-xxs">Create new hotel rooms, flight blocks, or bus entries</span>
+              </div>
+            </div>
+            <i class="bi bi-arrow-up-right-circle-fill text-indigo opacity-75"></i>
+          </a>
+
+          <!-- Quick Action: Financial Audit Ledger -->
+          <a class="btn btn-action-matrix text-start d-flex align-items-center justify-content-between p-3 rounded-3 border-0" 
+             [routerLink]="['/admin-dashboard/finance']" [queryParams]="{ tab: 'invoices' }">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-file-earmark-text text-emerald fs-5"></i>
+              <div>
+                <span class="d-block text-xs fw-bold text-white mb-0 line-height-1">View Invoices Book</span>
+                <span class="text-white-50 text-xxs">Inspect active client clearances and billings</span>
+              </div>
+            </div>
+            <i class="bi bi-shield-shaded text-emerald opacity-75"></i>
+          </a>
+
+          <!-- Quick Action: Security Logs -->
+          <a class="btn btn-action-matrix text-start d-flex align-items-center justify-content-between p-3 rounded-3 border-0" 
+             [routerLink]="['/admin-dashboard/compliance']" [queryParams]="{ tab: 'audit-log' }">
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-shield-lock text-amber fs-5"></i>
+              <div>
+                <span class="d-block text-xs fw-bold text-white mb-0 line-height-1">View Security Logs</span>
+                <span class="text-white-50 text-xxs">Check platform activity audit trails</span>
+              </div>
+            </div>
+            <i class="bi bi-terminal-fill text-amber opacity-75"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

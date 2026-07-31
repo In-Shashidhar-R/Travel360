@@ -1,0 +1,23 @@
+// Micro-interactions for tab state management
+.nav-pills {
+  .nav-link {
+    color: #64748b;
+    background: transparent;
+    border: 1px solid transparent;
+
+    &:hover {
+      color: #2563eb;
+      background-color: #f1f5f9;
+    }
+
+    &.active {
+      color: #ffffff !important;
+      background-color: #2563eb !important;
+      box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+    }
+  }
+}
+
+.transition-all {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}

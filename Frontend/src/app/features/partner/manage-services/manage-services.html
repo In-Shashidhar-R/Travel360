@@ -1,0 +1,99 @@
+<div class="card border-0 rounded-3 p-4 bg-white shadow-sm data-card">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4 section-header">
+    <h4 class="fw-bold text-slate-900 m-0 d-flex align-items-center">
+      <i class="bi bi-diagram-3-fill text-primary me-2"></i>
+      Manage Services
+    </h4>
+    <span class="badge rounded-pill px-3 py-2 text-primary bg-primary-light font-semibold service-count">
+      {{ totalServices }} Services Available
+    </span>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table align-middle service-table text-sm">
+      <thead>
+        <tr class="table-light-header text-uppercase text-xs fw-bold text-muted border-bottom-2">
+          <th class="py-3">ID</th>
+          <th class="py-3">Type</th>
+          <th class="py-3">Service Details</th>
+          <th class="py-3">Route / Location</th>
+          <th class="py-3">Price</th>
+          <th class="py-3">Status</th>
+          <th class="py-3 text-end px-3">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for(item of inventories; track item.inventoryId){
+          <tr class="align-middle border-bottom">
+            <td class="fw-bold text-secondary">#{{ item.inventoryId }}</td>
+            <td>
+              <span class="badge rounded-2 text-white px-2 py-1 text-xs text-uppercase type-badge" [ngClass]="{
+                  'bg-primary-dark': item.itemType === 'FLIGHT',
+                  'bg-success-dark': item.itemType === 'BUS',
+                  'bg-warning-dark': item.itemType === 'HOTEL',
+                  'bg-purple-dark': item.itemType === 'PACKAGE'
+                }">
+                {{ item.itemType }}
+              </span>
+            </td>
+            <td>
+              @if(item.itemType === 'BUS') {
+                <div class="fw-bold text-slate-900 main-value">{{ item.operatorName }}</div>
+                <small class="text-muted d-block text-xs">{{ item.busNumberPlate }}</small>
+              }
+              @else if(item.itemType === 'FLIGHT') {
+                <div class="fw-bold text-slate-900 main-value">{{ item.airlineName }}</div>
+                <small class="text-muted d-block text-xs">{{ item.flightNumber }}</small>
+              }
+              @else if(item.itemType === 'HOTEL') {
+                <div class="fw-bold text-slate-900 main-value">{{ item.hotelName }}</div>
+              }
+              @else {
+                <div class="fw-bold text-slate-900 main-value">{{ item.packageName }}</div>
+              }
+            </td>
+            <td>
+              @if(item.itemType === 'BUS') {
+                <span>{{ item.routeFrom }}</span> <i class="bi bi-arrow-right mx-1 text-muted"></i> <span>{{ item.routeTo }}</span>
+              }
+              @else if(item.itemType === 'FLIGHT') {
+                <span>{{ item.departureAirport }}</span> <i class="bi bi-airplane mx-1 text-muted"></i> <span>{{ item.arrivalAirport }}</span>
+              }
+              @else if(item.itemType === 'HOTEL') {
+                <span class="text-secondary">{{ item.city }}</span>
+              }
+              @else {
+                <span class="text-secondary">{{ item.destination }}</span>
+              }
+            </td>
+            <td class="fw-bold text-slate-900">₹{{ item.basePricePerSeat }}</td>
+            <td>
+              <span class="badge rounded-pill px-3 py-1-5 fw-bold text-xs status-badge" [ngClass]="{
+                  'bg-success-light text-success-dark': item.status === 'ACTIVE',
+                  'bg-danger-light text-danger-dark': item.status === 'INACTIVE'
+                }">
+                {{ item.status }}
+              </span>
+            </td>
+            <td class="text-end px-3">
+              @if(item.status === 'ACTIVE') {
+                <button class="btn btn-danger btn-sm px-3 rounded-2 fw-medium d-inline-flex align-items-center gap-1 transition-btn action-btn" (click)="triggerDeactivate(item.inventoryId)">
+                  <i class="bi bi-dash-circle"></i> Deactivate
+                </button>
+              }
+              @else {
+                <button class="btn btn-success btn-sm px-3 rounded-2 fw-medium d-inline-flex align-items-center gap-1 transition-btn action-btn" (click)="triggerActivate(item.inventoryId)">
+                  <i class="bi bi-check-circle"></i> Activate
+                </button>
+              }
+            </td>
+          </tr>
+        } @empty {
+          <tr>
+            <td colspan="7" class="text-center text-muted py-4">No services discovered under this specific parameters profile.</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+</div>

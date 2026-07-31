@@ -1,0 +1,82 @@
+// Dynamic Variable Framework Configurations Mapped into Aura-Light System
+$primary-soft: rgba(37, 99, 235, 0.06);
+$border-light: #e2e8f0;
+
+.tour-review-core {
+  // Explicit Tracking Padding Typography Metrics Alignment
+  .small-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+  }
+  .text-xs { font-size: 0.75rem !important; }
+  .xs-text { font-size: 0.72rem !important; }
+  .line-spaced { line-height: 1.55 !important; }
+  .tracking-mono { letter-spacing: 0.5px; }
+
+  // Dynamic Context Colors Soft Maps
+  .bg-primary-soft { background-color: $primary-soft !important; }
+
+  // Aura Frosted White Translucent Base Panel Card Scaffolding
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+  }
+
+  .shadow-inner-sm {
+    box-shadow: inset 0 2px 5px rgba(15, 23, 42, 0.03);
+  }
+
+  // Smooth Custom Timeline Scrollbar Handles
+  .scroll-viewport-timeline {
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.3);
+      border-radius: 10px;
+    }
+  }
+
+  // Last Element Layout Separator Reset
+  .last-mb-0:last-child {
+    margin-bottom: 0px !important;
+  }
+
+  // Big Operational Submit Button Animators
+  .btn-order-submit {
+    transition: all 0.25s ease-in-out;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25) !important;
+    &:hover:not([disabled]) {
+      background-color: #1d4ed8 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4) !important;
+    }
+  }
+
+  .btn-agent-dispatch {
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 10px rgba(245, 158, 11, 0.15) !important;
+    &:hover:not([disabled]) {
+      background-color: #d97706 !important;
+      box-shadow: 0 6px 14px rgba(245, 158, 11, 0.25) !important;
+    }
+  }
+
+  .checkbox-toggle-custom {
+    cursor: pointer;
+    width: 36px;
+    height: 20px;
+    &:checked {
+      background-color: #2563eb;
+      border-color: #2563eb;
+    }
+  }
+}

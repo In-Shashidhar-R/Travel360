@@ -1,0 +1,130 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top px-3">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    
+    <a class="navbar-brand fw-bold text-primary m-0" routerLink="/admin-dashboard/overview">
+      <span class="text-white">Admin</span>Portal
+    </a>
+    
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#adminNavbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse justify-content-between" id="adminNavbarContent">
+      
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/admin-dashboard/overview"
+             routerLinkActive="btn-primary text-white" 
+             [routerLinkActiveOptions]="{exact: true}">Overview</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/admin-dashboard/booking-requests"
+             routerLinkActive="btn-primary text-white">Bookings</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/admin-dashboard/finance"
+             routerLinkActive="btn-primary text-white">Finance</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/admin-dashboard/compliance"
+             routerLinkActive="btn-primary text-white">Compliance</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/admin-dashboard/users"
+             routerLinkActive="btn-primary text-white">Users</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/admin-dashboard/inventories"
+             routerLinkActive="btn-primary text-white">Inventories</a>
+        </li>
+      </ul>
+      
+      <div class="d-flex align-items-center gap-3">
+        @if (authService.currentUser(); as user) {
+          <div class="dropdown">
+            <div class="d-flex align-items-center gap-2 px-3 py-1 bg-secondary bg-opacity-25 rounded-pill dropdown-toggle text-decoration-none" 
+                 data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+              <div class="bg-success rounded-circle animate-pulse" style="width: 8px; height: 8px;"></div>
+              <span class="navbar-text p-0 text-light small fw-medium text-nowrap">{{ user.name }}</span>
+            </div>
+            <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary bg-dark mt-2 p-1">
+              <li>
+                <a class="dropdown-item text-light small d-flex align-items-center gap-2 py-2 rounded text-decoration-none" 
+                   routerLink="/admin-dashboard/myprofile">
+                  <i class="bi bi-person-circle text-primary"></i> My Profile
+                </a>
+              </li>
+              <li>
+                <button class="dropdown-item text-light small d-flex align-items-center gap-2 py-2 rounded" 
+                        data-bs-toggle="modal" data-bs-target="#adminPasswordModal" (click)="passwordError=''">
+                  <i class="bi bi-shield-lock text-warning"></i> Change Password
+                </button>
+              </li>
+              <li><hr class="dropdown-divider border-secondary my-1"></li>
+              <li>
+                <button class="dropdown-item text-danger small d-flex align-items-center gap-2 py-2 rounded" (click)="handleSignOut()">
+                  <i class="bi bi-box-arrow-right"></i> Sign Out
+                </button>
+              </li>
+            </ul>
+          </div>
+        }
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid p-4 admin-workspace-canvas-wrapper bg-light min-vh-100">
+  
+  @if (alertMessage) {
+    <div class="alert alert-dismissible shadow-sm fade show mb-4" [ngClass]="alertType === 'error' ? 'alert-danger' : 'alert-success'" role="alert">
+      <i class="bi bi-info-circle-fill me-2"></i> {{ alertMessage }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  }
+
+  <router-outlet></router-outlet>
+
+</div>
+
+<div class="modal fade" id="adminPasswordModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-white shadow border-0">
+      <div class="modal-header border-bottom p-3">
+        <h5 class="modal-title fw-bold text-dark text-uppercase small tracking-wider">Change Password</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeAdminPasswordBtn"></button>
+      </div>
+      <form (ngSubmit)="submitPasswordRotation()">
+        <div class="modal-body p-4 d-flex flex-column gap-3">
+          
+          @if (passwordError) {
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-0 shadow-sm border-0">
+              <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+              <span class="fw-medium">{{ passwordError }}</span>
+            </div>
+          }
+
+          <div>
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Current Password</label>
+            <input type="password" class="form-control form-control-sm p-2" [(ngModel)]="passwordForm.currentPassword" name="currentPassword" required autocomplete="current-password">
+          </div>
+          <div>
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">New Password</label>
+            <input type="password" class="form-control form-control-sm p-2" [(ngModel)]="passwordForm.newPassword" name="newPassword" required autocomplete="new-password">
+          </div>
+        </div>
+        <div class="modal-footer border-top p-2 bg-light">
+          <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-sm btn-warning text-dark px-4 fw-bold">Change password</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

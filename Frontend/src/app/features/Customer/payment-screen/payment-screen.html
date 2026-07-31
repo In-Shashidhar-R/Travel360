@@ -1,0 +1,324 @@
+<div class="container-fluid py-4 py-md-5 d-flex justify-content-center align-items-center payment-portal-core">
+  <div class="card p-4 border-0 bg-white rounded-4 glass-panel-light text-start text-dark shadow-sm card-container-frame animate-fade-in">
+    
+    <!-- Header Shield -->
+    <div class="text-center mb-3">
+      <div class="d-inline-flex align-items-center gap-2 bg-success-soft text-success px-3 py-1 rounded-pill text-xxs fw-semibold border border-success-subtle">
+        <i class="bi bi-shield-lock-fill"></i>
+        <span>256-Bit SSL Secured Settlement Pipeline</span>
+      </div>
+    </div>
+
+    <!-- Status Alerts -->
+    @if (successMessage) {
+      <div class="alert alert-success bg-success-soft text-success border-0 p-3 rounded-3 mb-4 shadow-sm text-center animate-fade-in">
+        <i class="bi bi-patch-check-fill fs-2 d-block mb-1"></i>
+        <h6 class="fw-bold m-0">{{ successMessage }}</h6>
+        <div class="badge bg-white text-success shadow-xs mt-2 px-3 py-1 font-monospace text-xxs">
+          Ref ID: {{ transactionId }}
+        </div>
+        <p class="small text-muted mb-0 mt-2">Redirecting to your booking dashboard...</p>
+      </div>
+    }
+
+    @if (isLoading) {
+      <div class="text-center py-5 my-2">
+        <div class="spinner-border text-primary mb-3" role="status" style="width: 2.2rem; height: 2.2rem;"></div>
+        <p class="text-muted small-label tracking-wider m-0">Generating secure billing statement...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="alert alert-danger bg-danger-soft text-danger border-0 p-3 rounded-3 mb-4 d-flex align-items-center gap-2 shadow-sm">
+        <i class="bi bi-exclamation-octagon-fill fs-5 flex-shrink-0 me-2"></i>
+        <span class="fw-semibold small line-spaced">Payment Engine Halt: {{ errorMessage }}</span>
+      </div>
+      <button class="btn btn-dark w-100 rounded-3 py-2 fw-bold text-xs text-uppercase tracking-wider shadow-sm" routerLink="/customer/inventories">
+        <i class="bi bi-shield-lock me-2"></i> Return to Marketplace
+      </button>
+    } @else if (invoice) {
+      
+      <!-- Statement Overview Header -->
+      <div class="text-center mb-3 pb-3 border-bottom border-light">
+        <div class="text-primary mb-1">
+          <i class="bi bi-receipt-cutoff fs-3"></i>
+        </div>
+        <h5 class="fw-extrabold text-dark m-0 tracking-tight">Booking Statement Invoice</h5>
+        <div class="text-muted font-monospace text-xxs mt-1 d-flex flex-wrap justify-content-center align-items-center gap-2">
+          <span>Statement Ref: <b class="text-dark">#{{ invoice.invoiceId }}</b></span>
+          <span class="text-light-subtle font-sans">|</span>
+          <span>Booking Tracking: <b class="text-dark">#{{ invoice.bookingId }}</b></span>
+        </div>
+      </div>
+
+      <!-- Ledger Card -->
+      <div class="bg-light bg-opacity-70 p-3 border border-light-subtle rounded-4 mb-3 shadow-inner-sm">
+        <div class="row g-2 align-items-center text-xs text-dark font-sans fw-medium">
+          <div class="col-5 text-muted text-uppercase tracking-wider small-label-xs">Guest Account Name</div>
+          <div class="col-7 text-end fw-extrabold text-dark text-truncate text-capitalize">{{ invoice.customerName }}</div>
+          
+          <div class="col-5 text-muted text-uppercase tracking-wider small-label-xs">Statement Date</div>
+          <div class="col-7 text-end fw-bold text-secondary font-sans d-inline-flex align-items-center justify-content-end">
+            <i class="bi bi-calendar3 text-muted me-1.5"></i>{{ invoice.generatedDate }}
+          </div>
+          
+          <div class="col-5 text-muted text-uppercase tracking-wider small-label-xs">Clearance Status</div>
+          <div class="col-7 text-end">
+            <span class="badge rounded-pill px-2.5 py-1 border fw-bold tracking-wider text-uppercase text-xxs font-sans" 
+                  [ngClass]="invoice.status === 'PAID' ? 'bg-success-soft text-success border-success' : 'bg-warning-soft text-warning border-warning'">
+              {{ invoice.status }}
+            </span>
+          </div>
+        </div>
+        
+        <hr class="my-2.5 border-light opacity-50">
+        
+        <div class="row align-items-center g-2">
+          <div class="col-5">
+            <span class="fw-bold text-secondary text-uppercase tracking-wider small-label">Net Payable Due:</span>
+          </div>
+          <div class="col-7 text-end">
+            <span class="fw-extrabold text-primary fs-4 tracking-tight">
+              <strong>{{ invoice.amount | currency:'INR':'symbol':'1.0-0' }}</strong>
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 5 Payment Rail Selection Options -->
+      @if (invoice.status === 'UNPAID' || invoice.status === 'PENDING') {
+        <div class="mb-3">
+          <h6 class="fw-bold text-dark mb-2 text-uppercase tracking-wide small-label">Choose Payment Rail</h6>
+          
+          <div class="payment-rail-grid mb-3">
+            <button type="button" class="payment-method-tile border rounded-3 p-2 text-center transition-all"
+                    [class.active-selection]="selectedMethod === 'CREDIT_CARD'"
+                    (click)="selectPaymentMethod('CREDIT_CARD')">
+              <i class="bi bi-credit-card-2-front fs-5 d-block"></i>
+              <span class="fw-bold text-xxs d-block mt-1">Credit Card</span>
+            </button>
+
+            <button type="button" class="payment-method-tile border rounded-3 p-2 text-center transition-all"
+                    [class.active-selection]="selectedMethod === 'DEBIT_CARD'"
+                    (click)="selectPaymentMethod('DEBIT_CARD')">
+              <i class="bi bi-credit-card fs-5 d-block"></i>
+              <span class="fw-bold text-xxs d-block mt-1">Debit Card</span>
+            </button>
+
+            <button type="button" class="payment-method-tile border rounded-3 p-2 text-center transition-all"
+                    [class.active-selection]="selectedMethod === 'NET_BANKING'"
+                    (click)="selectPaymentMethod('NET_BANKING')">
+              <i class="bi bi-bank fs-5 d-block"></i>
+              <span class="fw-bold text-xxs d-block mt-1">NetBanking</span>
+            </button>
+
+            <button type="button" class="payment-method-tile border rounded-3 p-2 text-center transition-all"
+                    [class.active-selection]="selectedMethod === 'UPI'"
+                    (click)="selectPaymentMethod('UPI')">
+              <i class="bi bi-qr-code-scan fs-5 d-block"></i>
+              <span class="fw-bold text-xxs d-block mt-1">UPI / QR</span>
+            </button>
+
+            <button type="button" class="payment-method-tile border rounded-3 p-2 text-center transition-all"
+                    [class.active-selection]="selectedMethod === 'WALLET'"
+                    (click)="selectPaymentMethod('WALLET')">
+              <i class="bi bi-wallet2 fs-5 d-block"></i>
+              <span class="fw-bold text-xxs d-block mt-1">Wallet</span>
+            </button>
+          </div>
+        </div>
+
+        <form [formGroup]="paymentForm" (ngSubmit)="submitPaymentClearance()">
+
+          <!-- 💳 CREDIT / DEBIT CARD BLOCK -->
+          @if (selectedMethod === 'CREDIT_CARD' || selectedMethod === 'DEBIT_CARD') {
+            <div class="payment-method-section animate-slide-up mb-3">
+              
+              <!-- Visual Card Preview -->
+              <div class="visual-card p-3 rounded-4 shadow-sm mb-3 position-relative text-white overflow-hidden">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <i class="bi bi-cpu fs-4 opacity-75"></i>
+                  <span class="card-type-badge">
+                    {{ selectedMethod === 'CREDIT_CARD' ? 'Credit Card' : 'Debit Card' }}
+                  </span>
+                </div>
+                
+                <div class="card-number-display font-monospace fs-5 tracking-widest my-2 text-center">
+                  {{ formattedCardNumber }}
+                </div>
+
+                <div class="d-flex justify-content-between align-items-end pt-2 text-uppercase text-xxs">
+                  <div>
+                    <span class="d-block text-muted-card">Card Holder</span>
+                    <span class="fw-bold font-sans text-truncate d-inline-block" style="max-width: 180px;">
+                      {{ paymentForm.get('cardHolder')?.value || 'FULL NAME' }}
+                    </span>
+                  </div>
+                  <div class="text-end">
+                    <span class="d-block text-muted-card">Expires</span>
+                    <span class="fw-bold font-sans">{{ paymentForm.get('expiry')?.value || 'MM/YY' }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Inputs -->
+              <div class="row g-2">
+                <div class="col-12">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Card Number (12 to 16 digits)</label>
+                  <input type="text" class="form-control form-control-sm rounded-3"
+                         formControlName="cardNumber" placeholder="4111222233334444" maxlength="16"
+                         [class.is-invalid]="isInvalid('cardNumber')">
+                  <div class="invalid-feedback text-xxs">Must be 12 to 16 numeric digits.</div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Card Holder Name</label>
+                  <input type="text" class="form-control form-control-sm rounded-3 text-uppercase"
+                         formControlName="cardHolder" placeholder="JOHN DOE"
+                         [class.is-invalid]="isInvalid('cardHolder')">
+                  <div class="invalid-feedback text-xxs">Card holder name is required.</div>
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Expiry Date (MM/YY)</label>
+                  <input type="text" class="form-control form-control-sm rounded-3"
+                         formControlName="expiry" placeholder="12/28" maxlength="5"
+                         [class.is-invalid]="isInvalid('expiry')">
+                  
+                  @if (isInvalid('expiry')) {
+                    <div class="invalid-feedback d-block text-xxs">
+                      @if (hasError('expiry', 'required')) { <span>Expiry date required.</span> }
+                      @if (hasError('expiry', 'invalidFormat')) { <span>Use MM/YY format.</span> }
+                      @if (hasError('expiry', 'expired')) { <span>Card has expired! Use active card.</span> }
+                    </div>
+                  }
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">CVV Code (3 digits)</label>
+                  <input type="password" class="form-control form-control-sm rounded-3"
+                         formControlName="cvv" placeholder="123" maxlength="3"
+                         [class.is-invalid]="isInvalid('cvv')">
+                  <div class="invalid-feedback text-xxs">Requires exactly 3 numeric digits.</div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- 🏛 NET BANKING BLOCK -->
+          @if (selectedMethod === 'NET_BANKING') {
+            <div class="payment-method-section animate-slide-up mb-3">
+              <div class="row g-2">
+                <div class="col-12">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Select Bank</label>
+                  <select class="form-select form-select-sm rounded-3" formControlName="bankName"
+                          [class.is-invalid]="isInvalid('bankName')">
+                    <option value="">Choose Bank...</option>
+                    <option value="HDFC">HDFC Bank</option>
+                    <option value="SBI">State Bank of India</option>
+                    <option value="ICICI">ICICI Bank</option>
+                    <option value="AXIS">Axis Bank</option>
+                    <option value="KOTAK">Kotak Mahindra Bank</option>
+                  </select>
+                  <div class="invalid-feedback text-xxs">Please select your net banking institution.</div>
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Account Number / NetBanking ID</label>
+                  <input type="text" class="form-control form-control-sm rounded-3" formControlName="bankAccountNumber"
+                         placeholder="Enter account or customer ID"
+                         [class.is-invalid]="isInvalid('bankAccountNumber')">
+                  <div class="invalid-feedback text-xxs">Enter a valid 9 to 18 digit account number.</div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- 📱 UPI BLOCK -->
+          @if (selectedMethod === 'UPI') {
+            <div class="payment-method-section animate-slide-up mb-3">
+              <div class="row align-items-center g-3 bg-light bg-opacity-60 p-3 rounded-3 border border-light-subtle">
+                <div class="col-sm-5 text-center border-end-sm">
+                  <div class="bg-white p-2 rounded-3 border shadow-xs d-inline-block">
+                    <img [src]="dynamicQrUrl" alt="UPI QR Code" class="img-fluid rounded" style="width: 120px; height: 120px;">
+                  </div>
+                  <span class="d-block text-xxs text-muted mt-1 fw-semibold">Scan with GPay, PhonePe, Paytm</span>
+                </div>
+                <div class="col-sm-7">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Or Enter UPI ID (VPA)</label>
+                  <div class="input-group input-group-sm">
+                    <span class="input-group-text bg-white"><i class="bi bi-person-badge"></i></span>
+                    <input type="text" class="form-control" formControlName="upiId" placeholder="username@okaxis"
+                           [class.is-invalid]="isInvalid('upiId')">
+                  </div>
+                  @if (isInvalid('upiId')) {
+                    <div class="invalid-feedback d-block text-xxs mt-1">
+                      Enter valid VPA format (e.g. name@upi).
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- 👛 WALLET BLOCK -->
+          @if (selectedMethod === 'WALLET') {
+            <div class="payment-method-section animate-slide-up mb-3">
+              <div class="row g-2">
+                <div class="col-12">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">Select Smart Wallet</label>
+                  <select class="form-select form-select-sm rounded-3" formControlName="walletProvider">
+                    <option value="PAYTM">Paytm Balance</option>
+                    <option value="AMAZON_PAY">Amazon Pay Balance</option>
+                    <option value="PHONEPE">PhonePe Wallet</option>
+                    <option value="MOBIKWIK">MobiKwik Zip</option>
+                  </select>
+                </div>
+                <div class="col-12">
+                  <label class="form-label small-label-xs text-muted text-uppercase mb-1">10-Digit Linked Mobile Number</label>
+                  <input type="text" class="form-control form-control-sm rounded-3" formControlName="walletPhone"
+                         placeholder="9876543210" maxlength="10"
+                         [class.is-invalid]="isInvalid('walletPhone')">
+                  <div class="invalid-feedback text-xxs">Requires valid 10-digit mobile number.</div>
+                </div>
+              </div>
+            </div>
+          }
+
+          <!-- Submit Button -->
+          <button type="submit" 
+                  class="btn btn-success w-100 fw-bold shadow-sm py-2.5 text-uppercase tracking-wider text-xs rounded-3 d-inline-flex align-items-center justify-content-center gap-2 btn-payment-submit border-0 mt-2"
+                  [disabled]="isProcessingPayment">
+            @if (isProcessingPayment) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 
+              Clearing Transaction Credentials...
+            } @else {
+              <i class="bi bi-shield-lock-fill fs-6 me-1"></i> Authorize & Clear Settlement
+            }
+          </button>
+        </form>
+
+      } @else {
+        <!-- Already Cleared -->
+        <div class="alert alert-success border-0 bg-success-soft text-success d-flex align-items-center gap-2 p-3 mb-3 rounded-3 shadow-inner-sm">
+          <i class="bi bi-patch-check-fill fs-4 flex-shrink-0 me-2"></i>
+          <span class="fw-semibold small line-spaced text-dark">This invoice record statement ledger has already been cleared successfully.</span>
+        </div>
+        <button class="btn btn-primary w-100 rounded-3 py-2 fw-bold tracking-wide text-uppercase text-xs border-0 shadow-sm" routerLink="/cust-dashboard">
+          <i class="bi bi-house-door-fill me-2"></i> Return to Traveler Dashboard
+        </button>
+      }
+
+    }
+
+    <!-- Footer Trust Badges -->
+    <div class="text-center mt-3 pt-2 border-top border-light">
+      <div class="d-flex justify-content-center gap-3 text-muted opacity-75 text-xxs">
+        <span><i class="bi bi-shield-check text-success me-1"></i> PCI-DSS Compliant</span>
+        <span>|</span>
+        <span><i class="bi bi-lock me-1"></i> SSL Encrypted</span>
+        <span>|</span>
+        <span><i class="bi bi-patch-check me-1"></i> Instant Clearance</span>
+      </div>
+    </div>
+
+  </div>
+</div>

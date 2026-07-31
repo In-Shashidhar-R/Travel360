@@ -1,0 +1,117 @@
+<div class="container-fluid p-0 text-secondary">
+  
+  <div class="card shadow-sm border border-light rounded-3 p-3 bg-white mb-4">
+    <div class="row row-cols-1 row-cols-md-3 g-3 align-items-end">
+      
+      <div class="col-md-4 d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Status</label>
+        <select class="form-select form-select-sm text-secondary bg-white p-2" [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="ALL">All Complaint Records</option>
+          <option value="OPEN">Open</option> 
+          <option value="IN_PROGRESS">In Progress</option>
+          <option value="RESOLVED">Resolved</option>
+        </select>
+      </div>
+
+      <div class="col-md-8 d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Search Parameters (ID / Client Name / Subject)</label>
+        <input type="text" class="form-control form-control-sm text-secondary p-2" [(ngModel)]="searchQuery" (input)="applyFilters()" placeholder="Filter through general incident fields..."/>
+      </div>
+
+    </div>
+  </div>
+
+  @if (loading) { 
+    <div class="text-center py-5 my-3">
+      <div class="spinner-border text-primary spinner-border-sm me-2" role="status"></div>
+      <span class="text-muted small">Polling administrative complaints queue...</span>
+    </div> 
+  }
+  @if (errorMsg) { <div class="alert alert-danger shadow-sm mb-4"><i class="bi bi-exclamation-circle-fill me-2"></i>{{ errorMsg }}</div> }
+
+  @if (!loading && filteredComplaints.length > 0) {
+    <div class="card shadow-sm border border-light rounded-3 overflow-hidden bg-white">
+      <div class="table-responsive w-100">
+        <table class="table table-hover align-top mb-0 text-start small">
+          <thead class="table-light border-bottom border-2 text-uppercase text-primary fw-bold">
+            <tr>
+              <th class="p-3">Complaint ID</th>
+              <th class="p-3">Status</th>
+              <th class="p-3">User Id</th>
+              <th class="p-3">Booking Id</th>
+              <th class="p-3">Complaint Description</th>
+              <th class="p-3">Remarks</th>
+              <th class="p-3">Complaint Created At</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (c of paginatedComplaints; track c.complaintId) {
+              <tr class="border-bottom">
+                <td class="p-3 font-monospace fw-bold text-dark">#{{ c.complaintId }}</td>
+                <td class="p-3">
+                <span class="badge text-uppercase tracking-wider px-2 py-1 text-pill-compliance" 
+                      [ngClass]="'status-' + c.status.toLowerCase()">
+                  {{ c.status }}
+                </span>
+                </td>
+                <td class="p-3">
+                  <div class="fw-semibold text-dark">{{ c.raisedByName }}</div>
+                  <div class="text-muted small mt-1">Account ID: #{{ c.raisedByUserId }}</div>
+                </td>
+                <td class="p-3">
+                  @if (c.relatedBookingId) {
+                    <span class="badge d-inline-flex align-items-center bg-info bg-opacity-10 text-info border border-info border-opacity-25 p-2 rounded fw-semibold">
+                      <i class="bi bi-link-45deg me-1"></i> Booking #{{ c.relatedBookingId }}
+                    </span>
+                  } @else {
+                    <span class="text-secondary opacity-50 fst-italic small">Standalone Issue</span>
+                  }
+                </td>
+                <td class="p-3">
+                  <div class="fw-bold text-dark mb-1" style="font-size: 0.88rem;">{{ c.subject }}</div>
+                  <div class="p-2 bg-light border rounded text-secondary small text-wrap text-break pre-wrap-box" style="max-width: 320px;">{{ c.description }}</div>
+                </td>
+                <td class="p-3">
+                  @if (c.resolutionNote) {
+                    <div class="p-2 border rounded text-wrap text-break note-resolved small pre-wrap-box" style="max-width: 280px;">{{ c.resolutionNote }}</div>
+                  } @else {
+                    <div class="text-muted fst-italic small opacity-75"><i class="bi bi-hourglass-split me-1"></i>Awaiting analysis...</div>
+                  }
+                </td>
+                <td class="p-3 text-nowrap text-secondary" style="font-size: 0.78rem;">
+                  <div><span class="fw-medium text-dark">Opened:</span> {{ c.createdAt | date:'shortDate' }}</div>
+                  <div class="mt-1"><span class="fw-medium text-dark">Modified:</span> {{ c.updatedAt | date:'shortDate' }}</div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card-footer bg-white border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 p-3">
+        <div class="text-muted small">
+          Showing <span class="fw-semibold">{{getStartIndex()}}</span> to <span class="fw-semibold">{{getEndIndex(filteredComplaints.length)}}</span> of <span class="fw-semibold">{{filteredComplaints.length}}</span> incidents
+        </div>
+        <nav aria-label="Complaints log pagination">
+          <ul class="pagination pagination-sm mb-0">
+            <li class="page-item" [class.disabled]="currentPage === 1">
+              <button class="page-link" (click)="goToPage(currentPage - 1)" type="button">Previous</button>
+            </li>
+            <li class="page-item" *ngFor="let p of getPagesArray(filteredComplaints.length); let idx = index" [class.active]="currentPage === idx + 1">
+              <button class="page-link" (click)="goToPage(idx + 1)" type="button">{{ idx + 1 }}</button>
+            </li>
+            <li class="page-item" [class.disabled]="currentPage === getTotalPages(filteredComplaints.length)">
+              <button class="page-link" (click)="goToPage(currentPage + 1)" type="button">Next</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+    </div>
+  } @else if (!loading) {
+    <div class="text-center p-5 text-muted border rounded bg-white small">
+      <i class="bi bi-folder-check d-block display-5 mb-2 opacity-50"></i>
+      No open corporate complaints entries reflect the selected query filters.
+    </div>
+  }
+</div>

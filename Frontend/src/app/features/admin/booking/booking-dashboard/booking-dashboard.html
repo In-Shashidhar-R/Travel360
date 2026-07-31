@@ -1,0 +1,26 @@
+<div class="w-100 d-flex flex-column">
+  <ul class="nav nav-tabs border-bottom-2 mb-4 gap-1">
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="currentSubTab === 'requests' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="setSubTab('requests')">
+        <i class="bi bi-clipboard-data me-2"></i> Booking Requests Directory
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="currentSubTab === 'active-bookings' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="setSubTab('active-bookings')">
+        <i class="bi bi-gem me-2"></i> Bookings Directory
+      </button>
+    </li>
+  </ul>
+
+  <div class="w-100 container-fluid p-0">
+    @if (currentSubTab === 'requests') {
+      <app-booking-requests></app-booking-requests>
+    } @else if (currentSubTab === 'active-bookings') {
+      <app-bookings></app-bookings>
+    }
+  </div>
+</div>

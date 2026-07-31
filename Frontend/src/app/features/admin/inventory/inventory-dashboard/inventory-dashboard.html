@@ -1,0 +1,27 @@
+<div class="container-fluid py-3">
+  <ul class="nav nav-pills bg-light p-2 rounded-3 border mb-4 gap-2">
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2 fw-semibold d-flex align-items-center transition-all"
+              [class.active]="activeSubTab === 'view'" 
+              (click)="switchSubTab('view')">
+        <i class="bi bi-box-seam me-2"></i> Audit Unified Inventory Logs
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2 fw-semibold d-flex align-items-center transition-all"
+              [class.active]="activeSubTab === 'add'" 
+              (click)="switchSubTab('add')">
+        <i class="bi bi-plus-circle me-2"></i> Add Unified Inventory Asset
+      </button>
+    </li>
+  </ul>
+
+  <div class="p-1">
+    @if (activeSubTab === 'view') { 
+      <app-inventories-audit></app-inventories-audit> 
+    }
+    @if (activeSubTab === 'add') { 
+      <app-add-inventory (alertTrigger)="forwardAlert($event)"></app-add-inventory> 
+    }
+  </div>
+</div>

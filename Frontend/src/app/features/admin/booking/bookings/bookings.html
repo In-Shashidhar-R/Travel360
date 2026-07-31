@@ -1,0 +1,128 @@
+<div class="container-fluid p-0 text-secondary">
+  
+  <div class="card shadow-sm border border-light rounded-3 p-3 bg-white mb-4">
+    <div class="row row-cols-1 row-cols-md-4 g-3">
+      
+      <div class="col d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Inventory Type</label>
+        <select class="form-select form-select-sm text-secondary bg-white p-2" [(ngModel)]="typeFilter" (change)="applyFiltersMatrix()">
+          <option value="ALL">All Categories</option>
+          <option value="FLIGHT">Flights</option>
+          <option value="HOTEL">Hotels</option>
+          <option value="BUS">Bus</option>
+          <option value="TOUR_PACKAGE">Tour Packages</option>
+        </select>
+      </div>
+
+      <div class="col d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Transaction Status</label>
+        <select class="form-select form-select-sm text-secondary bg-white p-2" [(ngModel)]="statusFilter" (change)="applyFiltersMatrix()">
+          <option value="ALL">All States</option>
+          <option value="CONFIRMED">Confirmed</option>
+          <option value="PENDING">Pending</option>
+          <option value="CANCELLED">Cancelled</option>
+        </select>
+      </div>
+
+      <div class="col d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Customer (ID / Name)</label>
+        <input type="text" class="form-control form-control-sm text-secondary p-2" [(ngModel)]="customerSearch" (input)="applyFiltersMatrix()" placeholder="Filter customer..."/>
+      </div>
+
+      <div class="col d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Partner (ID / Name)</label>
+        <input type="text" class="form-control form-control-sm text-secondary p-2" [(ngModel)]="partnerSearch" (input)="applyFiltersMatrix()" placeholder="Filter partner node..."/>
+      </div>
+
+    </div>
+  </div>
+
+  @if (errorMessage) { <div class="alert alert-danger shadow-sm mb-4"><i class="bi bi-exclamation-octagon-fill me-2"></i>{{ errorMessage }}</div> }
+  @if (loading) { <div class="text-center py-5 text-muted small"><div class="spinner-border text-primary spinner-border-sm me-2"></div>Syncing records ledger matrix...</div> }
+
+  @if (!loading && filteredBookings.length > 0) {
+    <div class="card shadow-sm border border-light rounded-3 overflow-hidden bg-white">
+      <div class="table-responsive w-100">
+        <table class="table table-hover align-top mb-0 text-start small">
+          <thead class="table-light border-bottom border-2 text-uppercase text-primary fw-bold">
+            <tr>
+              <th class="p-3">Booking ID</th>
+              <th class="p-3">Customer And Partner Information</th>
+              <th class="p-3">Booking Details</th>
+              <th class="p-3">Passenger Details</th>
+              <th class="p-3">Total Cost</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (b of filteredBookings; track b.bookingId) {
+              <tr class="border-bottom transition-all">
+                <td class="p-3 font-monospace fw-bold text-dark">#{{ b.bookingId }}</td>
+                <td class="p-3">
+                  <div class="fw-semibold text-dark">{{ b.customerName }} <span class="font-monospace text-muted small">(#{{b.customerId}})</span></div>
+                  <div class="text-muted small mt-1">Provider: {{ b.partnerName }} <span class="font-monospace text-muted small">(#{{b.partnerId}})</span></div>
+                  <div class="text-muted small mt-1" style="font-size: 0.72rem;"><i class="bi bi-clock me-1"></i>Issued: {{ b.bookingDate | date:'shortDate' }}</div>
+                </td>
+                <td class="p-3">
+                  <span class="badge text-uppercase tracking-wider px-2 py-1 mb-2 d-inline-block" [ngClass]="'badge-' + b.itemType.toLowerCase()">{{ b.itemType }}</span>
+                  
+                  <div class="p-2 bg-light border-start border-3 border-primary rounded-end small text-primary mb-0" style="line-height: 1.45;">
+                    @switch (b.itemType) {
+                      @case ('FLIGHT') {
+                        <div><i class="bi bi-airplane-fill me-1"></i> Departure Date: {{ b.targetTravelDate | date:'mediumDate' }}</div>
+                        <div class="text-dark">Seats Secured: <strong class="fw-bold">{{ b.requestedSeats }}</strong> (Type: {{ b.chosenSeatType }})</div>
+                      }
+                      @case ('HOTEL') {
+                        <div><i class="bi bi-building me-1"></i> Stay: {{ b.checkInDate | date:'shortDate' }} ➔ {{ b.checkOutDate | date:'shortDate' }}</div>
+                        <div class="text-dark">Allocated Rooms Matrix: <strong class="fw-bold">{{ b.requestedRooms }}</strong> Units</div>
+                      }
+                      @case ('BUS') {
+                        <div><i class="bi bi-bus-front-fill me-1"></i> Route: {{ b.pickupLocation }} ➔ {{ b.dropoffLocation }}</div>
+                        <div class="text-dark">Travel Window: {{ b.targetTravelDate | date:'mediumDate' }} | Seats: {{ b.requestedSeats }}</div>
+                      }
+                      @case ('TOUR_PACKAGE') {
+                        <div><i class="bi bi-globe me-1"></i> Package Inventory Id Ref: #{{ b.inventoryId }}</div>
+                        <div class="text-dark">Total Registered Registrants Count: <strong class="fw-bold">{{ b.numberOfPersons }} Persons</strong></div>
+                      }
+                    }
+                  </div>
+                </td>
+                <td class="p-3">
+                  <div class="d-flex flex-column gap-2" style="min-width: 220px;">
+                    @if (b.passengers && b.passengers.length > 0) {
+                      @for (p of b.passengers; track p.name) {
+                        <div class="bg-white border border-light rounded p-2 small shadow-sm">
+                          <div class="text-dark"><i class="bi bi-person-fill text-muted me-1"></i><strong class="fw-semibold">{{ p.name }}</strong> ({{ p.age }}, {{ p.gender }})</div>
+                          <div class="mt-1">
+                          <span class="d-inline-block border rounded font-monospace px-2 py-0 mt-1 style-proof-tag" 
+                                [ngClass]="p.idProofType.toLowerCase()" 
+                                style="font-size: 0.7rem;">
+                            {{ p.idProofType }}: {{ p.idProofNumber }}
+                          </span>
+                          </div>
+                        </div>
+                      }
+                    } @else {
+                      <span class="text-muted fst-italic small opacity-75">No travelers declared</span>
+                    }
+                  </div>
+                </td>
+                <td class="p-3 font-monospace fw-bold text-success fs-6">
+                  {{ b.totalAmount | currency:'INR':'symbol':'1.2-2' }}
+                </td>
+                <td class="p-3">
+                  <span class="badge text-uppercase tracking-wider px-2 py-1" 
+                        [ngClass]="'badge-' + b.status.toLowerCase()">
+                    {{ b.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  } @else if (!loading) {
+    <div class="text-center p-5 text-muted border rounded bg-white small">No administrative transactional data records match the specified query configuration.</div>
+  }
+</div>

@@ -1,0 +1,162 @@
+<div class="app-shell-container" [class.customer-view-mode]="authService.currentUserRole() === 'CUSTOMER'" (click)="handleBackgroundShellClick()">
+  
+  <!-- Smooth Sidebar Backdrop for Mobile/Tablet Framework Views -->
+  <div class="layout-sidebar-backdrop" [class.backdrop-active]="sidebarOpen()" (click)="toggleSidebar()"></div>
+
+  <!-- Immersive Aura-Light Header Interface -->
+  <header class="global-app-header-strip px-4 px-md-5">
+    <div class="left-brand-section">
+      @if (authService.currentUserRole() !== 'CUSTOMER') {
+        <button class="menu-toggle-hamburger-btn btn btn-light p-2 d-lg-none shadow-sm" (click)="toggleSidebar()" aria-label="Toggle Navigation Menu">
+          <i class="bi bi-list fs-4 text-dark"></i>
+        </button>
+      }
+      <div class="master-brand-logo fw-extrabold tracking-tight text-dark" [routerLink]="authService.currentUserRole() === 'CUSTOMER' ? '/customer/inventories' : '/'">
+        Travel <span class="text-primary">360°</span>
+      </div>
+    </div>
+    
+    <!-- Ultra-Clean Bright Frosted Capsule Bar Nav -->
+      @if (authService.currentUserRole() === 'CUSTOMER') {
+        <nav class="glass-nav-container">
+          <a routerLink="/cust-dashboard" routerLinkActive="active-glass-link" class="transition-all">Dashboard</a>
+          <a routerLink="/customer/inventories" routerLinkActive="active-glass-link" [routerLinkActiveOptions]="{exact: true}" class="transition-all">Explore</a>
+          <a routerLink="/customer/bookings" routerLinkActive="active-glass-link" class="transition-all">My Bookings</a>
+          <a routerLink="/customer/custom-requests" routerLinkActive="active-glass-link" class="transition-all">Booking Requests</a>
+          <a routerLink="/customer/invoices" routerLinkActive="active-glass-link" class="transition-all">Invoices</a>
+          <a routerLink="/customer/complaints" routerLinkActive="active-glass-link" class="transition-all">Complaints</a>
+        </nav>
+      }
+    
+    <!-- Control Hub Section Links -->
+    <div class="right-user-identity-context ms-auto d-flex align-items-center gap-3">
+      
+      <!-- Notification Dropper Hub -->
+      <div class="notification-bell-dropdown-anchor">
+        <button type="button" class="bell-trigger-action-btn d-inline-flex align-items-center justify-content-center border-0 position-relative shadow-sm" [class.has-unread-alerts]="unreadCount() > 0" (click)="toggleDropdown($event)">
+          <i class="bi bi-bell fs-5"></i>
+          @if (unreadCount() > 0) { 
+            <span class="unread-count-badge-bubble animate-pulse shadow">{{ unreadCount() }}</span> 
+          }
+        </button>
+
+        @if (dropdownOpen()) {
+          <div class="inline-notification-drawer-card shadow-xl border border-light bg-white animate-fade-in text-start" (click)="$event.stopPropagation()">
+            <div class="drawer-header-strip d-flex justify-content-between align-items-center p-3 border-bottom bg-light">
+              <span class="fw-bold text-dark text-uppercase tracking-wider small-label">
+                <i class="bi bi-bell-fill text-primary me-2"></i>Notifications
+              </span>
+              <div class="d-flex align-items-center gap-2">
+                @if (unreadCount() > 0) {
+                  <button type="button" class="btn bg-transparent text-primary border-0 p-0 tracking-wide transition-fade text-uppercase fw-bold text-xs" (click)="dismissAllNotifications($event)">Clear All</button>
+                  <span class="text-muted small">|</span>
+                }
+                <span class="badge bg-primary text-white rounded-pill px-2 py-1 text-xs">{{ unreadCount() }} New</span>
+              </div>
+            </div>
+            
+            <div class="drawer-scroll-container">
+              @if (notifications().length === 0) {
+                <div class="text-center py-5 text-muted small px-3 d-flex flex-column align-items-center justify-content-center gap-2">
+                  <div class="icon-circle bg-success-soft text-success rounded-circle d-flex align-items-center justify-content-center mb-1" style="width: 44px; height: 44px;">
+                    <i class="bi bi-shield-check fs-4"></i>
+                  </div>
+                  <b class="text-dark">All caught up!</b>
+                  <span class="text-xs text-muted">Zero pending logs discovered</span>
+                </div>
+              } @else {
+                @for (notif of notifications(); track notif.notificationId) {
+                  <div class="drawer-notification-row-item border-bottom border-light d-flex align-items-start gap-3 p-3 transition-all" [class.is-read-muted]="notif.status !== 'ACTIVE'">
+                    <div class="flex-grow-1 text-start">
+                      <p class="mb-1 text-dark small lh-sm font-sans notification-msg-text" style="word-break: break-word;">{{ notif.message }}</p>
+                      <small class="text-muted d-block mt-1 text-xs"><i class="bi bi-clock me-1"></i>{{ notif.createdDate | date:'shortTime' }}</small>
+                    </div>
+                    @if (notif.status === 'ACTIVE') {
+                      <button type="button" class="btn-mark-as-read-check btn btn-sm btn-outline-success border-0 p-1" (click)="dismissNotification(notif.notificationId, $event)" title="Mark as read">
+                        <i class="bi bi-check2 fs-6"></i>
+                      </button>
+                    }
+                  </div>
+                }
+              }
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Identity Profile Account Module Dropdown -->
+      @if (authService.currentUser(); as user) {
+        <div class="position-relative d-inline-block" (click)="$event.stopPropagation()">
+          <button class="btn btn-link p-0 border-0 d-flex align-items-center" type="button" style="box-shadow: none;" (click)="toggleUserMenu($event)">
+            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white fw-bold shadow-md text-uppercase border-glow transition-all"
+                 style="width: 38px; height: 38px; font-size: 0.95rem; border: 2px solid #ffffff;">
+              {{ user.name ? user.name.charAt(0) : 'U' }}
+            </div>
+          </button>
+          
+          @if (userMenuOpen()) {
+            <ul class="dropdown-menu dropdown-menu-end shadow-xl border border-light bg-white p-1 text-start d-block position-absolute rounded-3 animate-fade-in custom-profile-dropdown" style="min-width: 220px; margin-top: 12px; z-index: 99999; right: 4px; left: auto;">
+              <li class="dropdown-header text-muted border-bottom border-light pb-2 mb-2 fw-bold text-uppercase tracking-wider text-xs text-start">
+                <i class="bi bi-person me-1 text-primary"></i> Account Workspace
+              </li>
+              <li class="px-3 py-1 mb-2">
+                <span class="d-block fw-bold text-dark small text-truncate">{{ user.name }}</span>
+                <span class="badge bg-primary-soft text-primary text-xs mt-1 px-2 py-0.5 rounded text-uppercase font-sans" style="font-size: 9px; letter-spacing: 0.5px;">{{ authService.currentUserRole() }}</span>
+              </li>
+              <li>
+                <a class="dropdown-item rounded py-2 d-flex align-items-center gap-2 text-secondary small fw-medium transition-fade" routerLink="customer/profile" (click)="userMenuOpen.set(false)">
+                  <i class="bi bi-gear text-muted"></i> Profile Settings
+                </a>
+              </li>
+              <li><hr class="dropdown-divider border-light my-1"></li>
+              <li>
+                <button class="dropdown-item rounded py-2 d-flex align-items-center gap-2 text-danger fw-bold w-100 bg-transparent border-0 text-start transition-fade" type="button" (click)="handleSignOut(); userMenuOpen.set(false)">
+                  <i class="bi bi-box-arrow-right"></i> Sign Out
+                </button>
+              </li>
+            </ul>
+          }
+        </div>
+      }
+    </div>
+  </header>
+
+  <!-- Workspace Processing Viewport Architecture Splitter -->
+  <div class="workspace-viewport-wrapper-grid flex-grow-1 d-flex">
+    
+    <!-- Sidebar Panel Block Context for Back-office Operations -->
+    @if (authService.currentUserRole() !== 'CUSTOMER') {
+      <aside class="central-navigation-sidebar-panel bg-white text-dark d-flex flex-column border-end border-light" [class.sidebar-panel-expanded]="sidebarOpen()">
+        <div class="sidebar-identity-header p-3 d-flex justify-content-between align-items-center border-bottom border-light">
+          <h5 class="m-0 text-uppercase tracking-wider small-label fw-bold text-secondary">Control Node Menu</h5>
+          <button class="close-sidebar-panel-btn btn btn-sm btn-link text-dark border-0 d-lg-none" (click)="toggleSidebar()">✕</button>
+        </div>
+        <nav class="sidebar-links-nav-list p-2 flex-grow-1">
+          <ul class="list-unstyled d-flex flex-column gap-1 m-0 p-0">
+            @for (link of sidebarLinks(); track link.label) {
+              <li [routerLink]="link.routePath" 
+                  [queryParams]="link.targetTab ? { section: link.targetTab } : {}" 
+                  routerLinkActive="active-link-node" 
+                  class="btn btn-sm text-start text-secondary px-3 py-2-5 d-flex align-items-center gap-3 rounded text-decoration-none" 
+                  style="cursor: pointer;"
+                  (click)="sidebarOpen.set(false)">
+                <span class="nav-icon-node fs-5 text-center" style="width: 24px;">{{ link.icon }}</span>
+                <span class="nav-text-label small fw-medium text-dark-hover">{{ link.label }}</span>
+              </li>
+            }
+          </ul>
+        </nav>
+      </aside>
+    }
+
+    <!-- Dynamic Canvas View Target Root -->
+    <main class="central-workspace-content-canvas flex-grow-1">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+  <!-- System Universal Footer Bar Section Component -->
+  <footer class="standard-unified-system-footer text-center bg-white border-top border-light">
+    <p class="m-0 text-muted text-xs tracking-wide">&copy; 2026 Travel 360° Network Ecosystem. Realized on Enterprise Spring Boot + RBAC Core Foundations.</p>
+  </footer>
+</div>

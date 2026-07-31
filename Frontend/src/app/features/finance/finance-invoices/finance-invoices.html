@@ -1,0 +1,64 @@
+<div class="card border-0 shadow-sm rounded-3 p-4">
+  <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+    <div>
+      <h5 class="fw-bold text-dark mb-1">Invoices Ledger Book</h5>
+      <p class="text-muted small mb-0">Audit history logs tracking invoicing actions and processing streams.</p>
+    </div>
+  </div>
+
+  <!-- WORKSPACE CONTROL REGION -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <label class="form-label text-uppercase fw-bold text-secondary font-monospace small mb-1">Filter Billing Status</label>
+      <select class="form-select border-light-subtle shadow-sm" [value]="statusFilter" (change)="onStatusFilterChange($event)">
+        <option value="ALL">All Lifecycle States</option>
+        <option value="PAID">PAID</option>
+        <option value="UNPAID">UNPAID</option>
+        <option value="REFUNDED">REFUNDED</option>
+      </select>
+    </div>
+    <div class="col-md-8">
+      <label class="form-label text-uppercase fw-bold text-secondary font-monospace small mb-1">Search Client / Reservation Index</label>
+      <input type="text" class="form-control border-light-subtle shadow-sm" placeholder="e.g. Harash Thapa, Order ID, or Invoice ID..." [value]="searchQuery" (input)="onSearchQueryChange($event)">
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-4 text-muted font-monospace small">Extracting billing entities...</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table align-middle custom-ledger-table mb-0">
+        <thead>
+          <tr>
+            <th>Invoice ID</th>
+            <th>Linked Order ID</th>
+            <th>Client Profile</th>
+            <th>Statement Valuation Value</th>
+            <th>Billing Date</th>
+            <th>Ledger State Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (inv of getFilteredInvoices(); track inv.invoiceId) {
+            <tr>
+              <td class="fw-semibold text-dark">#{{ inv.invoiceId }}</td>
+              <td class="text-secondary">{{ inv.bookingId ? 'Order #' + inv.bookingId : 'N/A' }}</td>
+              <td>{{ inv.customerName || 'Harash Thapa' }}</td>
+              <td class="fw-bold text-dark">₹{{ inv.amount | number:'1.2-2' }}</td>
+              <td class="text-muted small">{{ inv.generatedDate | date:'mediumDate' }}</td>
+              <td>
+                <span class="badge status-tag text-uppercase" [ngClass]="inv.status?.toLowerCase()">
+                  {{ inv.status }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="text-center py-4 text-muted small">No structural invoices found matching specified filter parameters.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

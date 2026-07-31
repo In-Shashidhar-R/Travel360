@@ -1,0 +1,198 @@
+<div class="container-fluid p-0 w-100">
+  <div class="card border-0 shadow-sm rounded-3 overflow-hidden">
+    
+    <!-- DARK HEADER BANNER -->
+    <div class="card-header border-0 px-4 py-3.5 text-white" style="background: #111827;">
+      <div class="d-flex justify-content-between align-items-center">
+        <div>
+          <span class="badge px-2.5 py-1 rounded-pill mb-2 fw-bold text-uppercase"
+                style="background-color: #10b981; font-size: 0.7rem; letter-spacing: 0.5px;">
+            Booking Fulfillment
+          </span>
+          <h2 class="h4 mb-1 fw-bold text-white" style="letter-spacing: -0.3px;">Fulfill Package Booking on Client's Behalf</h2>
+          <p class="mb-0 text-slate-400" style="color: #9ca3af; font-size: 0.85rem;">
+            Assigned Request Reference <strong>#{{ targetRequest.requestId }}</strong>
+          </p>
+        </div>
+
+        <div class="text-end pe-2">
+          <span class="d-block text-uppercase fw-bold" style="color: #9ca3af; font-size: 0.7rem; letter-spacing: 0.8px;">
+            CUSTOMER ID
+          </span>
+          <span class="fs-3 fw-bolder text-white">#{{ targetRequest.customerId }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN FORM BODY -->
+    <div class="card-body p-4 bg-white">
+      
+      <!-- ERROR ALERT BANNER -->
+      <div *ngIf="formError" class="alert alert-danger border-0 p-3 mb-4 rounded-3 d-flex align-items-center gap-2 shadow-sm"
+           style="background-color: #fef2f2; border-left: 4px solid #ef4444 !important; color: #991b1b; font-size: 0.875rem;">
+        <span class="fw-bold">⚠️ Error:</span>
+        <div>{{ formError }}</div>
+      </div>
+
+      <!-- REQUEST SUMMARY & INVENTORY DETAILS -->
+      <div class="mb-4">
+        <label class="form-label fw-bold text-uppercase mb-2.5" style="font-size: 0.75rem; letter-spacing: 0.6px; color: #6b7280;">
+          REQUEST SUMMARY & INVENTORY DETAILS
+        </label>
+
+        <div class="row g-3">
+          <!-- Target Customer Card -->
+          <div class="col-12 col-md-4">
+            <div class="p-3 bg-white rounded-3 border h-100" style="border-color: #e5e7eb !important;">
+              <span class="d-block text-uppercase mb-1 fw-bold" style="font-size: 0.7rem; color: #6b7280; letter-spacing: 0.4px;">
+                TARGET CUSTOMER
+              </span>
+              <div class="fw-bold fs-6 text-dark mb-0.5">{{ targetRequest.customerName }}</div>
+              <small class="text-muted" style="font-size: 0.78rem; color: #9ca3af;">
+                User Reference ID: #{{ targetRequest.customerId }}
+              </small>
+            </div>
+          </div>
+
+          <!-- Inventory Resource Card -->
+          <div class="col-12 col-md-4">
+            <div class="p-3 bg-white rounded-3 border h-100" style="border-color: #e5e7eb !important;">
+              <span class="d-block text-uppercase mb-1 fw-bold" style="font-size: 0.7rem; color: #6b7280; letter-spacing: 0.4px;">
+                INVENTORY RESOURCE
+              </span>
+              <div class="fw-bold fs-6 text-dark mb-1.5">Item #{{ targetRequest.inventoryId }}</div>
+              <span class="badge bg-light text-dark border px-2 py-1 fw-semibold" style="font-size: 0.725rem;">
+                Category: {{ targetRequest.inventoryItemType || 'TOUR_PACKAGE' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Client Requirements Card (Highlighted) -->
+          <div class="col-12 col-md-4">
+            <div class="p-3 bg-white rounded-3 border h-100" 
+                 style="border: 1.5px solid #06b6d4 !important; background-color: #ffffff;">
+              <span class="d-block text-uppercase mb-1 fw-bold" style="font-size: 0.7rem; color: #0891b2; letter-spacing: 0.4px;">
+                CLIENT SPECIFIC REQUIREMENTS
+              </span>
+              <div class="text-dark lh-sm" style="font-size: 0.825rem; color: #374151;">
+                {{ targetRequest.customerRequirements || 'No special requirements specified by client.' }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAIN BOOKING FORM -->
+      <form #bookingForm="ngForm" (ngSubmit)="executeBookingSubmission(bookingForm)">
+        
+        <!-- TRAVEL INPUTS -->
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-6 d-flex flex-column">
+            <label for="travelDate" class="form-label fw-bold mb-1.5" style="font-size: 0.85rem; color: #374151;">
+              Target Travel Date <span class="text-danger">*</span>
+            </label>
+            <input type="date" id="travelDate" name="targetTravelDate" ngModel required 
+                   [min]="minDate" 
+                   class="form-control form-control-lg shadow-none" 
+                   style="border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 0.925rem; color: #111827; padding: 10px 14px;"
+                   onfocus="this.style.borderColor='#10b981';" onblur="this.style.borderColor='#d1d5db';" />
+          </div>
+
+          <div class="col-12 col-md-6 d-flex flex-column">
+            <label for="personsCount" class="form-label fw-bold mb-1.5" style="font-size: 0.85rem; color: #374151;">
+              Number of Persons Traveling <span class="text-danger">*</span>
+            </label>
+            <input type="number" id="personsCount" name="numberOfPersons" ngModel required min="1" placeholder="e.g. 3" 
+                   class="form-control form-control-lg shadow-none" 
+                   style="border: 1.5px solid #d1d5db; border-radius: 8px; font-size: 0.925rem; color: #111827; padding: 10px 14px;"
+                   onfocus="this.style.borderColor='#10b981';" onblur="this.style.borderColor='#d1d5db';" />
+          </div>
+        </div>
+
+        <!-- PASSENGER SELECTION SECTION -->
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-2.5">
+            <label class="form-label fw-bold mb-0" style="font-size: 0.875rem; color: #374151;">
+              Select Passengers from Customer Directory <span class="text-danger">*</span>
+            </label>
+            <span class="badge rounded-pill px-3 py-1.5 text-white fw-bold" 
+                  [style.backgroundColor]="selectedProfileIds.length > 0 ? '#4b5563' : '#6b7280'"
+                  style="font-size: 0.75rem;">
+              Selected: {{ selectedProfileIds.length }} Profile(s)
+            </span>
+          </div>
+
+          <!-- Loading State -->
+          <div *ngIf="isLoadingPassengers" class="p-4 text-center text-muted bg-light rounded-3 border">
+            <div class="spinner-border spinner-border-sm me-2" style="color: #10b981;" role="status"></div>
+            <span style="font-size: 0.875rem;">Loading customer passenger profiles...</span>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="!isLoadingPassengers && customerPassengers.length === 0" 
+               class="p-4 text-center text-muted bg-light rounded-3 border" style="font-size: 0.875rem;">
+            No passenger profiles found for this customer. Please ask customer to add passengers.
+          </div>
+
+          <!-- Passenger Cards Grid -->
+          <div *ngIf="!isLoadingPassengers && customerPassengers.length > 0" class="row g-3">
+            <div class="col-12 col-md-6" *ngFor="let passenger of customerPassengers">
+              <div class="card p-3 border rounded-3 h-100" 
+                   [style.borderColor]="isPassengerSelected(passenger.profileId) ? '#10b981' : '#e5e7eb'"
+                   [style.backgroundColor]="isPassengerSelected(passenger.profileId) ? '#f0fdf4' : '#ffffff'"
+                   style="transition: all 0.15s ease-in-out; cursor: pointer;"
+                   (click)="onPassengerCheckboxToggle(passenger.profileId, $event)">
+                
+                <div class="form-check d-flex align-items-start gap-2.5 m-0 p-0">
+                  <input class="form-check-input mt-1 ms-0" type="checkbox" 
+                         [id]="'p_' + passenger.profileId"
+                         [checked]="isPassengerSelected(passenger.profileId)"
+                         (click)="$event.stopPropagation()"
+                         (change)="onPassengerCheckboxToggle(passenger.profileId, $event)"
+                         style="cursor: pointer; width: 1.25em; height: 1.25em; accent-color: #10b981;">
+                  
+                  <label class="form-check-label w-100" [for]="'p_' + passenger.profileId" style="cursor: pointer;">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                      <strong class="text-dark fs-6" style="color: #111827;">{{ passenger.name }}</strong>
+                      <span class="badge bg-light text-dark border px-2 py-1" style="font-size: 0.725rem; font-weight: 600;">
+                        {{ passenger.gender }}, {{ passenger.age }} yrs
+                      </span>
+                    </div>
+                    
+                    <div *ngIf="passenger.idProofType" class="text-muted d-flex align-items-center gap-1" style="font-size: 0.78rem; color: #6b7280 !important;">
+                      <span class="fw-bold text-uppercase">{{ passenger.idProofType }}:</span>
+                      <span>{{ passenger.idProofNumber }}</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-2.5 text-secondary" style="font-size: 0.78rem; color: #6b7280 !important;">
+            Select the check boxes corresponding to traveling passengers. The number of checked profiles must equal the headcount value.
+          </div>
+        </div>
+
+        <!-- ACTION BUTTONS -->
+        <div class="d-flex justify-content-between align-items-center gap-3 pt-3 border-top mt-4" style="border-top-color: #f3f4f6 !important;">
+          <button type="button" class="btn text-white fw-bold px-4 py-2.5" 
+                  (click)="onCancel.emit()"
+                  style="background-color: #4b5563; border: none; border-radius: 8px; font-size: 0.875rem;">
+            Back to Queue
+          </button>
+
+          <button type="submit" 
+                  [disabled]="!bookingForm.valid || selectedProfileIds.length === 0" 
+                  class="btn text-white fw-bold flex-grow-1 py-2.5 px-4" 
+                  style="background-color: #34d399; border-radius: 8px; border: none; font-size: 0.875rem; transition: background-color 0.2s;"
+                  onmouseover="if(!this.disabled) this.style.backgroundColor='#10b981';" 
+                  onmouseout="if(!this.disabled) this.style.backgroundColor='#34d399';">
+            Confirm & Dispatch Tour Booking
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+</div>

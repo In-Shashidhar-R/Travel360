@@ -1,0 +1,73 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top px-3">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    
+    <!-- Brand Component Identifier Label Flag -->
+    <a class="navbar-brand fw-bold text-primary m-0" (click)="setView('analytics')" style="cursor: pointer;">
+      <span class="text-white">Finance</span>Canvas
+    </a>
+    
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#financeNavbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Context Module Toggles Styled Exactly as Navigation Links -->
+    <div class="collapse navbar-collapse justify-content-between" id="financeNavbarContent">
+      
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item">
+          <button type="button" 
+                  class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 btn-link text-decoration-none"
+                  [ngClass]="activeView === 'analytics' ? 'btn-primary text-white' : 'text-white-50'"
+                  (click)="setView('analytics')">
+            Performance Analytics
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" 
+                  class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none"
+                  [ngClass]="activeView === 'invoices' ? 'btn-primary text-white' : 'text-white-50'"
+                  (click)="setView('invoices')">
+            Invoices Ledger
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" 
+                  class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none"
+                  [ngClass]="activeView === 'payments' ? 'btn-primary text-white' : 'text-white-50'"
+                  (click)="setView('payments')">
+            Payments Log
+          </button>
+        </li>
+      </ul>
+      
+      <!-- Right Hand Dropdown Matrix Frame Controller -->
+      <div class="d-flex align-items-center gap-3">
+        <div class="dropdown">
+          <div class="d-flex align-items-center gap-2 px-3 py-1 bg-secondary bg-opacity-25 rounded-pill dropdown-toggle text-decoration-none" 
+               data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+            <div class="bg-success rounded-circle animate-pulse" style="width: 8px; height: 8px;"></div>
+            <span class="navbar-text p-0 text-light small fw-medium text-nowrap">{{ currentUserName }}</span>
+          </div>
+          
+          <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary bg-dark mt-2 p-1">
+            <li>
+              <button class="dropdown-item text-danger small d-flex align-items-center gap-2 py-2 rounded" (click)="onSignOut()">
+                <i class="bi bi-box-arrow-right"></i> Sign Out
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Main Workspace Processing Canvas Content Matrix Viewport Container -->
+<div class="container-fluid p-4 admin-workspace-canvas-wrapper bg-light min-vh-100">
+  <main [ngSwitch]="activeView">
+    <app-finance-analytics *ngSwitchCase="'analytics'"></app-finance-analytics>
+    <app-finance-invoices *ngSwitchCase="'invoices'"></app-finance-invoices>
+    <app-finance-payments *ngSwitchCase="'payments'"></app-finance-payments>
+  </main>
+</div>

@@ -1,0 +1,75 @@
+<!-- Main Typography and Style Providers -->
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+<!-- ================= SIGN IN VIEW ================= -->
+<div class="split-layout-wrapper mb-5">
+  <div class="split-card-container shadow-lg border-0">
+    
+    <div class="split-image-aside" style="background-image: linear-gradient(rgba(15, 23, 42, 0.4), rgba(15, 23, 42, 0.75)), url('https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1000&q=80');">
+      <div class="aside-caption-blur text-white">
+        <h4 class="fw-bold mb-3"><i class="bi bi-shield-check text-info me-2"></i>Enterprise Grade Security</h4>
+        <p class="small text-white-50 mb-4">Sign in to your account to manage properties, modify routing matrices, and analyze dynamic billing metrics safely.</p>
+        
+        <ul class="list-unstyled small text-white-50 border-top border-white-15 pt-3 mb-0">
+          <li class="mb-2 d-flex align-items-center"><i class="bi bi-lock-fill text-info me-2"></i> End-to-End Cryptographic Passwords</li>
+          <li class="mb-2 d-flex align-items-center"><i class="bi bi-activity text-info me-2"></i> Real-time Global Activity Logging</li>
+          <li class="d-flex align-items-center"><i class="bi bi-headset text-info me-2"></i> 24/7 Dedicated Operational Desk</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="split-form-aside bg-white">
+      <div class="form-inner-wrapper">
+        <!-- Return Path Route to Index Landing Page -->
+        <a routerLink="/" class="text-decoration-none text-secondary small fw-semibold d-inline-flex align-items-center mb-3 transition-fade hover-cyan">
+          <i class="bi bi-arrow-left me-1"></i> Back to Home
+        </a>
+
+        <h2 class="fw-bold text-dark mb-1">Welcome Back</h2>
+        <p class="text-muted small mb-4">Access your global tracking logs</p>
+
+        @if (errorMessage()) {
+          <div class="alert alert-danger border-0 rounded-3 small p-2.5 mb-3 shadow-sm d-flex align-items-center">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>{{ errorMessage() }}
+          </div>
+        }
+        @if (successMessage()) {
+          <div class="alert alert-success border-0 rounded-3 small p-2.5 mb-3 shadow-sm d-flex align-items-center">
+            <i class="bi bi-check-circle-fill me-2"></i>{{ successMessage() }}
+          </div>
+        }
+
+        <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+          <div class="mb-3">
+            <label class="form-label fw-bold text-secondary small mb-1">Username</label>
+            <input type="email" class="form-control form-control-custom" formControlName="email" placeholder="test@travel360.com">
+            @if (loginForm.get('email')?.touched && loginForm.get('email')?.invalid) {
+              <small class="text-danger small d-block mt-1">A valid email structure is required.</small>
+            }
+          </div>
+
+          <div class="mb-4">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+              <label class="form-label fw-bold text-secondary small mb-0">Password</label>
+              <a routerLink="/forgot-password" class="text-primary fw-semibold small text-decoration-none">Forgot Password?</a>
+            </div>
+            <input type="password" class="form-control form-control-custom" formControlName="password" placeholder="••••••••">
+            @if (loginForm.get('password')?.touched && loginForm.get('password')?.invalid) {
+              <small class="text-danger small d-block mt-1">Password input cannot be blank.</small>
+            }
+          </div>
+
+          <button type="submit" class="btn btn-action-submit w-100 mb-3 shadow-sm" [disabled]="loginForm.invalid">
+            Sign In
+          </button>
+        </form>
+
+        <p class="text-center small text-muted mb-0">
+          New explorer? <a routerLink="/signup" class="text-primary fw-bold text-decoration-none ms-1">Create account here</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>

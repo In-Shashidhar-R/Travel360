@@ -1,0 +1,215 @@
+<div class="container py-2">
+  @if (alertMessage) {
+    <div class="alert alert-dismissible shadow-sm fade show mb-4" 
+         [ngClass]="alertType === 'error' ? 'alert-danger' : 'alert-success'" role="alert">
+      <i class="bi bi-info-circle-fill me-2"></i> {{ alertMessage }}
+      <button type="button" class="btn-close" (click)="alertMessage=''"></button>
+    </div>
+  }
+
+  <div class="row g-4">
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm rounded-3 text-center p-4 bg-white h-100">
+        <div class="position-relative d-inline-block mx-auto mb-3">
+          <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center border border-4 border-light shadow" 
+               style="width: 100px; height: 100px; font-size: 2.5rem; font-weight: 600;">
+            {{ (adminForm.name | slice:0:1) || 'A' }}
+          </div>
+          <span class="position-absolute bottom-0 end-0 bg-success border border-2 border-white rounded-circle p-2 animate-pulse" title="Active Session"></span>
+        </div>
+        
+        <h4 class="fw-bold text-dark mb-1">{{ adminForm.name }}</h4>
+        <p class="text-muted small text-uppercase tracking-wider fw-semibold mb-3">System Administrator</p>
+        
+        <hr class="text-black-50 my-3">
+        
+        <div class="text-start small text-secondary px-2">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-envelope-fill text-muted"></i>
+            <span>{{ authService.currentUser()?.email || 'admin@canvas.internal' }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <i class="bi bi-telephone-fill text-muted"></i>
+            <span>{{ adminForm.phone || 'No phone set' }}</span>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-geo-alt-fill text-muted"></i>
+            <span>{{ adminForm.city }}{{ adminForm.country ? ', ' + adminForm.country : 'Location details empty' }}</span>
+          </div>
+        </div>
+
+        <div class="mt-4 d-grid gap-2">
+          @if (!isEditMode) {
+            <button class="btn btn-outline-primary btn-sm rounded-pill fw-medium py-2" (click)="toggleEdit(true)">
+              <i class="bi bi-pencil-square me-1"></i> Modify Profile Fields
+            </button>
+          } @else {
+            <button class="btn btn-secondary btn-sm rounded-pill fw-medium py-2" (click)="toggleEdit(false)">
+              Cancel Changes
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm rounded-3 bg-white h-100">
+        <div class="card-header bg-transparent border-bottom p-3 d-flex align-items-center justify-content-between">
+          <h5 class="mb-0 fw-bold text-dark text-uppercase small tracking-wider">
+            <i class="bi bi-shield-lock-fill text-primary me-2"></i>Account Management Records
+          </h5>
+          <span class="badge" [ngClass]="isEditMode ? 'bg-warning text-dark' : 'bg-light text-secondary border'">
+            {{ isEditMode ? 'Edit State Mode Active' : 'Read-Only Record File' }}
+          </span>
+        </div>
+
+        <div class="card-body p-4">
+          @if (profileError) {
+            <div class="alert alert-danger py-2 small d-flex align-items-center gap-2 mb-4 shadow-sm border-0">
+              <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+              <span class="fw-medium">{{ profileError }}</span>
+            </div>
+          }
+
+          <form #profileForm="ngForm" (ngSubmit)="submitAdminProfileUpdate()">
+            <div class="row g-3">
+              
+              <!-- Name Field -->
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Full Identity Name *</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-person"></i></span>
+                  <input type="text" class="form-control p-2 border-start-0" 
+                         [disabled]="!isEditMode" 
+                         [(ngModel)]="adminForm.name" 
+                         name="name" 
+                         #nameCtrl="ngModel" 
+                         pattern="^[a-zA-Z\s\-'\.]+$" 
+                         required
+                         [class.is-invalid]="nameCtrl.touched && nameCtrl.invalid">
+                </div>
+                @if (nameCtrl.touched && nameCtrl.invalid) {
+                  <div class="text-danger extra-small mt-1">
+                    @if (nameCtrl.errors?.['required']) { Name is required. }
+                    @if (nameCtrl.errors?.['pattern']) { Letters only. Numbers/special characters blocked. }
+                  </div>
+                }
+              </div>
+
+              <!-- Phone Field -->
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Contact Phone (10 Digits) *</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-telephone"></i></span>
+                  <input type="text" class="form-control p-2 border-start-0" 
+                         [disabled]="!isEditMode" 
+                         [(ngModel)]="adminForm.phone" 
+                         name="phone" 
+                         #phoneCtrl="ngModel"
+                         maxlength="10" 
+                         inputmode="numeric" 
+                         (input)="onPhoneInput($event)"
+                         pattern="^[0-9]{10}$" 
+                         required
+                         [class.is-invalid]="phoneCtrl.touched && phoneCtrl.invalid">
+                </div>
+                @if (phoneCtrl.touched && phoneCtrl.invalid) {
+                  <div class="text-danger extra-small mt-1">Must be exactly 10 numeric digits.</div>
+                }
+              </div>
+
+              <!-- Gender Field -->
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Designated Gender *</label>
+                <select class="form-select form-select-sm p-2" 
+                        [disabled]="!isEditMode" 
+                        [(ngModel)]="adminForm.gender" 
+                        name="gender" 
+                        #genderCtrl="ngModel" 
+                        required
+                        [class.is-invalid]="genderCtrl.touched && genderCtrl.invalid">
+                  <option value="">Choose Gender Parameter...</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other / Decline to Disclose</option>
+                </select>
+                @if (genderCtrl.touched && genderCtrl.invalid) {
+                  <div class="text-danger extra-small mt-1">Gender selection is mandatory.</div>
+                }
+              </div>
+
+              <!-- Date of Birth Field -->
+              <div class="col-md-6">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Verified Date of Birth (18+) *</label>
+                <div class="input-group input-group-sm">
+                  <span class="input-group-text bg-light text-muted border-end-0"><i class="bi bi-calendar3"></i></span>
+                  <input type="date" class="form-control p-2 border-start-0" 
+                         [disabled]="!isEditMode" 
+                         [(ngModel)]="adminForm.dateOfBirth" 
+                         name="dateOfBirth" 
+                         #dobCtrl="ngModel"
+                         [max]="maxDobDate" 
+                         required
+                         [class.is-invalid]="dobCtrl.touched && dobCtrl.invalid">
+                </div>
+                @if (dobCtrl.touched && dobCtrl.invalid) {
+                  <div class="text-danger extra-small mt-1">Valid DOB required (Must be 18+ years old).</div>
+                }
+              </div>
+
+              <div class="col-12"><hr class="text-black-50 my-2"></div>
+
+              <!-- Address Fields -->
+              <div class="col-12">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Street Address Parameters</label>
+                <input type="text" class="form-control form-control-sm p-2" 
+                       [disabled]="!isEditMode" 
+                       [(ngModel)]="adminForm.address" 
+                       name="address"
+                       pattern="^[^<>]*$">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Jurisdiction City</label>
+                <input type="text" class="form-control form-control-sm p-2" 
+                       [disabled]="!isEditMode" 
+                       [(ngModel)]="adminForm.city" 
+                       name="city"
+                       pattern="^[^<>]*$">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Regional State / Province</label>
+                <input type="text" class="form-control form-control-sm p-2" 
+                       [disabled]="!isEditMode" 
+                       [(ngModel)]="adminForm.state" 
+                       name="state"
+                       pattern="^[^<>]*$">
+              </div>
+
+              <div class="col-md-4">
+                <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Geographic Country</label>
+                <input type="text" class="form-control form-control-sm p-2" 
+                       [disabled]="!isEditMode" 
+                       [(ngModel)]="adminForm.country" 
+                       name="country"
+                       pattern="^[^<>]*$">
+              </div>
+            </div>
+
+            @if (isEditMode) {
+              <div class="mt-4 pt-3 d-flex justify-content-end gap-2 border-top">
+                <button type="button" class="btn btn-sm btn-secondary px-3 rounded-pill" (click)="toggleEdit(false)">
+                  Discard Changes
+                </button>
+                <button type="submit" class="btn btn-sm btn-primary px-4 rounded-pill shadow-sm" [disabled]="profileForm.invalid">
+                  Commit Saved Changes
+                </button>
+              </div>
+            }
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,197 @@
+<!-- Enforcing structural boundary margins to ensure elements have room to breathe across all viewports -->
+<div class="container-fluid px-2 px-md-4 py-4 animate-fade-in bookings-history-core">
+  
+  <!-- 1. TOP HEADER CONTROL STRIP -->
+  <div class="card p-3 mb-4 bg-white border border-light-subtle rounded-4 shadow-sm">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 text-start">
+      <div class="d-flex align-items-center gap-2">
+        <div class="icon-circle-sm bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+          <i class="bi bi-collection-fill fs-5"></i>
+        </div>
+        <div>
+          <span class="small-label text-primary tracking-wider d-block mb-0.5">Customer Ledger</span>
+          <h4 class="fw-extrabold text-dark m-0 tracking-tight">Booking Transactions History</h4>
+        </div>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-4 py-2 fw-bold text-xs d-inline-flex align-items-center gap-2 transition-all shadow-sm" routerLink="/cust-dashboard">
+        <i class="bi bi-arrow-left-short fs-5"></i> Back to Dashboard
+      </button>
+    </div>
+  </div>
+
+  <!-- Operational Stream Feedback Messages -->
+  @if (successMessage) {
+    <div class="alert alert-success bg-success-soft text-success border-0 p-3 rounded-3 mb-3 shadow-sm text-start d-flex align-items-center gap-2.5">
+      <i class="bi bi-patch-check-fill fs-5"></i>
+      <span class="fw-semibold small">{{ successMessage }}</span>
+    </div>
+  }
+  
+  @if (errorMessage && !selectedBookingId) {
+    <div class="alert alert-danger bg-danger-soft text-danger border-0 p-3 rounded-3 mb-3 shadow-sm text-start d-flex align-items-center gap-2.5">
+      <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+      <span class="fw-semibold small">System Exception: {{ errorMessage }}</span>
+    </div>
+  }
+
+  <!-- 2. MAIN TRANSACTIONS DATA CARD -->
+  <div class="card p-4 shadow-sm bg-white bg-opacity-95 border border-white-50 rounded-4 mb-4 text-start glass-panel-light">
+    
+    @if (isLoading && bookings.length === 0) {
+      <div class="text-center py-5">
+        <div class="spinner-border text-primary mb-3" role="status"></div>
+        <p class="text-muted small-label tracking-wider m-0">Extracting master paginated records history...</p>
+      </div>
+    } @else if (bookings.length === 0) {
+      <div class="text-center py-5 bg-light bg-opacity-50 rounded-4 border border-dashed px-3">
+        <div class="icon-circle bg-white shadow-sm text-muted rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+          <i class="bi bi-folder-x fs-3 text-secondary"></i>
+        </div>
+        <h5 class="fw-extrabold text-dark mb-1">No Reservations Documented</h5>
+        <p class="text-muted text-xs mx-auto mb-0" style="max-width: 340px;">You haven't booked any core inventories, transit seats, or curated travel packages yet.</p>
+      </div>
+    } @else {
+      
+      <!-- Responsive Table Viewport Wrap Grid -->
+      <div class="table-responsive rounded-3 border">
+        <table class="table table-hover align-middle mb-0 text-center data-table-node w-100">
+          <thead>
+            <tr class="bg-light">
+              <th class="py-3 small fw-bold text-secondary">BOOKING ID</th>
+              <th class="text-start py-3 small fw-bold text-secondary ps-4">CATEGORY & TARGET DETAILS</th>
+              <th class="py-3 small fw-bold text-secondary">TIMING / SCHEDULE WINDOW</th>
+              <th class="py-3 small fw-bold text-secondary">TRANSACTION PRICE</th>
+              <th class="py-3 small fw-bold text-secondary">STATUS</th>
+              <th class="py-3 small fw-bold text-secondary pe-4">ACTION</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (booking of bookings; track booking.bookingId) {
+              <tr [className]="booking.status === 'CANCELLED' ? 'table-light opacity-75 row-cancelled-dim' : 'item-transition-row'">
+                <td class="fw-bold font-monospace text-dark text-xs">#{{ booking.bookingId }}</td>
+                
+                <td class="text-start ps-4">
+                  <div class="d-flex align-items-center gap-2 mb-1.5 flex-wrap">
+                    @switch (booking.itemType) {
+                      @case ('FLIGHT') { 
+                        <span class="badge rounded-pill bg-primary-soft text-primary border border-primary-subtle px-2.5 py-1 fw-bold text-uppercase text-xxs">
+                          <i class="bi bi-airplane-fill rotate-45 me-1"></i> FLIGHT
+                        </span> 
+                      }
+                      @case ('HOTEL') { 
+                        <span class="badge rounded-pill bg-success-soft text-success border border-success-subtle px-2.5 py-1 fw-bold text-uppercase text-xxs">
+                          <i class="bi bi-building-fill me-1"></i> HOTEL
+                        </span> 
+                      }
+                      @case ('BUS') { 
+                        <span class="badge rounded-pill bg-danger-soft text-danger border border-danger-subtle px-2.5 py-1 fw-bold text-uppercase text-xxs">
+                          <i class="bi bi-bus-front-fill me-1"></i> BUS
+                        </span> 
+                      }
+                      @case ('CAB') { 
+                        <span class="badge rounded-pill bg-warning-soft text-warning border border-warning-subtle px-2.5 py-1 fw-bold text-uppercase text-xxs">
+                          <i class="bi bi-car-front-fill me-1"></i> CAB
+                        </span> 
+                      }
+                      @case ('TOUR_PACKAGE') { 
+                        <span class="badge rounded-pill bg-info-soft text-info border border-info-subtle px-2.5 py-1 fw-bold text-uppercase text-xxs">
+                          <i class="bi bi-backpack-fill me-1"></i> TOUR
+                        </span> 
+                      }
+                    }
+                    <small class="text-muted font-monospace text-xxs bg-light border px-2 py-0.5 rounded">
+                      {{ booking.roomType || booking.flightNumber || booking.vehicleNumber || 'Standard allocation' }}
+                    </small>
+                  </div>
+                  
+                  <h6 class="fw-bold text-dark mb-0 tracking-tight text-capitalize line-spaced fs-7">
+                    @if (booking.itemType === 'BUS') {
+                      {{ booking.pickupLocation || 'Source Origin' }} <i class="bi bi-arrow-right text-muted mx-1"></i> {{ booking.dropoffLocation || 'Target Terminal' }}
+                      <span class="text-muted fw-medium d-block text-xxs mt-0.5"><i class="bi bi-buildings me-1"></i>Line: {{ booking.partnerName || booking.operatorName }}</span>
+                    } @else if (booking.itemType === 'FLIGHT') {
+                      <span class="text-dark">{{ booking.partnerName || booking.airlineName }} Inter-Continental</span>
+                    } @else {
+                      {{ booking.partnerName || 'Curated Vacation Package Deal' }}
+                    }
+                  </h6>
+                </td>
+                
+                <td class="small-sans text-xs">
+                  @if (booking.itemType === 'HOTEL') {
+                    <span class="d-block text-dark mb-0.5"><b>In:</b> {{ booking.checkInDate }}</span>
+                    <span class="d-block text-muted"><b>Out:</b> {{ booking.checkOutDate }}</span>
+                  } @else {
+                    <span class="text-dark fw-bold d-inline-flex align-items-center gap-1">
+                      <i class="bi bi-calendar-event text-secondary"></i> {{ booking.targetTravelDate || booking.travelDate }}
+                    </span>
+                  }
+                </td>
+                
+                <!-- Prices formatted and wrapped explicitly in strong bold elements -->
+                <td class="fw-extrabold text-primary fs-6">
+                  <strong>{{ booking.calculatedDisplayPrice | currency:'INR':'symbol':'1.0-0' }}</strong>
+                </td>
+                
+                <td>
+                  <span class="badge rounded-pill px-3 py-1.5 border fw-bold tracking-wider text-uppercase text-xxs"
+                        [ngClass]="{
+                          'bg-success-soft text-success border-success': booking.status === 'CONFIRMED' || booking.status === 'PAID',
+                          'bg-warning-soft text-warning border-warning': booking.status === 'PENDING',
+                          'bg-danger-soft text-danger border-danger': booking.status === 'CANCELLED'
+                        }">
+                    {{ booking.status }}
+                  </span>
+                </td>
+                
+                <td class="pe-4">
+                  <button class="btn btn-xs btn-primary rounded-pill px-3 py-1.5 fw-bold text-uppercase text-xxs shadow-sm border-0 btn-view-action" (click)="openDetailsModal(booking.bookingId)">
+                    Details <i class="bi bi-arrow-right-short ms-0.5 fs-6"></i>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 3. PAGINATION SECTION SEGMENT CONTROLS CARD METRICS -->
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center bg-white bg-opacity-90 p-3 rounded-4 border border-light-subtle shadow-sm mt-4 gap-3">
+        
+        <small class="text-muted fw-bold text-xs tracking-wide">
+          SHOWING ENTRIES <b class="text-dark">{{ (currentPage * pageSize) + 1 }}</b> TO <b class="text-dark">{{ Math.min(((currentPage + 1) * pageSize), totalElements) }}</b> OF <b class="text-primary">{{ totalElements }}</b> RECORDS
+        </small>
+        
+        <nav aria-label="Ledger Page History Control Buttons">
+          <ul class="pagination pagination-sm mb-0 shadow-xs gap-1">
+            <li class="page-item" [class.disabled]="currentPage === 0">
+              <button class="page-link rounded-pill px-3 fw-bold text-xs shadow-sm bg-white" [disabled]="currentPage === 0" (click)="fetchBookingHistoryPage(currentPage - 1)">Previous</button>
+            </li>
+            
+            @for (p of [].constructor(totalPages); track i; let i = $index) {
+              <li class="page-item" [class.active]="currentPage === i">
+                <button class="page-link rounded-pill px-3 fw-bold text-xs shadow-sm" (click)="fetchBookingHistoryPage(i)">{{ i + 1 }}</button>
+              </li>
+            }
+            
+            <li class="page-item" [class.disabled]="currentPage >= totalPages - 1">
+              <button class="page-link rounded-pill px-3 fw-bold text-xs shadow-sm bg-white" [disabled]="currentPage >= totalPages - 1" (click)="fetchBookingHistoryPage(currentPage + 1)">Next</button>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+    }
+  </div>
+
+  <!-- Decoupled child overlay modal canvas container anchor target -->
+  @if (selectedBookingId) {
+    <app-booking-details-modal
+      [bookingId]="selectedBookingId"
+      [customerInvoicesList]="customerInvoicesList"
+      [currentUserId]="currentUserId"
+      (onClose)="closeDetailsModal()"
+      (onDataMutated)="handleDataMutation()">
+    </app-booking-details-modal>
+  }
+
+</div>

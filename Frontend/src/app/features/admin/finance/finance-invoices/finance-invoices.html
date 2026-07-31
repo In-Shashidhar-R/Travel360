@@ -1,0 +1,63 @@
+<div class="container-fluid p-0 text-secondary">
+  
+  <div class="card shadow-sm border border-light rounded-3 p-3 bg-white mb-4">
+    <div class="row row-cols-1 row-cols-md-2 g-3 align-items-end">
+      <div class="col d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Status</label>
+        <select class="form-select form-select-sm text-secondary bg-white p-2" [(ngModel)]="statusFilter" (change)="applyFilters()">
+          <option value="ALL">All Lifecycle States</option>
+          <option value="PAID">Paid</option>
+          <option value="UNPAID">Unpaid / Outstanding</option>
+          <option value="REFUNDED">Refunded</option>
+        </select>
+      </div>
+      <div class="col d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-primary small fw-bold tracking-wider mb-1">Search Client / Reservation Index</label>
+        <input type="text" class="form-control form-control-sm text-secondary p-2" [(ngModel)]="clientSearch" (input)="applyFilters()" placeholder="e.g. Shashidhar or Booking ID..."/>
+      </div>
+    </div>
+  </div>
+
+  @if (loading) { <div class="text-center py-4 text-muted small"><div class="spinner-border text-primary spinner-border-sm me-2"></div>Synchronizing system invoices ledger...</div> }
+  @if (errorMsg) { <div class="alert alert-danger shadow-sm mb-4"><i class="bi bi-exclamation-circle-fill me-2"></i>{{errorMsg}}</div> }
+
+  @if (!loading && filteredInvoices.length > 0) {
+    <div class="card shadow-sm border border-light rounded-3 overflow-hidden bg-white">
+      <div class="table-responsive w-100">
+        <table class="table table-hover align-middle mb-0 text-start small">
+          <thead class="table-light border-bottom border-2 text-uppercase text-primary fw-bold">
+            <tr>
+              <th class="p-3">Invoice ID</th>
+              <th class="p-3">Linked Order ID</th>
+              <th class="p-3">Client Name</th>
+              <th class="p-3">Total Value</th>
+              <th class="p-3">Billing Date</th>
+              <th class="p-3">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (inv of filteredInvoices; track inv.invoiceId) {
+              <tr class="border-bottom">
+                <td class="p-3 font-monospace fw-bold text-dark">#{{ inv.invoiceId }}</td>
+                <td class="p-3 text-muted">Order #{{ inv.bookingId }}</td>
+                <td class="p-3 fw-semibold text-dark">{{ inv.customerName }}</td>
+                <td class="p-3 font-monospace fw-bold text-primary">{{ inv.amount | currency:'INR' }}</td>
+                <td class="p-3 text-secondary">{{ inv.generatedDate | date:'mediumDate' }}</td>
+                <td class="p-3">
+                  <span class="badge text-uppercase tracking-wider px-2 py-1 text-pill-status" [ngClass]="'status-' + inv.status.toLowerCase()">
+                    {{ inv.status }}
+                  </span>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  } @else if (!loading) {
+    <div class="text-center p-5 text-muted border rounded bg-white small">
+      <i class="bi bi-file-earmark-x d-block display-5 mb-2 opacity-50"></i>
+      No invoice statements match the current data slice configuration queries.
+    </div>
+  }
+</div>

@@ -1,0 +1,88 @@
+// Layout Dynamic Theme Variable Allocations
+$primary-soft: rgba(37, 99, 235, 0.06);
+$success-soft: rgba(16, 185, 129, 0.06);
+$danger-soft: rgba(239, 68, 68, 0.06);
+$warning-soft: rgba(245, 158, 11, 0.06);
+$border-light: #e2e8f0;
+
+.modal-container-canvas {
+  max-width: 820px !important;
+  width: 100%;
+
+  // Micro Spacing Typography Elements
+  .small-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+  }
+  .text-xs { font-size: 0.75rem !important; }
+  .xs-text { font-size: 0.72rem !important; }
+  .line-spaced { line-height: 1.55 !important; }
+  .tracking-mono { letter-spacing: 0.5px; }
+
+  // Context Vector Background Colors
+  .bg-primary-soft { background-color: $primary-soft !important; }
+  .bg-success-soft { background-color: $success-soft !important; }
+  .bg-danger-soft { background-color: $danger-soft !important; }
+  .bg-warning-soft { background-color: $warning-soft !important; }
+
+  // Clean Vector Alignment for Plane Shapes
+  .rotate-45 {
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  // Aura Frosted White Elements Base Configuration Frame Rules
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  }
+
+  .shadow-inner-sm {
+    box-shadow: inset 0 2px 5px rgba(15, 23, 42, 0.02);
+  }
+
+  .item-transition-row {
+    transition: background-color 0.2s ease;
+    &:hover {
+      background-color: #f8fafc !important;
+    }
+  }
+
+  .opacity-75-hover {
+    transition: opacity 0.2s ease;
+    &:hover {
+      opacity: 0.65 !important;
+    }
+  }
+
+  // Right-aligned column boundary partitions layout adjustments
+  @media (min-width: 768px) {
+    .border-start-md {
+      border-left: 1px solid $border-light !important;
+    }
+    .pricing-display-aside {
+      text-align: right !important;
+      align-items: flex-end !important;
+    }
+  }
+
+  .checkbox-custom {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    &:checked {
+      background-color: #2563eb;
+      border-color: #2563eb;
+    }
+  }
+
+  // Micro logs item layout borders
+  .border-bottom-dashed {
+    border-bottom: 1px dashed var(--border-light);
+  }
+}

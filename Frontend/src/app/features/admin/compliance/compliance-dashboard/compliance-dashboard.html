@@ -1,0 +1,23 @@
+<div class="w-100 d-flex flex-column">
+  <ul class="nav nav-tabs border-bottom-2 mb-4 gap-1">
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="currentSubTab === 'audit-log' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="switchSubTab('audit-log')">
+        <i class="bi bi-shield-lock-fill me-2"></i> Security Audit Logs
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="currentSubTab === 'complaints' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="switchSubTab('complaints')">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> Customer Complaints Management
+      </button>
+    </li>
+  </ul>
+
+  <div class="w-100 container-fluid p-0">
+    @if (currentSubTab === 'audit-log') { <app-audit-log></app-audit-log> }
+    @if (currentSubTab === 'complaints') { <app-complaints></app-complaints> }
+  </div>
+</div>

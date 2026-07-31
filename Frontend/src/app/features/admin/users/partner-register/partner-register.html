@@ -1,0 +1,175 @@
+<div class="card shadow-sm border border-light bg-white rounded-3">
+  <div class="card-header bg-white border-bottom p-3">
+    <h2 class="h5 fw-bold text-dark mb-0">Register Business Partner</h2>
+  </div>
+  <div class="card-body p-4">
+    @if (successMessage()) {
+      <div class="alert alert-success shadow-sm mb-3 animate__animated animate__fadeIn">
+        {{ successMessage() }}
+      </div>
+    }
+    <form [formGroup]="partnerForm" (ngSubmit)="submitPartnerForm()">
+      
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Partner Business Name *</label>
+          <input type="text" class="form-control" formControlName="name" [class.is-invalid]="partnerForm.get('name')?.touched && partnerForm.get('name')?.invalid">
+          @if (partnerForm.get('name')?.touched && partnerForm.get('name')?.invalid) {
+            <div class="invalid-feedback">
+              @if (partnerForm.get('name')?.errors?.['required']) { Business name is mandatory }
+              @if (partnerForm.get('name')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+            </div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Partner Inventory Category Type *</label>
+          <select class="form-select" formControlName="type" [class.is-invalid]="partnerForm.get('type')?.touched && partnerForm.get('type')?.invalid">
+            <option value="">-- Choose Type --</option>
+            <option value="FLIGHT">FLIGHT</option>
+            <option value="HOTEL">HOTEL</option>
+            <option value="BUS">BUS</option>
+            <option value="TOUR_PACKAGE">TOUR_PACKAGE</option>
+          </select>
+          @if (partnerForm.get('type')?.touched && partnerForm.get('type')?.invalid) {
+            <div class="invalid-feedback">Inventory type selection is mandatory</div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Partner Contact Email *</label>
+          <input type="email" class="form-control" formControlName="email" [class.is-invalid]="partnerForm.get('email')?.touched && partnerForm.get('email')?.invalid">
+          @if (partnerForm.get('email')?.touched && partnerForm.get('email')?.invalid) {
+            <div class="invalid-feedback">Valid partner email is mandatory</div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Partner Contact Number *</label>
+          <input type="text" class="form-control" maxlength="10" inputmode="numeric" formControlName="contactNumber" [class.is-invalid]="partnerForm.get('contactNumber')?.touched && partnerForm.get('contactNumber')?.invalid">
+          @if (partnerForm.get('contactNumber')?.touched && partnerForm.get('contactNumber')?.invalid) {
+            <div class="invalid-feedback">Phone must be 10 digits and only numerical value is accepted.</div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Login Password *</label>
+          <input type="password" class="form-control" formControlName="password" [class.is-invalid]="partnerForm.get('password')?.touched && partnerForm.get('password')?.invalid">
+          @if (partnerForm.get('password')?.touched && partnerForm.get('password')?.invalid) {
+            <div class="invalid-feedback">Min 5 chars: needs 1 letter, 1 digit, and 1 special character</div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">GST Number *</label>
+          <input type="text" class="form-control" formControlName="gstNumber" placeholder="10-20 uppercase alphanumeric" [class.is-invalid]="partnerForm.get('gstNumber')?.touched && partnerForm.get('gstNumber')?.invalid">
+          @if (partnerForm.get('gstNumber')?.touched && partnerForm.get('gstNumber')?.invalid) {
+            <div class="invalid-feedback">GST code is mandatory (10-20 uppercase alphanumeric characters)</div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Gender *</label>
+          <select class="form-select" formControlName="gender" [class.is-invalid]="partnerForm.get('gender')?.touched && partnerForm.get('gender')?.invalid">
+            <option value="">-- Select Gender --</option>
+            <option value="MALE">Male</option>
+            <option value="FEMALE">Female</option>
+            <option value="OTHER">Other</option>
+          </select>
+          @if (partnerForm.get('gender')?.touched && partnerForm.get('gender')?.invalid) {
+            <div class="invalid-feedback">Gender is mandatory</div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Date of Birth * (Must be 18+)</label>
+          <input type="date" class="form-control" [max]="maxDobDate" formControlName="dateOfBirth" [class.is-invalid]="partnerForm.get('dateOfBirth')?.invalid && partnerForm.get('dateOfBirth')?.touched">
+          @if (partnerForm.get('dateOfBirth')?.touched && partnerForm.get('dateOfBirth')?.errors) {
+            <div class="invalid-feedback">
+              @if (partnerForm.get('dateOfBirth')?.errors?.['required']) { Date of Birth is required. }
+              @if (partnerForm.get('dateOfBirth')?.errors?.['underaged']) { Partner must be 18 years of age or older. }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Commission Rate Target % *</label>
+          <input type="number" class="form-control" formControlName="commissionRate" step="0.1" [class.is-invalid]="partnerForm.get('commissionRate')?.touched && partnerForm.get('commissionRate')?.invalid">
+          @if (partnerForm.get('commissionRate')?.touched && partnerForm.get('commissionRate')?.invalid) {
+            <div class="invalid-feedback">Commission is mandatory and must be between 0 and 100</div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Address *</label>
+          <input type="text" class="form-control" formControlName="address" [class.is-invalid]="partnerForm.get('address')?.touched && partnerForm.get('address')?.invalid">
+          @if (partnerForm.get('address')?.touched && partnerForm.get('address')?.invalid) {
+            <div class="invalid-feedback">
+              @if (partnerForm.get('address')?.errors?.['required']) { Street address details are mandatory }
+              @if (partnerForm.get('address')?.errors?.['pattern']) { HTML tags (<, >) are explicitly blocked. }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Country *</label>
+          <select class="form-select" formControlName="country" [class.is-invalid]="partnerForm.get('country')?.touched && partnerForm.get('country')?.invalid" (change)="onSelectChange('country', $event)">
+            <option value="">Select Country</option>
+            @for (c of countries; track c.name) {
+              <option [value]="c.name">{{c.name}}</option>
+            }
+          </select>
+          @if (partnerForm.get('country')?.touched && partnerForm.get('country')?.invalid) {
+            <div class="invalid-feedback">Country selection is mandatory</div>
+          }
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">State *</label>
+          <select class="form-select" formControlName="state" [class.is-invalid]="partnerForm.get('state')?.touched && partnerForm.get('state')?.invalid" (change)="onSelectChange('state', $event)">
+            <option value="">Select State</option>
+            @for (s of partnerStates; track s.name) {
+              <option [value]="s.name">{{s.name}}</option>
+            }
+          </select>
+          @if (partnerForm.get('state')?.touched && partnerForm.get('state')?.invalid) {
+            <div class="invalid-feedback">State selection is mandatory</div>
+          }
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">District *</label>
+          <select class="form-select" formControlName="district" [class.is-invalid]="partnerForm.get('district')?.touched && partnerForm.get('district')?.invalid" (change)="onSelectChange('district', $event)">
+            <option value="">Select District</option>
+            @for (d of partnerDistricts; track d.name) {
+              <option [value]="d.name">{{d.name}}</option>
+            }
+          </select>
+          @if (partnerForm.get('district')?.touched && partnerForm.get('district')?.invalid) {
+            <div class="invalid-feedback">District tracking selection is mandatory</div>
+          }
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold text-secondary small">City *</label>
+        <select class="form-select" formControlName="city" [class.is-invalid]="partnerForm.get('city')?.touched && partnerForm.get('city')?.invalid">
+          <option value="">Select City</option>
+          @for (city of partnerCities; track city) {
+            <option [value]="city">{{city}}</option>
+          }
+        </select>
+        @if (partnerForm.get('city')?.touched && partnerForm.get('city')?.invalid) {
+          <div class="invalid-feedback">City assignment selection is mandatory</div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-primary px-4 py-2 fw-semibold shadow-sm w-100" [disabled]="partnerForm.invalid">
+        Register Partner
+      </button>
+    </form>
+  </div>
+</div>

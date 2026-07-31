@@ -1,0 +1,109 @@
+// Dynamic Theme Vector Palette Scaffolding Overrides
+$primary-soft: rgba(37, 99, 235, 0.08);
+$success-soft: rgba(16, 185, 129, 0.08);
+$danger-soft: rgba(239, 68, 68, 0.08);
+$warning-orange: #f59e0b;
+$warning-soft: rgba(245, 158, 11, 0.08);
+$border-light: #e2e8f0;
+$slate-dark: #0f172a;
+
+.inventory-browser-core {
+  // Explicit Tracking Padding Typography Metrics Alignment
+  .small-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+  }
+  .text-xs { font-size: 0.75rem !important; }
+  .line-spaced { line-height: 1.5 !important; }
+  .max-w-500 { max-width: 500px !important; }
+  .fs-9 { font-size: 0.65rem !important; }
+
+  // Context Color Vector Elements
+  .bg-primary-soft { background-color: $primary-soft !important; }
+  .bg-success-soft { background-color: $success-soft !important; }
+  .bg-danger-soft { background-color: $danger-soft !important; }
+  .bg-warning-soft { background-color: $warning-soft !important; }
+
+  // Clean Vector Node Rotation Utility for Plane Icon Alignment
+  .rotate-45 {
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  // Aura Frosted Capsule Multi-tab Strip Controller Elements
+  .category-tab-node {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    flex: 1;
+    justify-content: center;
+    min-width: 140px;
+    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background-color: rgba(15, 23, 42, 0.03);
+      color: #000000 !important;
+    }
+
+    &.active-flight { background-color: $primary-soft !important; color: #2563eb !important; border-color: rgba(37, 99, 235, 0.15); box-shadow: 0 2px 4px rgba(37, 99, 235, 0.04); }
+    &.active-hotel { background-color: $success-soft !important; color: #10b981 !important; border-color: rgba(16, 185, 129, 0.15); box-shadow: 0 2px 4px rgba(16, 185, 129, 0.04); }
+    &.active-bus { background-color: $danger-soft !important; color: #ef4444 !important; border-color: rgba(239, 68, 68, 0.15); box-shadow: 0 2px 4px rgba(239, 68, 68, 0.04); }
+    &.active-tour { background-color: $warning-soft !important; color: #d97706 !important; border-color: rgba(245, 158, 11, 0.15); box-shadow: 0 2px 4px rgba(245, 158, 11, 0.04); }
+  }
+
+  // Bright White High Frosted Background Sheets
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+  }
+
+  // Large Interactive Execution Click Node Button
+  .btn-search-trigger {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2) !important;
+    &:hover {
+      background-color: #1d4ed8 !important;
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(37, 99, 235, 0.35) !important;
+    }
+  }
+
+  // Dynamic Content Card Row Items Hover Transitions
+  .shadow-hover {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+    border: 1px solid #f1f5f9 !important;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 24px -5px rgba(15, 23, 42, 0.05) !important;
+    }
+  }
+
+  .btn-view-details {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    &:hover {
+      background-color: #047857 !important;
+      transform: scale(1.02);
+    }
+  }
+}
+
+// Side Margin Control Boundaries Mapping Across Wide Display Screens
+@media (min-md-width: 768px) {
+  .border-start-md {
+    border-left: 1px solid $border-light !important;
+  }
+  .pricing-block-aside {
+    text-align: right !important;
+    align-items: flex-end !important;
+  }
+}

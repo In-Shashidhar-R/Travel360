@@ -1,0 +1,144 @@
+.style-filter-label {
+  font-size: 0.725rem;
+  letter-spacing: 0.06em;
+}
+
+.inventory-dynamic-card {
+  cursor: pointer;
+  overflow: hidden;
+  background-color: #ffffff !important;
+
+  &:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08) !important;
+    border-color: #cbd5e1 !important;
+  }
+}
+
+.style-currency-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+}
+
+.style-type-badge {
+  font-size: 0.7rem !important;
+  letter-spacing: 0.03em;
+  
+  &.badge-type-flight { background: #eff6ff !important; color: #1d4ed8 !important; border: 1px solid #dbeafe !important; }
+  &.badge-type-bus { background: #fff5f5 !important; color: #c53030 !important; border: 1px solid #fed7d7 !important; }
+  &.badge-type-hotel { background: #f0fdf4 !important; color: #166534 !important; border: 1px solid #dcfce7 !important; }
+  &.badge-type-cab { background: #fffbeb !important; color: #9a3412 !important; border: 1px solid #fef3c7 !important; }
+  &.badge-type-tour_package { background: #faf5ff !important; color: #6b21a8 !important; border: 1px solid #f3e8ff !important; }
+}
+
+.style-preview-box {
+  line-height: 1.5;
+}
+
+.btn-xs {
+  padding: 0.35rem 0.65rem !important;
+  font-size: 0.72rem !important;
+  border-radius: 5px !important;
+}
+
+.style-action-btn {
+  letter-spacing: 0.02em;
+  i { font-size: 0.78rem; }
+}
+
+.style-footer-hint {
+  font-size: 0.73rem;
+}
+
+.card-drawer-extended-details-panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.inventory-dynamic-card.card-state-expanded {
+  border-color: #93c5fd !important;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+
+  .card-drawer-extended-details-panel {
+    max-height: 1400px;
+  }
+
+  .chevron-indicator-icon {
+    transform: rotate(180deg);
+  }
+}
+
+// Fixed-column structural alignments framework definitions
+.style-panel-section-title {
+  font-size: 0.75rem !important;
+  letter-spacing: 0.05em;
+  color: #475569 !important;
+  border-bottom: 1px dashed #cbd5e1;
+  padding-bottom: 0.5rem;
+}
+
+// 💥 FIX: Clean line and text heights inside dynamic expansion blocks
+.style-data-grouping-stack {
+  display: flex;
+  flex-direction: column;
+  padding: 0.15rem 0;
+
+  .row {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    padding-top: 0.65rem !important;    // Generous vertical breathing room
+    padding-bottom: 0.65rem !important; // Eliminates squished row lines
+    align-items: center;
+  }
+}
+
+.style-sub-table-header-title {
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+}
+
+.style-sub-table-header, .style-sub-table-row {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.style-itinerary-render-pane {
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+  max-height: 180px;
+  overflow-y: auto;
+  line-height: 1.5;
+  background-color: #ffffff !important;
+}
+
+.border-dashed { border-style: dashed !important; }
+
+// Activation Toggle Configuration Classes Matrix Map Rules
+.style-action-btn {
+  &.toggle-active {
+    color: #198754 !important;
+    background-color: #f0fdf4 !important;
+    border-color: #bbf7d0 !important;
+    
+    &:hover {
+      background-color: #dcfce7 !important;
+      border-color: #86efac !important;
+      color: #146c43 !important;
+    }
+  }
+
+  &.toggle-inactive {
+    color: #64748b !important;
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    
+    &:hover {
+      background-color: #f1f5f9 !important;
+      border-color: #94a3b8 !important;
+      color: #334155 !important;
+    }
+  }
+}

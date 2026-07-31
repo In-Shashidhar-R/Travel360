@@ -1,0 +1,47 @@
+// Custom Role Badge Pipeline Mapping Metrics Configuration
+.font-role-pill {
+  font-size: 0.7rem !important;
+  letter-spacing: 0.04em;
+  background-color: #6c757d !important; // Fallback neutral grey so badges never appear blank
+
+  &.role-admin { background-color: #dc3545 !important; }
+  &.role-customer { background-color: #198754 !important; }
+  &.role-partner { background-color: #0d6efd !important; }
+  &.role-travel_agent { background-color: #6f42c1 !important; }
+  &.role-finance_officer { background-color: #ffc107 !important; color: #212529 !important; }
+  &.role-compliance_officer { background-color: #20c997 !important; }
+}
+
+// FIX: Target bottom borders and add clear vertical breathing room between detail items
+.border-dashed { 
+  border-bottom-style: dashed !important; 
+  border-color: #e2e8f0 !important; // Softened subtle slate line
+  padding-top: 0.65rem !important;   // Adds uniform space above text
+  padding-bottom: 0.65rem !important; // Adds uniform space below text
+}
+
+// Extra vertical space wrapper adjustments for nested agent/partner boxes
+.extended-role-nested-box {
+  margin-top: 1rem !important;
+  
+  .d-flex {
+    padding-top: 0.5rem !important;
+    padding-bottom: 0.5rem !important;
+  }
+}
+
+// Border accent mapping overrides
+.border-purple { border-color: #6f42c1 !important; }
+
+.user-profile-hover-card {
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.075) !important;
+    border-color: #cbd5e1 !important;
+  }
+}
+
+.style-bio-text {
+  font-size: 0.78rem;
+  line-height: 1.35;
+}

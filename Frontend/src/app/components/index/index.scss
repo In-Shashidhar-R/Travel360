@@ -1,0 +1,182 @@
+// ==========================================================================
+// TRAVEL 360 COMPREHENSIVE LANDING PORTAL SCSS ARCHITECTURE
+// ==========================================================================
+@use "sass:color";
+// --- Core Palette Variables ---
+$dark-slate: #0F172A;
+$cyan-electric: #00E5FF;
+$amber-sunset: #FF9F1C;
+$slate-muted: #64748B;
+$border-light: #E2E8F0;
+$bg-light-slate: #F8FAFC;
+
+.portal-home-wrapper {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-color: #ffffff;
+  overflow-x: hidden;
+
+  // --- Utility Configurations ---
+  .text-tracking { letter-spacing: 0.15rem; }
+  .fw-extrabold { font-weight: 800; }
+  .max-w-500 { max-width: 500px; }
+  .min-vh-75 { min-height: 75vh; }
+  .outline-none { outline: none; }
+  .xs-text { font-size: 0.75rem; }
+
+  // --- Custom Bootstrap Background Soft Badges ---
+  .bg-cyan-soft { background-color: rgba(0, 229, 255, 0.12); }
+  .text-cyan { color: $cyan-electric !important; }
+  .cyan-badge { color: $cyan-electric; }
+  .amber-text { color: $amber-sunset; }
+
+  .bg-primary-soft { background-color: rgba(15, 23, 42, 0.06); }
+  .bg-success-soft { background-color: rgba(34, 197, 94, 0.08); }
+  .bg-danger-soft { background-color: rgba(239, 68, 68, 0.08); }
+  .bg-warning-soft { background-color: rgba(245, 158, 11, 0.08); }
+  .bg-info-soft { background-color: rgba(6, 182, 212, 0.08); }
+
+  .bg-light-slate { background-color: $bg-light-slate; }
+  .text-white-70 { color: rgba(255, 255, 255, 0.7); }
+
+  // --- Hero Section Layout ---
+  .hero-viewport-panel {
+    position: relative;
+    min-height: 100vh;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    z-index: 1;
+
+    .ambient-glow {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: radial-gradient(circle at 15% 25%, rgba(0, 229, 255, 0.15), transparent 45%);
+      z-index: -1;
+    }
+
+    .glass-header {
+      background: rgba(15, 23, 42, 0.35);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-color: rgba(255, 255, 255, 0.12) !important;
+    }
+
+    .custom-paragraph-width {
+      max-width: 580px;
+      line-height: 1.65;
+    }
+
+    .bg-white-05 { background-color: rgba(255, 255, 255, 0.05); }
+    .border-white-10 { border-color: rgba(255, 255, 255, 0.1) !important; }
+
+    .hero-heading {
+      font-size: 3.8rem;
+      line-height: 1.15;
+      letter-spacing: -1.5px;
+      @media (max-width: 768px) { font-size: 2.6rem; }
+    }
+
+    // --- Interactive Action Button Overrides ---
+    .btn-cyan {
+      background-color: $cyan-electric;
+      color: $dark-slate;
+      font-weight: 700;
+      border: none;
+      transition: all 0.2s ease;
+      &:hover {
+              background-color: color.adjust($cyan-electric, $lightness: -10%);
+              transform: translateY(-1px);
+            }
+    }
+
+    .btn-amber {
+      background-color: $amber-sunset;
+      color: white;
+      border: none;
+      transition: all 0.2s ease;
+      &:hover {
+              background-color: color.adjust($amber-sunset, $lightness: -6%);
+              transform: translateY(-1px);
+            }
+    }
+  }
+
+  // --- Search Engine Overlay Card System ---
+  .search-matrix-card {
+    background: #ffffff;
+    box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.25);
+    
+    .tab-pill {
+      background: none;
+      border: none;
+      color: $slate-muted;
+      font-weight: 600;
+      font-size: 0.9rem;
+      padding: 0.4rem 0.5rem;
+      position: relative;
+      transition: color 0.15s ease;
+
+      &.active {
+        color: $dark-slate;
+        font-weight: 700;
+        &::after {
+          content: '';
+          position: absolute;
+          bottom: -9px; left: 0; width: 100%; height: 3px;
+          background-color: $cyan-electric;
+          border-radius: 3px 3px 0 0;
+        }
+      }
+      &:hover:not(.active) { color: $dark-slate; }
+    }
+
+    .form-control, .form-select {
+      border: 1px solid $border-light;
+      border-radius: 8px;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.9rem;
+      color: $dark-slate;
+      &:focus {
+        border-color: $cyan-electric;
+        box-shadow: 0 0 0 3px rgba(0, 229, 255, 0.15);
+      }
+    }
+  }
+
+  // --- Dynamic Grid Item Hover Effects ---
+  .feature-showcase-box {
+    background-color: #ffffff;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    .icon-circle {
+      width: 48px;
+      height: 48px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+    }
+
+    &:hover {
+      background-color: $bg-light-slate !important;
+      transform: translateY(-4px);
+      box-shadow: 0 12px 20px -5px rgba(15, 23, 42, 0.05);
+    }
+  }
+
+  .role-display-card {
+    transition: transform 0.2s ease;
+    &:hover {
+      transform: scale(1.01);
+    }
+  }
+
+  .transition-fade {
+    transition: opacity 0.2s ease;
+    &:hover { opacity: 0.8; }
+  }
+}

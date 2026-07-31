@@ -1,0 +1,336 @@
+/* --- Aura-Light Theme Configurations --- */
+:host {
+  --bg-main: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-header: rgba(255, 255, 255, 0.9); 
+  --bg-sidebar: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --accent: #2563eb;
+  --border-light: #e2e8f0;
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Core Animations --- */
+.animate-pulse {
+  animation: badgePulse 2s infinite;
+}
+@keyframes badgePulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.5); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(37, 99, 235, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+}
+
+.animate-fade-in {
+  animation: filterFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+@keyframes filterFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Layout Typography Tuning --- */
+.small-label {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.08em !important;
+}
+.text-xs { font-size: 0.75rem !important; }
+.py-2-5 { padding-top: 0.7rem !important; padding-bottom: 0.7rem !important; }
+.bg-primary-soft { background-color: rgba(37, 99, 235, 0.08) !important; }
+.bg-success-soft { background-color: rgba(16, 185, 129, 0.08) !important; }
+
+/* --- Interactive Elements --- */
+.bell-trigger-action-btn {
+  background: #ffffff;
+  border: 1px solid var(--border-light);
+  color: var(--text-main);
+  padding: 0.5rem 0.65rem;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: var(--transition);
+
+  &:hover {
+    background: #f1f5f9;
+    color: var(--accent);
+  }
+
+  &.has-unread-alerts {
+    border-color: rgba(37, 99, 235, 0.3) !important;
+    color: var(--accent) !important;
+  }
+}
+
+.unread-count-badge-bubble {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background-color: var(--accent);
+  color: #ffffff;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  border: 2px solid #ffffff;
+}
+
+.inline-notification-drawer-card {
+  position: absolute;
+  right: 0;
+  top: 52px;
+  width: 340px;
+  border-color: var(--border-light) !important;
+  border-radius: 12px;
+  z-index: 1100;
+  overflow: hidden;
+
+  .drawer-scroll-container {
+    max-height: 320px;
+    overflow-y: auto;
+  }
+
+  .drawer-notification-row-item {
+    &:hover {
+      background-color: #f8fafc;
+    }
+    &.is-read-muted {
+      opacity: 0.55;
+    }
+  }
+}
+
+.border-glow:hover {
+  box-shadow: 0 0 14px rgba(37, 99, 235, 0.25) !important;
+  transform: scale(1.02);
+}
+
+/* --- Layout Structuring --- */
+.app-shell-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  background-color: var(--bg-main);
+}
+
+.global-app-header-strip {
+  height: 75px;
+  background-color: var(--bg-header);
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1050;
+  position: relative;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.03);
+}
+
+.left-brand-section, .right-user-identity-context {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.master-brand-logo {
+  font-size: 1.35rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  cursor: pointer;
+}
+
+.sub-env-tag {
+  font-size: 9px;
+  font-weight: 700;
+  background-color: #0f172a;
+  color: #ffffff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  margin-left: 0.5rem;
+  letter-spacing: 0.5px;
+}
+
+/* --- Premium Frosted Center Capsule Navigation --- */
+.glass-nav-container {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 50px;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+  box-shadow: 0 4px 12px rgba(15, 23, 42, 0.04);
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  a {
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.85rem;
+    padding: 0.45rem 1.2rem;
+    border-radius: 50px;
+    transition: var(--transition);
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+
+    &:hover {
+      color: var(--text-main);
+      background: rgba(15, 23, 42, 0.03);
+    }
+  }
+
+  .active-glass-link {
+    background: var(--accent) !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  }
+}
+
+.central-navigation-sidebar-panel {
+  width: 260px;
+  min-width: 260px;
+  transition: var(--transition);
+  z-index: 1030;
+
+  .sidebar-links-nav-list li {
+    transition: var(--transition);
+    &:hover {
+      background-color: #f1f5f9 !important;
+      color: var(--text-main) !important;
+    }
+    &.active-link-node {
+      background-color: var(--primary-soft) !important;
+      color: var(--accent) !important;
+      font-weight: 600;
+    }
+  }
+}
+
+.workspace-viewport-wrapper-grid {
+  position: relative;
+}
+
+.central-workspace-content-canvas {
+  padding: 2.5rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+/* ==========================================================================
+   🎯 BRIGHT LUXURY CUSTOMER PORTAL BACKDROP CONFIGURATION
+   ========================================================================== */
+.app-shell-container.customer-view-mode {
+  height: auto !important;
+  min-height: 100vh;
+  overflow-y: auto !important;
+
+  .global-app-header-strip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+  }
+
+  .workspace-viewport-wrapper-grid {
+    display: block;
+    height: auto !important;
+  }
+
+  .central-workspace-content-canvas {
+    display: block;
+    height: auto !important;
+    min-height: calc(100vh - 40px);
+    width: 100%;            
+    padding: 115px 0 4rem 0;      
+    
+    background-image: linear-gradient(rgba(244, 246, 249, 0.45), rgba(244, 246, 249, 0.45)), url('https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=1920&q=80');
+    background-repeat: no-repeat;
+    background-position: center top;
+    background-size: cover;            
+    background-attachment: fixed;      
+
+    & > * {
+      max-width: 1360px;
+      margin-left: auto;
+      margin-right: auto;
+      padding-left: 1.5rem;
+      padding-right: 1.5rem;
+      box-sizing: border-box;
+    }
+  }
+}
+
+.custom-profile-dropdown {
+  right: 8px !important;
+  left: auto !important;
+}
+
+/* --- Responsive Layout Handling Breakpoints --- */
+@media (max-width: 991.98px) {
+  .glass-nav-container {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+    max-width: 520px;
+    justify-content: space-between;
+    z-index: 2050;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid var(--border-light);
+    padding: 0.4rem 0.5rem;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.12);
+    overflow-x: auto;
+    scrollbar-width: none; /* Hide scrollbar for Chrome/Safari/Firefox */
+    &::-webkit-scrollbar { display: none; }
+
+    a {
+      padding: 0.45rem 0.75rem;
+      font-size: 0.78rem;
+      flex-shrink: 0;
+    }
+  }
+
+  .central-navigation-sidebar-panel {
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 20px 0 30px rgba(15, 23, 42, 0.05);
+    
+    &.sidebar-panel-expanded {
+      transform: translateX(0);
+    }
+  }
+
+  .layout-sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(15, 23, 42, 0.2);
+    backdrop-filter: blur(4px);
+    z-index: 1020;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s linear;
+    
+    &.backdrop-active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
+  .app-shell-container.customer-view-mode .central-workspace-content-canvas {
+    padding-bottom: 95px; 
+  }
+}

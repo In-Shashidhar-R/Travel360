@@ -1,0 +1,282 @@
+<div class="card shadow-sm border border-light rounded-3 overflow-hidden bg-white">
+  <div class="card-header bg-white border-bottom p-3">
+    <h2 class="h5 fw-bold text-dark mb-1">View Inventory</h2>
+  </div>
+
+  <div class="card-body bg-light border-bottom p-3">
+    <div class="row g-3">
+      <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">Item Type</label>
+        <select class="form-select form-select-sm p-2" [(ngModel)]="filterItemType" (change)="onFilterSearchTrigger()">
+          <option value="">-- All Types --</option>
+          <option value="FLIGHT">FLIGHT</option>
+          <option value="BUS">BUS</option>
+          <option value="HOTEL">HOTEL</option>
+          <option value="TOUR_PACKAGE">TOUR</option>
+        </select>
+      </div>
+
+      @if (filterItemType === '' || filterItemType === 'CAB' || filterItemType === 'HOTEL') {
+        <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+          <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">State</label>
+          <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="filterState" (input)="onFilterSearchTrigger()" placeholder="e.g., Karnataka">
+        </div>
+        <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+          <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">District</label>
+          <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="filterDistrict" (input)="onFilterSearchTrigger()" placeholder="e.g., Bangalore">
+        </div>
+      }
+      
+      @if (filterItemType === '' || filterItemType === 'HOTEL') {
+        <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+          <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">City</label>
+          <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="filterCity" (input)="onFilterSearchTrigger()" placeholder="e.g., Bengaluru">
+        </div>
+      }
+      
+      @if (filterItemType === '' || filterItemType === 'FLIGHT' || filterItemType === 'BUS') {
+        <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+          <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">Source Terminal</label>
+          <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="filterSource" (input)="onFilterSearchTrigger()" placeholder="e.g., BLR">
+        </div>
+        <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+          <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">Destination Terminal</label>
+          <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="filterDestination" (input)="onFilterSearchTrigger()" placeholder="e.g., DXB">
+        </div>
+      }
+      
+      <div class="col-12 col-md-4 col-xl-3 d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-secondary fw-bold mb-0 style-filter-label">Max Price</label>
+        <input type="number" class="form-control form-control-sm p-2" [(ngModel)]="filterMaxPrice" (input)="onFilterSearchTrigger()" placeholder="Enter Max Price">
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body p-4 bg-white">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-2 g-4 align-items-start">
+      @for (inv of paginatedInventories; track inv.inventoryId) {
+        <div class="col">
+          <div class="card border border-light shadow-sm inventory-dynamic-card transition-all" 
+               [class.card-state-expanded]="inv.uiExpanded" 
+               (click)="toggleCard(inv)">
+            
+            <div class="card-body d-flex justify-content-between align-items-center p-3 border-bottom border-light bg-white">
+              <div>
+                <span class="text-muted font-monospace small d-block">REF #{{inv.inventoryId}}</span>
+                <span class="badge d-inline-flex align-items-center gap-1.5 px-2.5 py-1.5 rounded text-uppercase fw-bold mt-2 shadow-sm style-type-badge" 
+                      [ngClass]="'badge-type-' + inv.itemType.toLowerCase()">
+                  @if(inv.itemType === 'FLIGHT') { <i class="bi bi-airplane-fill"></i> }
+                  @if(inv.itemType === 'BUS') { <i class="bi bi-bus-front"></i> }
+                  @if(inv.itemType === 'HOTEL') { <i class="bi bi-building"></i> }
+                  @if(inv.itemType === 'TOUR_PACKAGE') { <i class="bi bi-backpack-fill"></i> }
+                  {{inv.itemType || 'HOTEL'}}
+                </span>
+              </div>
+              <div class="text-end fw-extrabold text-dark h5 mb-0 font-financial-header">
+                <small class="text-muted fw-semibold d-block text-uppercase style-currency-label">INR</small>
+                {{ getBasePrice(inv) | number:'1.2-2' }}
+              </div>
+            </div>
+
+            <div class="card-body p-3 d-flex flex-column bg-white">
+              <h4 class="h6 fw-bold text-dark d-flex align-items-center gap-2 mb-2 mt-1 text-truncate">
+                <i class="bi bi-building-fill-gear text-secondary"></i>
+                {{inv.partnerName}} <small class="text-muted font-monospace fw-normal">(ID: {{inv.partnerId}})</small>
+              </h4>
+              
+              <div class="text-secondary small bg-light p-3 rounded border-start border-3 border-secondary border-opacity-50 my-2 fw-medium style-preview-box">
+                @if (inv.itemType === 'FLIGHT') { <span>{{ asFlight(inv).airlineName }} &middot; Code: {{ asFlight(inv).flightNumber }} ({{ asFlight(inv).departureAirport }} &rarr; {{ asFlight(inv).arrivalAirport }})</span> }
+                @if (inv.itemType === 'BUS') { <span>{{ asBus(inv).operatorName }} [{{ asBus(inv).busNumberPlate }}] &middot; Route: {{ asBus(inv).routeFrom }} &rarr; {{ asBus(inv).routeTo }}</span> }
+                @if (inv.itemType === 'HOTEL') { <span>{{ asHotel(inv).hotelName }} &middot; Room Class: {{ asHotel(inv).roomType }} ({{ asHotel(inv).totalRooms }} Units)</span> }
+                @if (inv.itemType === 'TOUR_PACKAGE') { <span>Bundle: {{ asTour(inv).packageName }} &middot; Duration: {{ asTour(inv).durationDays }} Days</span> }
+              </div>
+
+              <div class="d-flex flex-wrap gap-2 mt-3 mb-3 pt-3 border-top border-dashed border-light" (click)="$event.stopPropagation()">
+                <button type="button" class="btn btn-xs btn-outline-primary text-uppercase fw-bold d-flex align-items-center gap-1 style-action-btn" (click)="onEditInventory(inv, $event)">
+                  <i class="bi bi-pencil-square"></i> Edit
+                </button>
+
+                <button type="button" class="btn btn-xs text-uppercase fw-bold d-flex align-items-center gap-1 style-action-btn" 
+                        [ngClass]="inv.isActive ? 'toggle-active' : 'toggle-inactive'"
+                        (click)="onToggleActivation(inv, $event)">
+                  @if (inv.isActive) {
+                    <i class="bi bi-x-circle-fill text-danger"></i> Deactivate
+                  } @else {
+                    <i class="bi bi-check-circle-fill text-success"></i> Activate 
+                  }
+                </button>
+
+                <button type="button" class="btn btn-xs btn-outline-danger text-uppercase fw-bold d-flex align-items-center gap-1 style-action-btn ms-auto" (click)="onDeleteInventory(inv, $event)">
+                  <i class="bi bi-trash3-fill"></i> Delete
+                </button>
+              </div>
+              
+              <div class="d-flex justify-content-between align-items-center pt-2 small text-primary fw-semibold style-footer-hint">
+                <span>Click here to view additional information</span>
+                <i class="bi bi-chevron-down text-primary transition-all chevron-indicator-icon"></i>
+              </div>
+            </div>
+
+<div class="card-drawer-extended-details-panel bg-light" (click)="$event.stopPropagation()">
+  <div class="p-4 border-top border-light shadow-inner">
+    
+    <h5 class="text-uppercase text-secondary fw-bold style-panel-section-title mb-3 ms-1">
+      <i class="bi bi-hdd-network me-2"></i>Additional Information
+    </h5>
+    
+    <div class="style-data-grouping-stack px-1">
+      
+      @if (inv.itemType === 'FLIGHT') {
+        <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+          <div class="col-5 fw-bold text-secondary text-start">Airline Name:</div>
+          <div class="col-7 fw-semibold text-dark text-start">{{ asFlight(inv).airlineName }}</div>
+        </div>
+        <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+          <div class="col-5 fw-bold text-secondary text-start">Route:</div>
+          <div class="col-7 fw-semibold text-dark text-start">Airport {{ asFlight(inv).departureAirport }} to {{ asFlight(inv).arrivalAirport }}</div>
+        </div>
+        <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+          <div class="col-5 fw-bold text-secondary text-start">Timeline:</div>
+          <div class="col-7 fw-semibold text-dark text-start">Departs: {{ asFlight(inv).startTime }} | Arrives: {{ asFlight(inv).endTime }} ({{ asFlight(inv).numberOfHours | number:'1.1-2' }} hrs)</div>
+        </div>
+        <div class="row py-2.5 align-items-center small text-dark">
+          <div class="col-5 fw-bold text-secondary text-start">Layovers:</div>
+          <div class="col-7 fw-semibold text-dark text-start">{{ asFlight(inv).isConnecting ? 'Transitional Connecting (' + asFlight(inv).layoverDetails + ')' : 'Non-Stop Direct Pathing' }}</div>
+        </div>
+        
+        <div class="mt-4 p-3 bg-white border rounded shadow-sm mx-1">
+          <h6 class="text-uppercase text-dark fw-bold style-sub-table-header-title mb-3"><i class="bi bi-grid-3x3-gap me-2 text-secondary"></i>Total Available Seats ( {{ asFlight(inv).totalSeats }} )</h6>
+          <div class="list-group list-group-flush border rounded-3 overflow-hidden font-monospace small">
+            <div class="list-group-item bg-light p-2.5 d-grid style-sub-table-header"><span>Tier Class</span><span>Allocated</span><span>Calculated Price</span></div>
+            @for (tier of asFlight(inv).seatTiers; track tier.seatType) {
+              <div class="list-group-item p-2.5 d-grid style-sub-table-row align-items-center">
+                <span class="fw-bold text-dark">{{ tier.seatType }}</span>
+                <span class="text-secondary">{{ tier.totalSeatsAllocated }} Seats</span>
+                <span class="fw-bold text-primary">INR {{ (inv.basePricePerSeat * tier.priceMultiplier) | number:'1.2-2' }}</span>
+              </div>
+            }
+          </div>
+        </div>
+                  }
+                  
+                  @if (inv.itemType === 'BUS') {
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Operator Agency Name:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">{{ asBus(inv).operatorName }} [{{ asBus(inv).busNumberPlate }}]</div>
+                    </div>
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Terminal:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">Terminal {{ asBus(inv).routeFrom }} &rarr; {{ asBus(inv).routeTo }} Hub</div>
+                    </div>
+                    <div class="row py-2.5 align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Timeline:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">Dispatch: {{ asBus(inv).startTime }} | Arrival: {{ asBus(inv).endTime }}</div>
+                    </div>
+                    
+                    <div class="mt-4 p-3 bg-white border rounded shadow-sm mx-1">
+                      <h6 class="text-uppercase text-dark fw-bold style-sub-table-header-title mb-3"><i class="bi bi-signpost-split me-2 text-secondary"></i>Bus Stop Details</h6>
+                      <div class="list-group list-group-flush border rounded-3 overflow-hidden small mb-4">
+                        <div class="list-group-item bg-light p-2.5 d-grid style-sub-table-header font-monospace"><span>Terminal Station Name</span><span>Stop Variant</span><span>Scheduled Time</span></div>
+                        @for (stop of asBus(inv).routeStops; track stop.stopName + stop.scheduledTime) {
+                          <div class="list-group-item p-2.5 d-grid style-sub-table-row align-items-center">
+                            <span class="fw-semibold text-dark">{{ stop.stopName }}</span>
+                            <div><span class="badge inline-pill text-uppercase font-monospace text-dark bg-secondary bg-opacity-15 px-2 py-1" [ngClass]="stop.stopType.toLowerCase()">{{ stop.stopType }}</span></div>
+                            <span class="text-muted font-monospace">{{ stop.scheduledTime }}</span>
+                          </div>
+                        }
+                      </div>
+
+                      <h6 class="text-uppercase text-dark fw-bold style-sub-table-header-title mb-3"><i class="bi bi-grid-3x3-gap me-2 text-secondary"></i>Total Available Seats ({{ asBus(inv).totalSeats }} )</h6>
+                      <div class="list-group list-group-flush border rounded-3 overflow-hidden font-monospace small">
+                        <div class="list-group-item bg-light p-2.5 d-grid style-sub-table-header"><span>Tier Variant</span><span>Capacity Unit</span><span>Calculated Price</span></div>
+                        @for (tier of asBus(inv).seatTiers; track tier.seatType) {
+                          <div class="list-group-item p-2.5 d-grid style-sub-table-row align-items-center">
+                            <span class="fw-bold text-dark">{{ tier.seatType }}</span>
+                            <span class="text-secondary">{{ tier.totalSeatsAllocated }} Units</span>
+                            <span class="fw-bold text-primary">INR {{ (inv.basePricePerSeat * tier.priceMultiplier) | number:'1.2-2' }}</span>
+                          </div>
+                        }
+                      </div>
+                    </div>
+                  }
+                  
+                  @if (inv.itemType === 'HOTEL') {
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Hotel Name:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">{{ asHotel(inv).hotelName }}</div>
+                    </div>
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Room Type:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">{{ asHotel(inv).roomType }} ({{ asHotel(inv).totalRooms }} Rooms)</div>
+                    </div>
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Location:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">{{ asHotel(inv).addressLocation }}, {{ asHotel(inv).district }}, {{ asHotel(inv).state }}</div>
+                    </div>
+                    <div class="row py-2.5 align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary text-start">Rating:</div>
+                      <div class="col-7 fw-bold text-warning text-start">
+                        <i class="bi bi-star-fill text-warning me-1"></i> {{ asHotel(inv).hotelRating }} / 5 Stars
+                      </div>
+                    </div>
+                  }
+                  
+                  
+                  @if (inv.itemType === 'TOUR_PACKAGE') {
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary pe-2 text-start">Package Name:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">{{ asTour(inv).packageName }} ({{ asTour(inv).durationDays }} Days)</div>
+                    </div>
+                    <div class="row py-2.5 border-bottom border-white align-items-center small text-dark">
+                      <div class="col-5 fw-bold text-secondary pe-2 text-start">Travel Agent Info:</div>
+                      <div class="col-7 fw-semibold text-dark text-start">Node ID #{{ asTour(inv).travelAgentId }} ({{ asTour(inv).travelAgentName }})</div>
+                    </div>
+                    <div class="mt-4 text-start mx-1">
+                      <strong class="text-secondary small d-block mb-2 ms-1"><i class="bi bi-card-text me-1.5"></i>Itinerary Details Logs Data:</strong>
+                      <div class="p-3 border bg-white rounded font-monospace small text-muted style-itinerary-render-pane shadow-inner">
+                        {{ asTour(inv).fullItineraryDetails }}
+                      </div>
+                    </div>
+                  }
+
+    </div>
+  </div>
+</div>
+
+          </div>
+        </div>
+      } @empty {
+        <div class="col-12 py-5 text-center bg-light border border-dashed rounded-3">
+          <p class="text-secondary mb-0">No backend resource component inventories discovered matching criteria matrix parameters.</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card-footer bg-white border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 p-3">
+    <div class="text-muted small">
+      Showing <span class="fw-semibold text-dark">{{getStartIndex()}}</span> to <span class="fw-semibold text-dark">{{getEndIndex(backendFilteredInventories.length)}}</span> of <span class="fw-semibold text-dark">{{backendFilteredInventories.length}}</span> asset components
+    </div>
+    <nav aria-label="System query inventory ledger dataset table pagination navigation">
+      <ul class="pagination pagination-sm mb-0 shadow-sm">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" type="button">Previous</button>
+        </li>
+        <li class="page-item" *ngFor="let p of getPagesArray(backendFilteredInventories.length); let idx = index" [class.active]="currentPage === idx + 1">
+          <button class="page-link" (click)="goToPage(idx + 1)" type="button">{{ idx + 1 }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === getTotalPages(backendFilteredInventories.length)">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" type="button">Next</button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+@if (isEditing && editingItem) {
+  <app-inventory-edit-modal 
+    [item]="editingItem" 
+    (close)="onModalDismiss()" 
+    (saved)="onModalSaveSuccess()">
+  </app-inventory-edit-modal>
+}

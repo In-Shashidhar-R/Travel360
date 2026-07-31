@@ -1,0 +1,131 @@
+// System Palette Parameters
+$brand-blue: #2563eb;
+$success-green: #10b981;
+$danger-red: #ef4444;
+$warning-orange: #f59e0b;
+$border-light: #e2e8f0;
+$slate-dark: #0f172a;
+
+.analytics-sub-component {
+  // Custom Hover Animation Engine for Platform Grid elements
+  .shadow-hover {
+    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease;
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.08) !important;
+    }
+  }
+
+  .workspace-select {
+    width: auto;
+    min-width: 130px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    border-color: $border-light;
+    background-color: #ffffff;
+    cursor: pointer;
+    border-radius: 6px;
+    padding: 0.45rem 2rem 0.45rem 0.75rem;
+  }
+
+  // FLAWLESS CHART Mock Radial Layout Alignments Fix
+  .conic-chart-wrapper {
+    width: 165px;
+    height: 165px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    padding: 3px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+
+    .donut-chart-mock {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      
+      .donut-center {
+        width: 120px;
+        height: 120px;
+        background-color: #ffffff;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+
+  // Segment Table Typography Overrides
+  .data-table-node {
+    border-collapse: collapse;
+    th {
+      background-color: #f8fafc;
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    td {
+      padding: 0.95rem 1rem;
+      vertical-align: middle;
+    }
+    .summary-accumulation-row {
+      background-color: #0f172a !important;
+      td {
+        color: #ffffff !important;
+      }
+    }
+  }
+
+  // Progress Bar Scaffolding Layout presentation metrics
+  .progress-bar-container {
+    background-color: #f1f5f9;
+    border-radius: 8px;
+    height: 10px;
+    overflow: hidden;
+    width: 100%;
+    
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      &.fill-brand {
+        background-color: $brand-blue !important;
+      }
+    }
+  }
+
+  .chart-legend-row {
+    .legend-item {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: #475569;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+
+      .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        
+        &.confirmed { background-color: $success-green; }
+        &.pending { background-color: $warning-orange; }
+        &.cancelled { background-color: $danger-red; }
+      }
+    }
+  }
+
+  .w-40 { width: 40% !important; }
+}

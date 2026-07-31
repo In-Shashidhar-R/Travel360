@@ -1,0 +1,139 @@
+<div class="container-fluid p-0 w-100 animate-fade-in">
+  <div class="card p-4 rounded-3 border-0 border-start border-5 w-100 shadow-sm" 
+       style="border-left-color: #3b82f6 !important; background-color: #ffffff;">
+    
+    <div class="d-flex align-items-center justify-content-between p-3 rounded-3 border mb-4 shadow-sm" 
+         style="background-color: #f8fafc; border-color: #e2e8f0 !important;">
+      <div class="d-flex align-items-center gap-4">
+        <div class="d-flex justify-content-center align-items-center rounded-circle fw-bold shadow-sm text-white" 
+             style="width: 70px; height: 70px; background-color: #0f172a; font-size: 2rem; font-family: sans-serif;">
+          {{ agentDetails?.name ? agentDetails.name.charAt(0).toUpperCase() : 'A' }}
+        </div>
+        <div>
+          <h2 class="h4 mb-1 fw-bold text-dark" style="color: #0f172a !important; letter-spacing: -0.5px;">
+            {{ agentDetails?.name || 'Travel Specialist' }}
+          </h2>
+          <p class="mb-0 text-secondary fw-semibold" style="color: #64748b !important; font-size: 0.9rem;">
+            Travel Specialist <span class="text-muted mx-2">|</span> {{ agentDetails?.agentExperienceYears || 0 }} Years Experience
+          </p>
+        </div>
+      </div>
+
+      <button type="button" (click)="handleProfileButtonClick()" 
+              class="btn fw-bold px-4 py-2 shadow-sm d-flex align-items-center gap-2"
+              [style.background-color]="isEditMode ? '#10b981' : '#3b82f6'"
+              style="color: #ffffff; border: none; border-radius: 8px; font-size: 0.9rem; transition: background 0.2s;">
+        <span>{{ isEditMode ? 'Save Profile Changes' : 'Update Profile' }}</span>
+      </button>
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success border-0 p-3 mb-4 fw-medium text-dark shadow-sm" style="background-color: #dcfce7; color: #15803d !important; border-radius: 8px;">
+      {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger border-0 p-3 mb-4 fw-medium text-dark shadow-sm" style="background-color: #fee2e2; color: #991b1b !important; border-radius: 8px;">
+      {{ errorMessage }}
+    </div>
+
+    <div class="w-100">
+      <form>
+        <h3 class="text-uppercase fw-bold pb-2 border-bottom text-secondary" 
+            style="font-size: 0.8rem; border-color: #e2e8f0 !important; border-bottom-width: 2px !important; letter-spacing: 0.08em; color: #64748b !important; margin: 1.5rem 0 1rem 0;">
+          Professional Biography
+        </h3>
+        <div class="mb-4">
+          <textarea name="agentBio" [(ngModel)]="agentDetails.agentBio" [disabled]="!isEditMode"
+                    [class.bg-light]="!isEditMode" [class.text-muted]="!isEditMode"
+                    class="form-control lh-base shadow-sm" rows="2" 
+                    style="resize:none; padding: 11px 14px; font-size: 0.95rem; border-radius: 8px; border: 2px solid #cbd5e1;"></textarea>
+        </div>
+
+        <h3 class="text-uppercase fw-bold pb-2 border-bottom text-secondary" 
+            style="font-size: 0.8rem; border-color: #e2e8f0 !important; border-bottom-width: 2px !important; letter-spacing: 0.08em; color: #64748b !important; margin: 1.5rem 0 1rem 0;">
+          Account & Operations Details
+        </h3>
+        
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">Full Operator Name</label>
+            <input type="text" name="name" [(ngModel)]="agentDetails.name" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">Contact Number</label>
+            <input type="text" name="phone" [(ngModel)]="agentDetails.phone" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">Experience Record (Years)</label>
+            <input type="number" name="agentExperienceYears" [(ngModel)]="agentDetails.agentExperienceYears" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+        </div>
+
+        <div class="row g-3 mb-4">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">Office Base Address</label>
+            <input type="text" name="address" [(ngModel)]="agentDetails.address" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+          <div class="col-12 col-md-2">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">City</label>
+            <input type="text" name="city" [(ngModel)]="agentDetails.city" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+          <div class="col-12 col-md-2">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">State</label>
+            <input type="text" name="state" [(ngModel)]="agentDetails.state" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+          <div class="col-12 col-md-2">
+            <label class="form-label fw-bold mb-1" style="font-size: 0.85rem; color: #475569;">Country</label>
+            <input type="text" name="country" [(ngModel)]="agentDetails.country" [disabled]="!isEditMode" [class.bg-light]="!isEditMode" class="form-control shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+          </div>
+        </div>
+      </form>
+
+      <div class="my-4">
+        <button type="button" (click)="togglePasswordPanel()" 
+                class="btn fw-bold px-4 py-2 border d-inline-flex align-items-center gap-2"
+                style="background-color: #f8fafc; color: #334155; border-color: #cbd5e1; border-radius: 8px; font-size: 0.85rem; transition: all 0.2s;">
+          <span>{{ isPasswordPanelOpen ? 'Close Password Tool' : 'Change Account Password' }}</span>
+        </button>
+      </div>
+
+      <div *ngIf="isPasswordPanelOpen" class="p-4 border rounded-3 bg-light mb-4 shadow-sm animate-fade-in">
+        <form #passForm="ngForm" (ngSubmit)="onUpdatePasswordSubmit();">
+          <h4 class="h6 text-uppercase fw-bold text-danger mb-3" style="letter-spacing: 0.05em; font-size: 0.8rem;">
+            Security Password Settings
+          </h4>
+          
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold mb-1" style="font-size: 0.825rem; color: #475569;">Old Password</label>
+              <input type="password" name="currentPassword" [(ngModel)]="passwordModel.currentPassword" required placeholder="••••••••" class="form-control bg-white shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold mb-1" style="font-size: 0.825rem; color: #475569;">New Password</label>
+              <input type="password" name="newPassword" [(ngModel)]="passwordModel.newPassword" required placeholder="Minimum 6 characters" class="form-control bg-white shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+            </div>
+
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-bold mb-1" style="font-size: 0.825rem; color: #475569;">Confirm New Password</label>
+              <input type="password" name="confirmPassword" [(ngModel)]="passwordModel.confirmPassword" required placeholder="Retype new password" class="form-control bg-white shadow-sm" style="padding: 11px 14px; font-size: 0.9rem; border-radius: 8px; border: 2px solid #cbd5e1;" />
+            </div>
+          </div>
+
+          <button type="submit" [disabled]="!passForm.valid" class="btn text-white fw-bold px-4 py-2" style="background-color: #0f172a; border-radius: 8px; border: none; font-size: 0.88rem;">
+            Confirm & Save Password
+          </button>
+        </form>
+      </div>
+
+      <div class="d-flex justify-content-end pt-3 border-top mt-4" style="border-top: 1px solid #edf2f7 !important;">
+        <button type="button" class="btn d-inline-flex align-items-center justify-content-center gap-2 fw-bold" 
+                (click)="logout()"
+                style="background-color: #fef2f2; color: #ef4444; border: 1px solid #fee2e2; padding: 10px 20px; font-size: 0.9rem; border-radius: 8px; transition: all 0.2s ease-in-out;"
+                onmouseover="this.style.backgroundColor='#fee2e2'; this.style.color='#dc2626'; this.style.borderColor='#fca5a5';"
+                onmouseout="this.style.backgroundColor='#fef2f2'; this.style.color='#ef4444'; this.style.borderColor='#fee2e2';">
+          Sign Out From Account
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+.text-slate-900 { color: #0f172a; }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
+.py-1-5 { padding-top: 0.35rem; padding-bottom: 0.35rem; }
+
+// Custom Background & Color Palette Accents preserved from original specifications
+.bg-primary-light { background-color: #eff6ff; }
+.bg-success-light { background-color: #dcfce7; }
+.bg-danger-light { background-color: #fee2e2; }
+
+.bg-primary-dark { background-color: #2563eb; }
+.bg-success-dark { background-color: #10b981; }
+.bg-warning-dark { background-color: #f59e0b; }
+.bg-purple-dark { background-color: #8b5cf6; }
+
+.text-success-dark { color: #15803d; }
+.text-danger-dark { color: #dc2626; }
+
+.table-light-header th {
+  background-color: #f8fafc !important;
+  color: #475569;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.transition-btn {
+  transition: transform 0.1s linear, background-color 0.15s ease-in-out;
+  &:active { transform: scale(0.96); }
+}

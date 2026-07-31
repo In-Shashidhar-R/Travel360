@@ -1,0 +1,47 @@
+.custom-ledger-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0 6px;
+
+  th {
+    background-color: #f8fafc;
+    color: #475569;
+    font-size: 0.725rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 0.85rem 1rem;
+    border-bottom: 2px solid #e2e8f0;
+  }
+
+  td {
+    padding: 1rem;
+    background-color: #ffffff;
+    border-top: 1px solid #f1f5f9;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.875rem;
+  }
+}
+
+/* Custom Element Background Processing Configuration Blocks */
+.badge.status-tag {
+  padding: 0.35rem 0.55rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  border-radius: 4px;
+  
+  &.paid {
+    background-color: #d1fae5 !important;
+    color: #065f46 !important;
+  }
+  
+  &.refunded {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+  }
+  
+  &.unpaid {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+  }
+}

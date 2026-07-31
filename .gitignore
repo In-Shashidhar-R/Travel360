@@ -1,0 +1,61 @@
+# ==============================
+# Travel360 Git Ignore
+# ==============================
+
+# ---------- SECRETS ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+secrets/
+
+# Local Spring configuration containing secrets
+application-local.properties
+application-local.yml
+application-local.yaml
+
+# ---------- SPRING BOOT / MAVEN ----------
+**/target/
+*.class
+*.jar
+*.war
+*.log
+
+# ---------- ANGULAR / NODE ----------
+**/node_modules/
+**/dist/
+**/.angular/
+**/.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ---------- STS / ECLIPSE ----------
+**/.metadata/
+**/.settings/
+**/.classpath
+**/.project
+**/.factorypath
+**/.springBeans
+**/.sts4-cache/
+
+# ---------- INTELLIJ ----------
+**/.idea/
+*.iml
+
+# ---------- VS CODE ----------
+**/.vscode/
+
+# ---------- OS ----------
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------- TEMP FILES ----------
+*.tmp
+*.temp
+*.swp
+*~

@@ -1,0 +1,227 @@
+
+<div class="container-fluid px-2 px-md-4 py-4 animate-fade-in bus-review-core">
+  
+  <div class="card p-3 mb-4 bg-white border border-light-subtle rounded-4 shadow-sm">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 text-start">
+      <div>
+        <span class="small-label text-primary tracking-wider d-block mb-1">Transaction Pipeline</span>
+        <h4 class="fw-extrabold text-dark m-0 tracking-tight">Review & Secure Your Bus Journey</h4>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-4 py-2 fw-bold text-xs d-inline-flex align-items-center gap-2 transition-all shadow-sm" routerLink="/customer/inventories">
+        <i class="bi bi-arrow-left-short fs-6"></i> Change Fleet Option
+      </button>
+    </div>
+  </div>
+
+  @if (item) {
+    <div class="row g-4">
+      
+      <!-- Left Hand Side: Primary Bus Booking Processing Node -->
+      <div class="col-12 col-xl-7">
+        <div class="card p-4 shadow-sm border border-light-subtle rounded-4 bg-white bg-opacity-95 h-100 d-flex flex-column text-start glass-panel-light">
+          
+          <!-- Operator Identification Header -->
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3 border-bottom border-light pb-3 mb-4">
+            <div>
+              <h3 class="fw-extrabold text-dark m-0 tracking-tight">{{ item.operatorName }}</h3>
+              <span class="badge rounded-pill bg-primary-soft text-primary border border-primary-subtle px-3 py-1.5 fw-bold text-uppercase tracking-wider text-xs mt-2 d-inline-block">
+                <i class="bi bi-shield-check-fill me-1"></i> Inter-City Fleet Carrier
+              </span>
+            </div>
+            <span class="badge bg-dark text-white px-3 py-2 rounded-3 font-monospace tracking-mono shadow-sm align-self-start text-uppercase text-xs">
+              <i class="bi bi-reorder text-warning me-1.5"></i>{{ item.busNumberPlate }}
+            </span>
+          </div>
+
+          <!-- Dynamic Destination Route Segment Strip -->
+          <div class="row bg-light bg-opacity-70 p-4 rounded-4 text-center align-items-center g-3 border mx-0 mb-4">
+            <div class="col-12 col-sm-5 text-center text-sm-start">
+              <span class="small-label text-secondary d-block mb-1">Boarding Terminal</span>
+              <h4 class="fw-extrabold text-dark mb-1 tracking-tight">{{ item.matchingSource || item.routeFrom }}</h4>
+              <span class="text-muted small fw-bold font-sans d-inline-flex align-items-center gap-1">
+                <i class="bi bi-clock-history"></i> Departs: {{ item.startTime }}
+              </span>
+            </div>
+            
+            <div class="col-12 col-sm-2 d-flex flex-column align-items-center justify-content-center py-2">
+              <div class="vector-badge rounded-circle bg-danger-soft text-danger d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
+                <i class="bi bi-bus-front-fill fs-5"></i>
+              </div>
+              <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1 font-monospace tracking-tight text-xs mt-2 shadow-sm">{{ item.numberOfHours }}h</span>
+            </div>
+            
+            <div class="col-12 col-sm-5 text-center text-sm-end">
+              <span class="small-label text-secondary d-block mb-1">Dropoff Hub</span>
+              <h4 class="fw-extrabold text-dark mb-1 tracking-tight">{{ item.matchingDestination || item.routeTo }}</h4>
+              <span class="text-muted small fw-bold font-sans d-inline-flex align-items-center gap-1">
+                <i class="bi bi-clock"></i> Arrival: {{ item.endTime }}
+              </span>
+            </div>
+            
+            <div class="col-12 border-top border-light-subtle pt-2 mt-2 text-start">
+              <small class="text-muted font-monospace xs-text d-block">
+                <i class="bi bi-info-circle me-1"></i> Full Scheduled Run: {{ item.routeFrom }} to {{ item.routeTo }}
+              </small>
+            </div>
+          </div>
+
+          <!-- Route Stops Intermediate Stations Sequence -->
+          @if (item.routeStops && item.routeStops.length > 0) {
+            <div class="mb-4 border border-light-subtle rounded-4 p-3 bg-white shadow-inner-sm">
+              <div class="text-uppercase small-label text-secondary mb-3 d-flex align-items-center gap-1.5">
+                <i class="bi bi-geo-alt-fill text-danger fs-6"></i> Route Stations Sequence
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                @for (stop of item.routeStops; track stop.stopName) {
+                  <span class="badge bg-light text-dark border p-2 rounded-3 fw-semibold text-xs tracking-wide align-items-center d-inline-flex gap-1"
+                        [style.border-left-width]="(stop.stopName === item.matchingSource || stop.stopName === item.matchingDestination) ? '4px' : '1px'"
+                        [style.border-left-color]="stop.stopName === item.matchingSource ? '#10b981' : stop.stopName === item.matchingDestination ? '#ef4444' : '#e2e8f0'">
+                    <b [class.text-success]="stop.stopType === 'PICKUP'" [class.text-danger]="stop.stopType === 'DROPOFF'">{{ stop.stopType }}</b>: 
+                    {{ stop.stopName }} <span class="text-muted font-monospace fw-normal">({{ stop.scheduledTime }})</span>
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- NEW: IN-TRANSIT COMFORT AMENITIES METRICS GRID -->
+          <div class="mb-4 bg-white border border-light-subtle rounded-4 p-3 shadow-inner-sm">
+            <span class="small-label text-secondary d-block mb-3">Included Carrier Amenities</span>
+            <div class="row g-3">
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-primary"><i class="bi bi-wind fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Air Conditioned</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-success"><i class="bi bi-lightning-charge-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">USB Charging Ports</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-warning"><i class="bi bi-droplet-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Mineral Water Bottles</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-info"><i class="bi bi-moon-stars-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Blankets Provided</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-secondary"><i class="bi bi-arrow-repeat fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Reclining Seats</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-danger"><i class="bi bi-lightbulb-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Personal Reading Lights</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comfort Category Selection Table Matrix -->
+          <div class="mb-4">
+            <h6 class="fw-bold text-dark mb-3 text-uppercase tracking-wide small-label">Select Comfort Seat Class Type</h6>
+            <div class="table-responsive rounded-3 border">
+              <table class="table table-hover align-middle text-center mb-0 data-table-node">
+                <thead>
+                  <tr class="bg-light">
+                    <th style="width: 12%">Select</th>
+                    <th class="text-start ps-3 py-2 small fw-bold text-secondary">SEAT CATEGORY CLASS</th>
+                    <th class="text-center py-2 small fw-bold text-secondary">AVAILABLE SEATS</th>
+                    <th class="text-end pe-4 py-2 small fw-bold text-secondary">FARE PER SEAT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tier of item.seatTiers; track tier.seatType) {
+                    <tr (click)="selectSeatTier(tier.seatType)" class="item-transition-row">
+                      <td>
+                        <input 
+                          type="radio" 
+                          name="busSeatSelection" 
+                          class="form-check-input checkbox-custom"
+                          [value]="tier.seatType"
+                          [checked]="chosenSeatType === tier.seatType"
+                          [disabled]="isLoading"
+                          (change)="selectSeatTier(tier.seatType)">
+                      </td>
+                      <td class="fw-bold text-dark text-start ps-3 text-uppercase font-sans text-xs tracking-wide">
+                        {{ tier.seatType.replace('_', ' ') }}
+                      </td>
+                      
+                      <td class="text-center">
+                        <span class="badge rounded-pill fw-bold px-3 py-1 text-xs"
+                              [ngClass]="tier.availableSeats > 12 ? 'bg-success-soft text-success border border-success-subtle' : 'bg-danger-soft text-danger border border-danger-subtle'">
+                          {{ tier.availableSeats }} seats left
+                        </span>
+                      </td>
+
+                      <td class="fw-extrabold text-primary text-end pe-4 fs-5 line-height-spaced">
+                        <!-- Prices bolded explicitly across dynamic bindings -->
+                        <strong>{{ tier.pricePerSeat | currency:'INR':'symbol':'1.0-0' }}</strong>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Checkout Calculation Values Summary Card -->
+          @if (selectedPassengerIds.length > 0) {
+            <div class="bg-white p-3 rounded-4 mb-4 border border-light-subtle shadow-sm animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-2 text-secondary small font-sans fw-medium">
+                <span>Selected Seats Count:</span>
+                <span class="fw-bold text-dark font-mono">x{{ selectedPassengerIds.length }} Passenger(s)</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-top border-light pt-3 mt-1">
+                <span class="fw-bold text-secondary text-uppercase tracking-wider small-label">Estimated Checkout Balance Total:</span>
+                <!-- Prices bolded clearly inside checkout calculation row blocks -->
+                <span class="fw-extrabold text-success fs-3"><strong>{{ calculateTotalBookingPrice | currency:'INR':'symbol':'1.0-0' }}</strong></span>
+              </div>
+            </div>
+          }
+
+          @if (bookingErrorMessage) {
+            <div class="alert alert-danger border-0 rounded-3 small p-3 mb-4 shadow-sm d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
+              <span class="fw-semibold text-dark">{{ bookingErrorMessage }}</span>
+            </div>
+          }
+
+          <!-- Order Execution Pipeline Button -->
+          <button 
+            class="btn btn-primary btn-lg w-100 fw-bold shadow-md py-3 text-uppercase tracking-wider rounded-3 btn-order-submit mt-auto d-flex align-items-center justify-content-center gap-2"
+            [disabled]="selectedPassengerIds.length === 0 || isLoading || !chosenSeatType"
+            (click)="executeBookingTransaction()">
+            @if (isLoading) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Securing Seats Pipeline...
+            } @else {
+              <i class="bi bi-credit-card-2-back-fill"></i> Proceed to Secure Payment
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Hand Side: Dynamic Passenger Directory Input Node Frame -->
+      <div class="col-12 col-xl-5">
+        <div class="card border-0 rounded-4 bg-white bg-opacity-95 p-3 shadow-sm h-100">
+          <app-passenger-directory 
+            [showSelection]="true" 
+            (selectionChange)="onPassengerSelected($event)">
+          </app-passenger-directory>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

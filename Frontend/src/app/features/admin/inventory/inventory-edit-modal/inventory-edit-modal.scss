@@ -1,0 +1,76 @@
+// Core Backdrop Elevation Mask
+.style-modal-backdrop {
+  background-color: rgba(15, 23, 42, 0.65) !important; // Dark slate shadow overlay layer
+  backdrop-filter: blur(5px);
+  z-index: 1060 !important;
+}
+
+// Modal Entry Scale Transitions
+.modal-content {
+  animation: modalScaleEntryAnimation 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+  background-color: #ffffff !important;
+}
+
+// Global Form Fields Elements Reset Inside Modal Context Sandbox
+.modal-body {
+  .form-label {
+    display: block !important;
+    margin-bottom: 0.45rem !important; // Clean baseline label spacing
+    color: #475569 !important;          // Soft visible charcoal contrast
+    font-weight: 600 !important;
+  }
+
+  .form-control, .form-select {
+    display: block !important;
+    width: 100% !important;
+    font-size: 0.92rem !important;
+    color: #0f172a !important;
+    background-color: #ffffff !important;
+    border: 1px solid #cbd5e1 !important; // Unified border sizing line
+    border-radius: 6px !important;
+    box-shadow: none !important;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out !important;
+
+    &:focus {
+      border-color: #3b82f6 !important;
+      box-shadow: 0 0 0 3.5px rgba(59, 130, 246, 0.15) !important; // Crisp primary branding ring
+    }
+
+    &[readonly] {
+      background-color: #f1f5f9 !important; // Clear disabled mapping state
+      color: #94a3b8 !important;
+      border-color: #e2e8f0 !important;
+    }
+  }
+
+  // Extra line heights configurations for textareas
+  textarea.form-control {
+    line-height: 1.5;
+  }
+}
+
+// Button Sizing Normalizations
+.style-modal-btn {
+  padding-top: 0.55rem !important;
+  padding-bottom: 0.55rem !important;
+  font-size: 0.9rem !important;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed !important;
+}
+
+// Micro-animations for section toggles
+.section-fade-in {
+  animation: componentFadeIn 0.2s ease-out;
+}
+
+@keyframes modalScaleEntryAnimation {
+  from { transform: scale(0.96); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes componentFadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,171 @@
+<!-- Symmetrical outer page margins protecting display layouts on all viewports -->
+<div class="container-fluid px-2 px-md-4 py-4 animate-fade-in tour-review-core">
+  
+  <!-- Top Navigation Control Strip -->
+  <div class="card p-3 mb-4 bg-white border border-light-subtle rounded-4 shadow-sm">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 text-start">
+      <div>
+        <span class="small-label text-primary tracking-wider d-block mb-1">Transaction Pipeline</span>
+        <h4 class="fw-extrabold text-dark m-0 tracking-tight">Review & Book Your Vacation Itinerary</h4>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-4 py-2 fw-bold text-xs d-inline-flex align-items-center gap-2 transition-all shadow-sm" routerLink="/customer/inventories">
+        <i class="bi bi-arrow-left-short fs-6"></i> Change Package Option
+      </button>
+    </div>
+  </div>
+
+  @if (item) {
+    <div class="row g-4">
+      
+      <!-- Left Hand Side: Core Custom Itinerary Reservation Card -->
+      <div class="col-12 col-xl-7">
+        <div class="card p-4 shadow-sm border border-light-subtle rounded-4 bg-white bg-opacity-95 h-100 d-flex flex-column text-start glass-panel-light">
+          
+          <!-- Package Primary Headers Block -->
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3 border-bottom border-light pb-3 mb-4">
+            <div>
+              <h3 class="fw-extrabold text-dark m-0 tracking-tight">{{ item.packageName }}</h3>
+              <span class="badge rounded-pill bg-primary-soft text-primary border border-primary-subtle px-3 py-1.5 fw-bold text-uppercase tracking-wider text-xs mt-2 d-inline-block">
+                <i class="bi bi-alarm-fill me-1"></i> Stay Duration: {{ item.durationDays }} Days Plan
+              </span>
+            </div>
+            <div class="badge bg-dark text-white px-3 py-2 rounded-3 font-monospace tracking-mono shadow-sm align-self-start text-xs text-uppercase">
+              <i class="bi bi-person-badge text-warning me-1.5"></i>Agent: {{ item.travelAgentName || 'System Sync' }}
+            </div>
+          </div>
+
+          <!-- Tour Commencement Target Calendar Selection -->
+          <div class="mb-4">
+            <label class="form-label text-xs fw-bold text-secondary mb-1">Target Tour Commencement Date</label>
+            <div class="input-group">
+              <span class="input-group-text bg-light border-end-0 text-muted"><i class="bi bi-calendar-event-fill"></i></span>
+              <input type="date" class="form-control bg-white shadow-sm border-start-0 font-sans text-dark fw-bold" [(ngModel)]="targetTravelDate" readonly>
+            </div>
+          </div>
+
+          <!-- Chronological Itinerary Timeline Block Map -->
+          <div class="mb-4 flex-grow-1">
+            <h6 class="fw-bold text-dark text-uppercase tracking-wide small-label mb-3 d-inline-flex align-items-center gap-2">
+              <i class="bi bi-sliders text-primary fs-5"></i> Chronological Itinerary Timeline
+            </h6>
+            
+            <div class="pe-2 position-relative scroll-viewport-timeline" style="max-height: 290px; overflow-y: auto;">
+              @if (parsedItineraryDays.length > 0) {
+                <div class="position-relative ps-4 ms-2 py-1">
+                  <!-- Main vertical path track connector -->
+                  <div class="position-absolute top-0 start-0 h-100 border-start border-2 border-primary-subtle opacity-50" style="z-index: 1;"></div>
+                  
+                  @for (day of parsedItineraryDays; track $index) {
+                    <div class="position-relative mb-4 animate-fade-in line-item-node">
+                      <div class="position-absolute bg-primary border border-3 border-white rounded-circle shadow-sm node-bullet-bead" 
+                           style="width: 14px; height: 14px; left: -29px; top: 4px; z-index: 2;">
+                      </div>
+                      <div>
+                        <div class="d-flex align-items-center mb-1">
+                          <span class="text-primary fw-extrabold text-xs font-sans text-uppercase tracking-wider">
+                            {{ day.dayTitle }}
+                          </span>
+                        </div>
+                        <p class="mb-0 text-muted line-spaced text-justify small" style="font-size: 0.85rem !important;">
+                          {{ day.dayContent }}
+                        </p>
+                      </div>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="p-3 bg-light bg-opacity-60 border border-light-subtle rounded-3 font-monospace xs-text text-secondary text-start" style="white-space: pre-wrap; line-height: 1.6;">
+                  {{ item.fullItineraryDetails }}
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Checkout Pricing Multiplier Calculations Sheet -->
+          @if (selectedPassengerIds.length > 0 && !wantsPersonalization) {
+            <div class="bg-white p-3 rounded-4 mb-4 border border-light-subtle shadow-sm animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-2 text-secondary small font-sans fw-medium">
+                <span>Base Cost Per Consumer:</span>
+                <span class="fw-bold text-primary font-sans">{{ (basePrice || item.basePricePerSeat) | currency:'INR':'symbol':'1.0-0' }}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center mb-2 text-secondary small font-sans fw-medium">
+                <span>Traveler Multiplier Base:</span>
+                <span class="fw-bold text-dark font-sans">x{{ selectedPassengerIds.length }} Ticket(s)</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-top border-light pt-3 mt-1">
+                <span class="fw-bold text-secondary text-uppercase tracking-wider small-label">Calculated Total Gross Price:</span>
+                <!-- Prices are explicitly bolded inside checkout total cards -->
+                <span class="fw-extrabold text-success fs-3"><strong>{{ calculateTotalPackagePrice | currency:'INR':'symbol':'1.0-0' }}</strong></span>
+              </div>
+            </div>
+          }
+
+          @if (bookingErrorMessage) {
+            <div class="alert alert-danger border-0 rounded-3 small p-3 mb-4 shadow-sm d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-octagon-fill text-danger fs-5"></i>
+              <span class="fw-semibold text-dark">{{ bookingErrorMessage }}</span>
+            </div>
+          }
+
+          <!-- Personalization Request Adjustment Workflow Form Panel -->
+          @if (item.travelAgentName) {
+            <div class="card bg-light bg-opacity-60 border-light-subtle p-3 rounded-4 mb-4 shadow-inner-sm">
+              <div class="form-check form-switch mb-1 d-flex align-items-center gap-2">
+                <input class="form-check-input shadow-xs m-0 checkbox-toggle-custom" type="checkbox" id="customWorkflowToggle" [(ngModel)]="wantsPersonalization">
+                <label class="form-check-label fw-extrabold text-dark tracking-wide small-label cursor-pointer" for="customWorkflowToggle">
+                  Request Custom Adjustments / Modifications
+                </label>
+              </div>
+
+              @if (wantsPersonalization) {
+                <div class="mt-3 animate-fade-in">
+                  <label class="form-label text-secondary small fw-bold text-xs mb-1.5">Describe your custom requirements down below:</label>
+                  <textarea class="form-control bg-white font-sans text-dark p-2.5 small" rows="3" 
+                            placeholder="E.g., Provide all the required information (Passanger info, date and requirements)" 
+                            [(ngModel)]="customerRequirementsText"></textarea>
+                  
+                  <button type="button" class="btn btn-warning mt-3 w-100 fw-bold text-uppercase text-xs tracking-wider shadow-sm text-dark py-2.5 rounded-3 d-inline-flex align-items-center justify-content-center gap-2 btn-agent-dispatch" 
+                          [disabled]="isLoading || !customerRequirementsText.trim()" 
+                          (click)="submitAgentPersonalizationRequest()">
+                    @if (isLoading) {
+                      <span class="spinner-border spinner-border-sm"></span> Syncing Parameters with Agent Core...
+                    } @else {
+                      <i class="bi bi-envelope-plus-fill"></i> Forward Requirements to {{ item.travelAgentName }}
+                    }
+                  </button>
+                </div>
+              }
+            </div>
+          }
+
+          <!-- Normal Transaction Submission Route Button -->
+          @if (!wantsPersonalization) {
+            <button 
+              type="button"
+              class="btn btn-primary btn-lg w-100 fw-bold shadow-md py-3 text-uppercase tracking-wider rounded-3 btn-order-submit mt-auto d-flex align-items-center justify-content-center gap-2"
+              [disabled]="selectedPassengerIds.length === 0 || isLoading"
+              (click)="executeTourBookingTransaction()">
+              @if (isLoading) {
+                <span class="spinner-border spinner-border-sm" role="status"></span> Securing Package Matrix...
+              } @else {
+                <i class="bi bi-credit-card-2-back-fill"></i> Proceed to Secure Payment
+              }
+            </button>
+          }
+          
+        </div>
+      </div>
+
+      <!-- Right Hand Side: Dynamic Directory Subnode Panel Configuration -->
+      <div class="col-12 col-xl-5">
+        <div class="card border-0 rounded-4 bg-white bg-opacity-95 p-3 shadow-sm h-100">
+          <app-passenger-directory 
+            [showSelection]="!wantsPersonalization" 
+            (selectionChange)="onPassengerSelected($event)">
+          </app-passenger-directory>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

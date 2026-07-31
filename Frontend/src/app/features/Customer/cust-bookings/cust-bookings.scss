@@ -1,0 +1,103 @@
+// Dynamic Theme Variable Configurations Mapped into Aura-Light System
+$primary-soft: rgba(37, 99, 235, 0.06);
+$success-soft: rgba(16, 185, 129, 0.06);
+$danger-soft: rgba(239, 68, 68, 0.06);
+$warning-soft: rgba(245, 158, 11, 0.06);
+$info-soft: rgba(6, 182, 212, 0.06);
+$border-light: #e2e8f0;
+
+.bookings-history-core {
+  // Explicit Tracking Padding Typography Metrics Alignment
+  .small-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+  }
+  .text-xs { font-size: 0.75rem !important; }
+  .text-xxs { font-size: 0.68rem !important; letter-spacing: 0.3px; }
+  .line-spaced { line-height: 1.45 !important; }
+  .small-sans { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+
+  // Context Color Vector Elements
+  .bg-primary-soft { background-color: $primary-soft !important; }
+  .bg-success-soft { background-color: $success-soft !important; }
+  .bg-danger-soft { background-color: $danger-soft !important; }
+  .bg-warning-soft { background-color: $warning-soft !important; }
+  .bg-info-soft { background-color: $info-soft !important; }
+
+  // Clean Vector Rotation Utility for Flight Badge Icon Alignment
+  .rotate-45 {
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  // Aura Frosted White Translucent Base Panel Card Scaffolding
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+  }
+
+  // Segment Table Typography Overrides
+  .data-table-node {
+    border-collapse: collapse;
+    th {
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 0.95rem 1rem;
+    }
+    td {
+      padding: 1.1rem 1rem;
+      vertical-align: middle;
+    }
+  }
+
+  // Row Transitions
+  .item-transition-row {
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    &:hover {
+      background-color: #f8fafc !important;
+    }
+  }
+
+  .row-cancelled-dim {
+    background-color: rgba(241, 245, 249, 0.4) !important;
+    td { color: #94a3b8 !important; }
+    .text-primary, .text-dark { color: #94a3b8 !important; }
+  }
+
+  .btn-view-action {
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    &:hover {
+      background-color: #1d4ed8 !important;
+      transform: scale(1.02);
+    }
+  }
+
+  // Custom Pagination Customizer overrides
+  .pagination {
+    .page-item {
+      .page-link {
+        color: #475569;
+        border-color: $border-light;
+        padding: 0.4rem 0.85rem;
+        transition: all 0.2s ease;
+        &:hover:not([disabled]) {
+          background-color: #f1f5f9;
+          color: #000000;
+        }
+      }
+      &.active .page-link {
+        background-color: #2563eb !important;
+        border-color: #2563eb !important;
+        color: #ffffff !important;
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.25);
+      }
+    }
+  }
+}

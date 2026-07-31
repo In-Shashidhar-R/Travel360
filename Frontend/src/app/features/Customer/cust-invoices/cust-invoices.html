@@ -1,0 +1,127 @@
+<!-- Enforcing structural boundary margins to ensure elements have room to breathe across all viewports -->
+<div class="container-fluid px-2 px-md-4 py-4 animate-fade-in invoices-portal-core">
+  
+  <!-- 1. TOP HEADER CONTROL STRIP -->
+  <div class="card p-3 mb-4 bg-white border border-light-subtle rounded-4 shadow-sm">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 text-start">
+      <div class="d-flex align-items-center gap-2">
+        <div class="icon-circle-sm bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
+          <i class="bi bi-credit-card-fill fs-5"></i>
+        </div>
+        <div>
+          <span class="small-label text-primary tracking-wider d-block mb-0.5">Accounting Center</span>
+          <h4 class="fw-extrabold text-dark m-0 tracking-tight">Billing & Invoice Statements</h4>
+        </div>
+      </div>
+      <div class="d-flex align-items-center gap-2 ms-sm-auto">
+        <button class="btn btn-sm btn-primary rounded-pill px-4 py-2 fw-bold text-xs text-uppercase tracking-wider shadow-sm border-0 d-inline-flex align-items-center gap-1.5 transition-all" 
+                [disabled]="isLoading" (click)="fetchInvoices(0)">
+          <i class="bi bi-arrow-clockwise"></i> Referesh
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Operational States Rendering Viewports -->
+  @if (isLoading) {
+    <div class="card border-0 rounded-4 bg-white bg-opacity-90 shadow-sm p-5 text-center my-4">
+      <div class="spinner-border text-primary mx-auto mb-2" role="status" style="width: 2.5rem; height: 2.5rem;"></div>
+      <p class="text-secondary mt-2 fw-bold text-uppercase tracking-wider text-xs m-0">Extracting dynamic invoice entries...</p>
+    </div>
+  } @else if (errorMessage) {
+    <div class="alert alert-danger bg-danger-soft text-danger border-0 p-3 rounded-3 mb-4 shadow-sm text-start d-flex align-items-center gap-2.5">
+      <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+      <span class="fw-semibold small">System Exception: {{ errorMessage }}</span>
+    </div>
+  } @else if (invoices.length === 0) {
+    <div class="text-center py-5 bg-white bg-opacity-90 rounded-4 border border-dashed px-3 shadow-sm">
+      <div class="icon-circle bg-light text-muted rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+        <i class="bi bi-receipt fs-3 text-secondary"></i>
+      </div>
+      <h5 class="fw-extrabold text-dark mb-1">Statement Directory Empty</h5>
+      <p class="text-muted text-xs mx-auto mb-0 line-spaced" style="max-width: 440px;">
+        No outstanding invoice items or finalized statements are currently registered to this customer account profile sequence ledger.
+      </p>
+    </div>
+  } @else {
+      
+    <!-- 2. MAIN INVOICES LEDGER DATA CARD -->
+    <div class="card p-4 shadow-sm bg-white bg-opacity-95 border border-white-50 rounded-4 mb-4 text-start glass-panel-light">
+      <div class="table-responsive rounded-3 border">
+        <table class="table table-hover align-middle mb-0 data-table-node w-100 text-center">
+          <thead>
+            <tr class="bg-light">
+              <th class="py-3 small fw-bold text-secondary ps-3">INVOICE REF ID</th>
+              <th class="py-3 small fw-bold text-secondary">BOOKING SEQUENCE ASSOCIATION</th>
+              <th class="py-3 small fw-bold text-secondary">FINANCIAL GROSS AMOUNT</th>
+              <th class="py-3 small fw-bold text-secondary">ISSUE TIMESTAMP</th>
+              <th class="py-3 small fw-bold text-secondary">SETTLEMENT STATUS</th>
+              <th class="py-3 small fw-bold text-secondary pe-3 text-end">DOCUMENT ACTIONS</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (inv of invoices; track inv.invoiceId) {
+              <tr class="item-transition-row">
+                <td class="ps-3 fw-bold font-monospace text-secondary text-xs">#{{ inv.invoiceId }}</td>
+                <td>
+                  <span class="badge rounded-pill bg-light text-dark border border-light-subtle font-monospace px-3 py-1.5 fs-8 tracking-mono">
+                    Booking Ref: #{{ inv.bookingId }}
+                  </span>
+                </td>
+                
+                <!-- Financial gross balances wrapped in bold tags -->
+                <td class="fw-extrabold text-success fs-6">
+                  <strong>{{ inv.amount | currency:'INR':'symbol':'1.0-0' }}</strong>
+                </td>
+                
+                <td class="text-muted font-monospace text-xs">
+                  <i class="bi bi-calendar-event me-1 text-secondary"></i>{{ inv.generatedDate | date:'mediumDate' }}
+                </td>
+                
+                <td>
+                  <span class="badge rounded-pill px-3 py-1.5 border fw-bold tracking-wider text-uppercase text-xxs" [ngClass]="getInvoiceStatusClass(inv.status)">
+                    {{ inv.status }}
+                  </span>
+                </td>
+                
+                <td class="pe-3 text-end">
+                  <button type="button" class="btn btn-xs btn-outline-danger rounded-pill px-3 py-1.5 fw-bold text-uppercase text-xxs d-inline-flex align-items-center gap-1.5 shadow-sm btn-download-action" (click)="downloadInvoicePDF(inv)">
+                    <i class="bi bi-file-earmark-pdf-fill"></i> Download PDF
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination Footer Controls Matrix -->
+      <div class="d-flex flex-column flex-sm-row justify-content-between align-items-center bg-white bg-opacity-90 p-3 rounded-4 border border-light-subtle shadow-sm mt-4 gap-3">
+        <small class="text-muted fw-bold text-xs tracking-wide">
+          TOTAL STATEMENT ENTRIES: <b class="text-primary font-sans">{{ totalElements }}</b> | PAGE <b class="text-dark">{{ totalPages > 0 ? currentPage + 1 : 0 }}</b> OF <b class="text-dark">{{ totalPages || 1 }}</b>
+        </small>
+        
+        <div class="d-flex align-items-center gap-2">
+          <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-3 fw-bold text-xs shadow-sm d-inline-flex align-items-center gap-1 bg-white" 
+                  [disabled]="currentPage === 0 || isLoading" (click)="goToPreviousPage()">
+            <i class="bi bi-chevron-left"></i> Prev
+          </button>
+          
+          <div class="d-flex align-items-center gap-1.5 mx-1">
+            @for (p of [].constructor(totalPages || 1); let idx = $index; track idx) {
+              <button type="button" [disabled]="isLoading" (click)="fetchInvoices(idx)" 
+                      [className]="idx === currentPage ? 'btn btn-xs btn-primary px-3 py-1 fw-bold rounded-pill shadow-sm text-xs' : 'btn btn-xs btn-light border px-3 py-1 text-dark fw-bold rounded-pill text-xs bg-white bg-opacity-70'">
+                {{ idx + 1 }}
+              </button>
+            }
+          </div>
+          
+          <button type="button" class="btn btn-xs btn-outline-secondary rounded-pill px-3 fw-bold text-xs shadow-sm d-inline-flex align-items-center gap-1 bg-white" 
+                  [disabled]="isLastPage || totalPages <= 1 || isLoading" (click)="goToNextPage()">
+            Next <i class="bi bi-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+</div>

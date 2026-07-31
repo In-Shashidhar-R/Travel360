@@ -1,0 +1,34 @@
+<div class="container my-4">
+
+  @if (isLoading) {
+    <div class="d-flex flex-column align-items-center justify-content-center py-5">
+      <div class="spinner-border text-primary" role="status"></div>
+      <p class="text-secondary mt-3">Extracting inventory specification variants...</p>
+    </div>
+  }
+
+  @else if (errorMessage) {
+    <div class="alert alert-danger shadow-sm">⚠️ {{ errorMessage }}</div>
+  }
+
+  @else if (item) {
+    @switch (categoryType) {
+      @case ('FLIGHT') {
+        <app-flight-details [item]="item" [date]="confirmedTravelDate" [searchPrice]="dynamicSearchPrice"></app-flight-details>
+      }
+      @case ('HOTEL') {
+        <app-hotel-details [item]="item" [checkIn]="confirmedTravelDate" [checkOut]="confirmedCheckOut" [searchPrice]="dynamicSearchPrice"></app-hotel-details>
+      }
+      @case ('BUS') {
+        <app-bus-details [item]="item" [date]="confirmedTravelDate" [searchPrice]="dynamicSearchPrice"></app-bus-details>
+      }
+      @case ('TOUR_PACKAGE') {
+        <app-tour-details [item]="item" [date]="confirmedTravelDate" ></app-tour-details>
+      }
+      @default {
+        <div class="alert alert-warning">Unsupported reservation category structure format.</div>
+      }
+    }
+  }
+
+</div>

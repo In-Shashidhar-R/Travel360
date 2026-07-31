@@ -1,0 +1,161 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top px-3">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    
+    <!-- Unified Administrative Brand Flag -->
+    <a class="navbar-brand fw-bold text-primary m-0" (click)="toggleView('QUEUE')" style="cursor: pointer;">
+      <span class="text-white">Agent</span>Canvas
+    </a>
+    
+    <!-- Native Bootstrap Responsive Toggler Button -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#agentNavbarContent" aria-controls="agentNavbarContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Center Section View Switch Controllers -->
+    <div class="collapse navbar-collapse justify-content-between" id="agentNavbarContent">
+      
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item">
+          <button type="button" 
+                  class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 btn-link text-decoration-none"
+                  [ngClass]="currentWorkspaceView === 'QUEUE' ? 'btn-primary text-white' : 'text-white-50'"
+                  (click)="toggleView('QUEUE')">
+            <i class="bi bi-layers-half me-2"></i> Work Queue
+          </button>
+        </li>
+        <li class="nav-item">
+          <button type="button" 
+                  class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none"
+                  [ngClass]="currentWorkspaceView === 'PROFILE' ? 'btn-primary text-white' : 'text-white-50'"
+                  (click)="toggleView('PROFILE')">
+            <i class="bi bi-person-circle me-2"></i> My Profile
+          </button>
+        </li>
+      </ul>
+      
+      <!-- Right-Aligned Profile Control Hub -->
+      <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
+        <div class="dropdown">
+          <div class="d-flex align-items-center gap-2 px-3 py-1 bg-secondary bg-opacity-25 rounded-pill dropdown-toggle text-decoration-none" 
+               data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+            <div class="bg-success rounded-circle animate-pulse" style="width: 8px; height: 8px;"></div>
+            <span class="navbar-text p-0 text-light small fw-medium text-nowrap">
+              {{ displayUserName }}
+            </span>
+          </div>
+          
+          <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary bg-dark mt-2 p-1">
+            <li>
+              <button class="dropdown-item text-danger small d-flex align-items-center gap-2 py-2 rounded" (click)="onSignOut()">
+                <i class="bi bi-box-arrow-right"></i> Sign Out
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Main Workspace Target Layout Container Canvas -->
+<div class="container-fluid p-4 admin-workspace-canvas-wrapper bg-light min-vh-100">
+  
+  <!-- Dynamic Validation Error Alert Frame -->
+  @if (errorMessage) {
+    <div class="alert alert-danger border-0 rounded-3 small p-3 mb-4 shadow-sm d-flex align-items-center justify-content-between">
+      <div class="d-flex align-items-center">
+        <i class="bi bi-exclamation-octagon-fill text-danger me-2 fs-5"></i>
+        <span class="fw-medium text-dark">{{ errorMessage }}</span>
+      </div>
+      <button type="button" class="btn-close" (click)="errorMessage = null" aria-label="Close"></button>
+    </div>
+  }
+
+  <!-- View Port Splitter Core Logic -->
+  <main class="w-100">
+    
+    <!-- Profile View Section Container Grid -->
+    <div *ngIf="currentWorkspaceView === 'PROFILE'" class="card border-0 shadow-sm rounded-4 bg-white p-4">
+      <app-agent-profile></app-agent-profile>
+    </div>
+
+    <!-- Active Distribution Process Queue Control Container -->
+    <div *ngIf="currentWorkspaceView === 'QUEUE'">
+      
+      <!-- Primary Operational Stats Row -->
+      <section class="kpi-metric-cards-row row g-3 mb-4" *ngIf="!isBookingViewActive">
+        <div class="col-12 col-md-4">
+          <div class="kpi-card orange-border bg-white shadow-sm">
+            <div class="kpi-label text-uppercase fw-bold text-secondary">Pending Review</div>
+            <div class="kpi-value fw-extrabold text-dark">{{ totalPending }}</div>
+            <div class="kpi-subtext">Awaiting operational triage</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="kpi-card blue-border bg-white shadow-sm">
+            <div class="kpi-label text-uppercase fw-bold text-secondary">Approved Requests</div>
+            <div class="kpi-value fw-extrabold text-dark">{{ totalApproved }}</div>
+            <div class="kpi-subtext">Verified workflow allocations</div>
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="kpi-card green-border bg-white shadow-sm">
+            <div class="kpi-label text-uppercase fw-bold text-secondary">Fulfillments Completed</div>
+            <div class="kpi-value fw-extrabold text-dark">{{ totalCompleted }}</div>
+            <div class="kpi-subtext">Committed dynamic ledger payloads</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Processing Grid Control Strip Elements -->
+      <div class="card border-0 shadow-sm bg-white p-3 mb-4" *ngIf="!isBookingViewActive">
+        <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+          <div>
+            <h5 class="fw-bold text-dark mb-0">Assigned Inbound Requests</h5>
+            <small class="text-muted">Select specific consumer segments to initiate validation pipelines</small>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <label for="statusFilter" class="small fw-bold text-secondary text-uppercase text-nowrap mb-0">Filter Metrics:</label>
+            <select id="statusFilter" class="form-select form-select-sm" [(ngModel)]="selectedStatusFilter">
+              <option value="ALL">All Statuses</option>
+              <option value="PENDING">Pending Review</option>
+              <option value="APPROVED">Approved</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live Dynamic Inbound Listing Component Stack -->
+      <div class="card border-0 shadow-sm bg-white p-4" *ngIf="!isBookingViewActive">
+        <app-request-list 
+          [requests]="filteredBookingRequests"
+          (onAccept)="handleRequestAccepted($event)"
+          (onReject)="handleRequestRejected($event)"
+          (onBook)="handleNavigateToBooking($event)">
+        </app-request-list>
+      </div>
+
+      <!-- Context Booking Generation Interface Form Overlay Panel -->
+      <div class="card border-0 shadow-sm bg-white p-4 animate-fade-in" *ngIf="isBookingViewActive && selectedRequestForBooking">
+        <div class="border-bottom pb-3 mb-4 d-flex justify-content-between align-items-center">
+          <div>
+            <span class="small fw-bold text-secondary text-uppercase tracking-wider d-block mb-1">Execution Engine Interface</span>
+            <h4 class="fw-extrabold text-dark mb-0">Process Tour Package Booking</h4>
+          </div>
+          <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" (click)="handleCancelBookingForm()">
+            <i class="bi bi-arrow-left-short"></i> Abort Verification
+          </button>
+        </div>
+        
+        <app-booking-form 
+          [targetRequest]="selectedRequestForBooking"
+          (onSubmitSuccess)="handleBookingSubmitted($event)"
+          (onCancel)="handleCancelBookingForm()">
+        </app-booking-form>
+      </div>
+
+    </div>
+  </main>
+</div>

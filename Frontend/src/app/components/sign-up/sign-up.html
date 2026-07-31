@@ -1,0 +1,177 @@
+<div class="split-layout-wrapper">
+  <div class="split-card-container extended-width shadow-lg border-0">
+    
+    <!-- Left Hand Visual Showcase Panel -->
+    <div class="split-image-aside" style="background-image: linear-gradient(rgba(15, 23, 42, 0.3), rgba(15, 23, 42, 0.7)), url('https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=1000&q=80');">
+      <div class="aside-caption-blur text-white">
+        <h4 class="fw-bold mb-3"><i class="bi bi-star-fill text-warning me-2"></i>Travel 360° Club Perks</h4>
+        <p class="small text-white-50 mb-4">Unlock the complete power of synchronized modern travel planning. Join today and instantly secure localized premium reservation mappings.</p>
+        
+        <ul class="list-unstyled small text-white-50 border-top border-white-15 pt-3 mb-0">
+          <li class="mb-2 d-flex align-items-center"><i class="bi bi-tags-fill text-warning me-2"></i> Direct Access to Insiders-Only Net Rates</li>
+          <li class="mb-2 d-flex align-items-center"><i class="bi bi-coin text-warning me-2"></i> Earn 360 Loyalty Reward Points on entry</li>
+          <li class="d-flex align-items-center"><i class="bi bi-arrow-repeat text-warning me-2"></i> Free Multi-segment Cancellation Insurance</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right Hand Interactive Data Input Fields -->
+    <div class="split-form-aside bg-white">
+      <div class="form-inner-wrapper wide-grid">
+        <!-- Return Path Route to Index Landing Page -->
+        <a routerLink="/" class="text-decoration-none text-secondary small fw-semibold d-inline-flex align-items-center mb-3 transition-fade hover-cyan">
+          <i class="bi bi-arrow-left me-1"></i> Back to Home
+        </a>
+
+        <h2 class="fw-bold text-dark mb-1">Create your Account</h2>
+        <p class="text-muted small mb-4">Join Travel 360° to coordinate global reservation listings</p>
+
+        @if (successMessage()) {
+          <div class="alert alert-success border-0 rounded-3 small shadow-sm p-2.5 mb-3">{{ successMessage() }}</div>
+        }
+        @if (errorMessage()) {
+          <div class="alert alert-danger border-0 rounded-3 small shadow-sm p-2.5 mb-3">{{ errorMessage() }}</div>
+        }
+
+        <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()">
+          
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">Full Name *</label>
+              <input type="text" class="form-control form-control-custom" formControlName="name" placeholder="John Doe" [class.is-invalid]="signUpForm.get('name')?.touched && signUpForm.get('name')?.invalid">
+              @if (signUpForm.get('name')?.touched && signUpForm.get('name')?.invalid) {
+                <div class="invalid-feedback">
+                  @if (signUpForm.get('name')?.errors?.['required']) { Full name is required. }
+                  @if (signUpForm.get('name')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+                </div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">Email Address *</label>
+              <input type="email" class="form-control form-control-custom" formControlName="email" placeholder="john@example.com" [class.is-invalid]="signUpForm.get('email')?.touched && signUpForm.get('email')?.invalid">
+              @if (signUpForm.get('email')?.touched && signUpForm.get('email')?.invalid) {
+                <div class="invalid-feedback">Provide a valid email address.</div>
+              }
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">Password *</label>
+              <input type="password" class="form-control form-control-custom" formControlName="password" placeholder="••••••••" [class.is-invalid]="signUpForm.get('password')?.touched && signUpForm.get('password')?.invalid">
+              @if (signUpForm.get('password')?.touched && signUpForm.get('password')?.invalid) {
+                <div class="invalid-feedback">Password must be at least 4 characters.</div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">Contact Phone Number *</label>
+              <input type="text" class="form-control form-control-custom" formControlName="phone" maxlength="10" inputmode="numeric" placeholder="9876543210" [class.is-invalid]="signUpForm.get('phone')?.touched && signUpForm.get('phone')?.invalid">
+              @if (signUpForm.get('phone')?.touched && signUpForm.get('phone')?.invalid) {
+                <div class="invalid-feedback">Invalid phone format it should be 10 digits. Only digits.</div>
+              }
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold text-secondary small mb-1">Date of Birth *</label>
+              <input type="date" class="form-control form-control-custom" [max]="maxDobDate" formControlName="dateOfBirth" [class.is-invalid]="signUpForm.get('dateOfBirth')?.touched && signUpForm.get('dateOfBirth')?.invalid">
+              @if (signUpForm.get('dateOfBirth')?.touched && signUpForm.get('dateOfBirth')?.errors) {
+                <div class="invalid-feedback">
+                  @if (signUpForm.get('dateOfBirth')?.errors?.['required']) { DOB is required. }
+                  @if (signUpForm.get('dateOfBirth')?.errors?.['underAge']) { Must be 18+ years old. }
+                </div>
+              }
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold text-secondary small mb-1">Gender *</label>
+              <select class="form-select form-control-custom" formControlName="gender" [class.is-invalid]="signUpForm.get('gender')?.touched && signUpForm.get('gender')?.invalid" (change)="formUtils.syncDropdown('gender', $event, signUpForm, cdr)">
+                <option value="">Select</option>
+                <option value="MALE">Male</option>
+                <option value="FEMALE">Female</option>
+                <option value="OTHER">Other</option>
+                <option value="PREFER_NOT_TO_SAY">Prefer not to say</option>
+              </select>
+              @if (signUpForm.get('gender')?.touched && signUpForm.get('gender')?.invalid) {
+                <div class="invalid-feedback">Gender selection required.</div>
+              }
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label fw-semibold text-secondary small mb-1">Street Address *</label>
+              <input type="text" class="form-control form-control-custom" formControlName="address" placeholder="123 Main St" [class.is-invalid]="signUpForm.get('address')?.touched && signUpForm.get('address')?.invalid">
+              @if (signUpForm.get('address')?.touched && signUpForm.get('address')?.invalid) {
+                <div class="invalid-feedback">
+                  @if (signUpForm.get('address')?.errors?.['required']) { Address is required. }
+                  @if (signUpForm.get('address')?.errors?.['pattern']) { HTML tags (<, >) are explicitly blocked. }
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="row g-3 mb-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">Country *</label>
+              <select class="form-select form-control-custom" formControlName="country" [class.is-invalid]="signUpForm.get('country')?.touched && signUpForm.get('country')?.invalid" (change)="onSelectChange('country', $event)">
+                <option value="">-- Select Country --</option>
+                @for (c of countries; track c.name) {
+                  <option [value]="c.name">{{c.name}}</option>
+                }
+              </select>
+              @if (signUpForm.get('country')?.touched && signUpForm.get('country')?.invalid) {
+                <div class="invalid-feedback">Country required.</div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">State *</label>
+              <select class="form-select form-control-custom" formControlName="state" [class.is-invalid]="signUpForm.get('state')?.touched && signUpForm.get('state')?.invalid" (change)="onSelectChange('state', $event)">
+                <option value="">-- Select State --</option>
+                @for (s of states; track s.name) {
+                  <option [value]="s.name">{{s.name}}</option>
+                }
+              </select>
+              @if (signUpForm.get('state')?.touched && signUpForm.get('state')?.invalid) {
+                <div class="invalid-feedback">State required.</div>
+              }
+            </div>
+          </div>
+
+          <div class="row g-3 mb-4">
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">District *</label>
+              <select class="form-select form-control-custom" formControlName="district" [class.is-invalid]="signUpForm.get('district')?.touched && signUpForm.get('district')?.invalid" (change)="onSelectChange('district', $event)">
+                <option value="">-- Select District --</option>
+                @for (d of districts; track d.name) {
+                  <option [value]="d.name">{{d.name}}</option>
+                }
+              </select>
+              @if (signUpForm.get('district')?.touched && signUpForm.get('district')?.invalid) {
+                <div class="invalid-feedback">District required.</div>
+              }
+            </div>
+            <div class="col-12 col-md-6">
+              <label class="form-label fw-semibold text-secondary small mb-1">City *</label>
+              <select class="form-select form-control-custom" formControlName="city" [class.is-invalid]="signUpForm.get('city')?.touched && signUpForm.get('city')?.invalid" (change)="formUtils.syncDropdown('city', $event, signUpForm, cdr)">
+                <option value="">-- Select City --</option>
+                @for (city of cities; track city) {
+                  <option [value]="city">{{city}}</option>
+                }
+              </select>
+              @if (signUpForm.get('city')?.touched && signUpForm.get('city')?.invalid) {
+                <div class="invalid-feedback">City required.</div>
+              }
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-action-submit w-100 shadow-sm py-2.5" [disabled]="signUpForm.invalid">
+            Complete Registration
+          </button>
+        </form>
+        
+        <p class="text-center mt-3 mb-0 small text-muted">
+          Already registered? <a routerLink="/login" class="text-primary fw-bold text-decoration-none ms-1">Sign In here</a>
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>

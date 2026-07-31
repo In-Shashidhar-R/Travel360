@@ -1,0 +1,283 @@
+<div class="card shadow-sm border border-light rounded-3 overflow-hidden bg-white">
+  <div class="card-header bg-white border-bottom p-3">
+    <h2 class="h5 fw-bold text-dark mb-1">System Users Directory Logs</h2>
+  </div>
+
+  <div class="card-body bg-light border-bottom p-3">
+    <div class="row g-3">
+      <div class="col-12 col-md-6 d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-secondary fw-bold small tracking-wider mb-0" style="font-size: 0.72rem;">Filter via User ID</label>
+        <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="userSearchId" (input)="onFilterChange()" placeholder="e.g., 102">
+      </div>
+      <div class="col-12 col-md-6 d-flex flex-column gap-1">
+        <label class="form-label text-uppercase text-secondary fw-bold small tracking-wider mb-0" style="font-size: 0.72rem;">Filter via Role</label>
+        <select class="form-select form-select-sm p-2" [(ngModel)]="userSearchRole" (change)="onFilterChange()">
+          <option value="">-- All Target Roles --</option>
+          <option value="CUSTOMER">CUSTOMER</option>
+          <option value="TRAVEL_AGENT">TRAVEL AGENT</option>
+          <option value="FINANCE_OFFICER">FINANCE OFFICER</option>
+          <option value="COMPLIANCE_OFFICER">COMPLIANCE OFFICER</option>
+          <option value="PARTNER">PARTNER</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <div class="card-body p-3 bg-white">
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-3">
+      @for (u of paginatedUsers; track u.userId) {
+        <div class="col">
+          <div class="card h-100 border border-light shadow-sm user-profile-hover-card transition-all">
+            <div class="card-body d-flex justify-content-between align-items-start pb-2">
+              <div>
+                <span class="text-muted font-monospace small d-block">ID #{{u.userId}}</span>
+                <h3 class="h6 fw-bold text-dark text-uppercase mb-0 mt-1">{{u.name}}</h3>
+              </div>
+              <span class="badge rounded-pill px-2.5 py-1 text-uppercase fw-bold text-white shadow-sm font-role-pill" [ngClass]="'role-' + u.role.toLowerCase()">
+                {{u.role}}
+              </span>
+            </div>
+
+            <div class="card-body pt-0 flex-grow-1">
+              <div class="d-flex justify-content-between align-items-center border-bottom border-dashed py-1.5 small">
+                <strong class="text-secondary fw-normal">Gender:</strong>
+                <span class="text-dark fw-semibold">{{u.gender || 'Not Specified'}}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-bottom border-dashed py-1.5 small">
+                <strong class="text-secondary fw-normal">Age Status:</strong>
+                <span class="text-dark fw-bold badge bg-secondary bg-opacity-10 text-dark px-2 py-0.5 small">{{u.age ? u.age + ' Years' : 'Not Specified'}}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-bottom border-dashed py-1.5 small">
+                <strong class="text-secondary fw-normal">Email:</strong>
+                <span class="text-dark fw-semibold text-truncate ms-3" style="max-width: 65%;">{{u.email}}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-bottom border-dashed py-1.5 small">
+                <strong class="text-secondary fw-normal">Phone:</strong>
+                <span class="text-dark fw-semibold">{{u.phone}}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-start border-bottom border-dashed py-1.5 small">
+                <strong class="text-secondary fw-normal text-nowrap me-2">Location :</strong>
+                <span class="text-dark fw-semibold text-end" style="max-width: 65%;">{{u.address}}, {{u.city}}, {{u.state}}, {{u.country}}</span>
+              </div>
+
+              @if (u.role === 'TRAVEL_AGENT' || u.role === 'PARTNER') {
+                <div class="d-flex justify-content-end pt-2">
+                  <button type="button" class="btn btn-xs btn-outline-primary py-1 px-2.5 d-flex align-items-center gap-1 small text-uppercase fw-bold" 
+                          style="font-size: 0.68rem; letter-spacing: 0.05em;"
+                          data-bs-toggle="modal" data-bs-target="#directoryEditModal" (click)="initializeEditWorkflow(u)">
+                    <i class="bi bi-pencil-square"></i> Modify Account Records
+                  </button>
+                </div>
+              }
+
+              @if (u.role === 'TRAVEL_AGENT') {
+                <div class="mt-2 p-2 bg-light border border-start border-3 border-purple rounded small">
+                  <div class="d-flex justify-content-between py-1 border-bottom border-light">
+                    <strong class="text-muted fw-normal">Agent Experience:</strong>
+                    <span class="text-dark fw-bold">{{u.agentExperienceYears}} Years</span>
+                  </div>
+                  <div class="mt-1">
+                    <strong class="text-muted fw-normal d-block mb-0.5">Professional Bio Summary:</strong>
+                    <span class="text-secondary fst-italic style-bio-text">{{u.agentBio}}</span>
+                  </div>
+                </div>
+              }
+
+              @if (u.role === 'PARTNER') {
+                <div class="mt-2 p-2 bg-light border border-start border-3 border-primary rounded small">
+                  <div class="d-flex justify-content-between py-1 border-bottom border-light">
+                    <strong class="text-muted fw-normal">Partner Type:</strong>
+                    <span class="text-dark fw-bold">{{u.partnerType}}</span>
+                  </div>
+                  <div class="d-flex justify-content-between py-1 border-bottom border-light">
+                    <strong class="text-muted fw-normal">GSTIN:</strong>
+                    <span class="font-monospace text-dark fw-bold">{{u.gstNumber}}</span>
+                  </div>
+                  <div class="d-flex justify-content-between py-1">
+                    <strong class="text-muted fw-normal">Commission Rate:</strong>
+                    <span class="text-dark fw-bold text-success">{{u.commissionRate}} %</span>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="col-12 py-5 text-center bg-light border border-dashed rounded-3">
+          <p class="text-secondary mb-0">No system user records discovered matching search context vectors.</p>
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="card-footer bg-white border-top d-flex flex-column flex-sm-row justify-content-between align-items-center gap-2 p-3">
+    <div class="text-muted small">
+      Showing <span class="fw-semibold text-dark">{{getStartIndex()}}</span> to <span class="fw-semibold text-dark">{{getEndIndex(filteredUsers.length)}}</span> of <span class="fw-semibold text-dark">{{filteredUsers.length}}</span> records
+    </div>
+    <nav aria-label="System entity logs directory navigation pagination">
+      <ul class="pagination pagination-sm mb-0 shadow-sm">
+        <li class="page-item" [class.disabled]="currentPage === 1">
+          <button class="page-link" (click)="goToPage(currentPage - 1)" type="button">Previous</button>
+        </li>
+        <li class="page-item" *ngFor="let p of getPagesArray(filteredUsers.length); let idx = index" [class.active]="currentPage === idx + 1">
+          <button class="page-link" (click)="goToPage(idx + 1)" type="button">{{ idx + 1 }}</button>
+        </li>
+        <li class="page-item" [class.disabled]="currentPage === getTotalPages(filteredUsers.length)">
+          <button class="page-link" (click)="goToPage(currentPage + 1)" type="button">Next</button>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</div>
+
+<div class="modal fade" id="directoryEditModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content bg-white shadow border-0">
+      <div class="modal-header border-bottom p-3">
+        <h5 class="modal-title fw-bold text-dark text-uppercase small tracking-wider">
+          System Records Registry Editor &mdash; ID #{{activeEditTarget?.userId}} [{{activeEditTarget?.role}}]
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" id="closeDirectoryEditBtn"></button>
+      </div>
+      <form #editDirectoryForm="ngForm" (ngSubmit)="processDirectoryModification()">
+        <div class="modal-body p-4 row g-3">
+          
+          @if (directoryError) {
+            <div class="col-12 alert alert-danger py-2 small d-flex align-items-center gap-2 mb-0 shadow-sm border-0">
+              <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+              <span class="fw-medium">{{ directoryError }}</span>
+            </div>
+          }
+
+          <!-- Name Field -->
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Legal Registration Name *</label>
+            <input type="text" class="form-control form-control-sm p-2" 
+                   [(ngModel)]="editForm.name" name="name" #nameCtrl="ngModel" 
+                   pattern="^[a-zA-Z\s\-'\.,&]+$" required
+                   [class.is-invalid]="nameCtrl.touched && nameCtrl.invalid">
+            @if (nameCtrl.touched && nameCtrl.invalid) {
+              <div class="text-danger extra-small mt-1">Name is required and cannot contain numbers or special symbols (<, >, ?, !).</div>
+            }
+          </div>
+
+          <!-- Contact Phone Field -->
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Contact Phone String (10 Digits) *</label>
+            <input type="text" class="form-control form-control-sm p-2" 
+                   [(ngModel)]="editForm.phone" name="phone" #phoneCtrl="ngModel"
+                   maxlength="10" inputmode="numeric" (input)="onPhoneInput($event)"
+                   pattern="^[0-9]{10}$" required
+                   [class.is-invalid]="phoneCtrl.touched && phoneCtrl.invalid">
+            @if (phoneCtrl.touched && phoneCtrl.invalid) {
+              <div class="text-danger extra-small mt-1">Phone number must be exactly 10 digits.</div>
+            }
+          </div>
+
+          <!-- Gender Dropdown -->
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Gender *</label>
+            <select class="form-select form-select-sm p-2" [(ngModel)]="editForm.gender" name="gender" #genderCtrl="ngModel" required [class.is-invalid]="genderCtrl.touched && genderCtrl.invalid">
+              <option value="">Select Gender</option>
+              <option value="MALE">Male</option>
+              <option value="FEMALE">Female</option>
+              <option value="OTHER">Other</option>
+            </select>
+            @if (genderCtrl.touched && genderCtrl.invalid) {
+              <div class="text-danger extra-small mt-1">Gender selection is mandatory.</div>
+            }
+          </div>
+
+          <!-- Date of Birth (18+ restriction) -->
+          <div class="col-md-6">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Date of Birth (Must be 18+) *</label>
+            <input type="date" class="form-control form-control-sm p-2" 
+                   [(ngModel)]="editForm.dateOfBirth" name="dateOfBirth" #dobCtrl="ngModel" 
+                   [max]="maxDobDate" required
+                   [class.is-invalid]="dobCtrl.touched && dobCtrl.invalid">
+            @if (dobCtrl.touched && dobCtrl.invalid) {
+              <div class="text-danger extra-small mt-1">Valid DOB required (Must be 18+ years old).</div>
+            }
+          </div>
+
+          <div class="col-12"><hr class="text-black-50 my-1"></div>
+
+          <!-- Street Address -->
+          <div class="col-md-12">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Street Address Parameters</label>
+            <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="editForm.address" name="address" pattern="^[^<>]*$">
+          </div>
+
+          <!-- City -->
+          <div class="col-md-4">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">City Matrix</label>
+            <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="editForm.city" name="city" pattern="^[^<>]*$">
+          </div>
+
+          <!-- State -->
+          <div class="col-md-4">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">State Context</label>
+            <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="editForm.state" name="state" pattern="^[^<>]*$">
+          </div>
+
+          <!-- Country -->
+          <div class="col-md-4">
+            <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Country Location</label>
+            <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="editForm.country" name="country" pattern="^[^<>]*$">
+          </div>
+
+          <!-- Agent Specific Fields -->
+          @if (activeEditTarget?.role === 'TRAVEL_AGENT') {
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Experience (Years)</label>
+              <input type="number" min="0" class="form-control form-control-sm p-2" [(ngModel)]="editForm.agentExperienceYears" name="agentExperienceYears">
+            </div>
+            <div class="col-md-8">
+              <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Professional Bio Statement</label>
+              <input type="text" class="form-control form-control-sm p-2" [(ngModel)]="editForm.agentBio" name="agentBio" pattern="^[^<>]*$">
+            </div>
+          }
+
+          <!-- Partner Specific Fields -->
+          @if (activeEditTarget?.role === 'PARTNER') {
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Merchant Type Category *</label>
+              <select class="form-select form-select-sm p-2" [(ngModel)]="editForm.partnerType" name="partnerType" #typeCtrl="ngModel" required [class.is-invalid]="typeCtrl.touched && typeCtrl.invalid">
+                <option value="">-- Choose Type --</option>
+                <option value="FLIGHT">FLIGHT</option>
+                <option value="HOTEL">HOTEL</option>
+                <option value="BUS">BUS</option>
+                <option value="CAB">CAB</option>
+                <option value="TOUR_PACKAGE">TOUR_PACKAGE</option>
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-secondary text-uppercase mb-1">GSTIN Identity String *</label>
+              <input type="text" class="form-control form-control-sm p-2" 
+                     [(ngModel)]="editForm.gstNumber" name="gstNumber" #gstCtrl="ngModel"
+                     pattern="^[0-9A-Z]{10,20}$" placeholder="10-20 uppercase alphanumeric" required
+                     [class.is-invalid]="gstCtrl.touched && gstCtrl.invalid">
+              @if (gstCtrl.touched && gstCtrl.invalid) {
+                <div class="text-danger extra-small mt-1">10-20 uppercase alphanumeric characters required.</div>
+              }
+            </div>
+            <div class="col-md-4">
+              <label class="form-label small fw-bold text-secondary text-uppercase mb-1">Corporate Commission Rate (%) *</label>
+              <input type="number" step="0.1" min="0" max="100" class="form-control form-control-sm p-2" 
+                     [(ngModel)]="editForm.commissionRate" name="commissionRate" #commCtrl="ngModel" required
+                     [class.is-invalid]="commCtrl.touched && commCtrl.invalid">
+              @if (commCtrl.touched && commCtrl.invalid) {
+                <div class="text-danger extra-small mt-1">Must be between 0 and 100%.</div>
+              }
+            </div>
+          }
+        </div>
+        <div class="modal-footer border-top p-2 bg-light">
+          <button type="button" class="btn btn-sm btn-secondary px-3" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-sm btn-primary px-4 fw-semibold" [disabled]="editDirectoryForm.invalid">Save Entity Target Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

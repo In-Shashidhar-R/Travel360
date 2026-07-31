@@ -1,0 +1,40 @@
+<div class="container-fluid py-3">
+  
+  <!-- Bootstrap Pill Navigation Bar with Bootstrap Icons -->
+  <ul class="nav nav-pills bg-light p-2 rounded-3 border mb-4 gap-2">
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2 fw-semibold d-flex align-items-center transition-all"
+              [class.active]="activeSubTab === 'view'" 
+              (click)="switchSubTab('view')">
+        <i class="bi bi-people-fill me-2"></i> Audit System Users Directory
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2 fw-semibold d-flex align-items-center transition-all"
+              [class.active]="activeSubTab === 'add-partner'" 
+              (click)="switchSubTab('add-partner')">
+        <i class="bi bi-person-badge-fill me-2"></i> Register Partner
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link px-3 py-2 fw-semibold d-flex align-items-center transition-all"
+              [class.active]="activeSubTab === 'add-agent'" 
+              (click)="switchSubTab('add-agent')">
+        <i class="bi bi-person-badge-fill me-2"></i> Register Travel Agent
+      </button>
+    </li>
+  </ul>
+
+  <!-- Viewport Injection Sandbox Area -->
+  <div class="p-1">
+    @if (activeSubTab === 'view') { 
+      <app-user-audit></app-user-audit>
+    }
+    @if (activeSubTab === 'add-partner') { 
+      <app-partner-register (alertTrigger)="forwardAlert($event)"></app-partner-register> 
+    }
+    @if (activeSubTab === 'add-agent') { 
+      <app-agent-register (alertTrigger)="forwardAlert($event)"></app-agent-register> 
+    }
+  </div>
+</div>

@@ -1,0 +1,86 @@
+/* Interactive States & Micro-interactions */
+.cursor-pointer { cursor: pointer; }
+.bg-pink { background-color: #ec4899 !important; }
+.bg-purple { background-color: #a855f7 !important; }
+
+.transition-all {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.action-nav-card-scaled {
+  transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.2s ease-in-out;
+  &:hover {
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.12) !important;
+  }
+}
+
+.card-status-strip {
+  height: 4px;
+  width: 45px;
+  border-radius: 2px;
+}
+
+/* Hover effect for inactive menu navigation tabs */
+.nav-btn-custom {
+  &:hover:not(.btn-primary) {
+    color: #ffffff !important;
+    opacity: 1;
+  }
+}
+
+/* Network Node Status Pulse Animation */
+.animate-pulse {
+  animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.6; transform: scale(0.95); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* Structural Layout Entry Fade In Animation */
+.fade-in {
+  animation: dashboardViewTransition 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes dashboardViewTransition {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Re-engineered High-Contrast Dark Dropdown Themes Custom Variables Override */
+.dropdown-menu {
+  min-width: 180px;
+
+  .dropdown-item {
+    background: transparent !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    font-weight: 500;
+    transition: all 0.15s ease-in-out;
+
+    i {
+      transition: transform 0.15s ease-in-out;
+    }
+
+    /* Shared Interactive State Resetting Logic */
+    &:hover, &:focus {
+      background-color: rgba(255, 255, 255, 0.1) !important;
+      color: #ffffff !important;
+      
+      i {
+        transform: scale(1.1);
+      }
+    }
+
+    /* Isolated Custom Context Override Rules For Red Danger Sign-out Button Elements */
+    &.text-danger {
+      color: #f87171 !important; /* Soft, readable alert red text on dark canvas backgrounds */
+      
+      &:hover, &:focus {
+        background-color: rgba(220, 53, 69, 0.15) !important;
+        color: #ef4444 !important; /* Vivid active selection red */
+      }
+    }
+  }
+}

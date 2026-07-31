@@ -1,0 +1,211 @@
+<!-- Symmetric wrapper grids protecting display boundaries on all viewports -->
+<div class="container-fluid px-2 px-md-4 py-4 animate-fade-in flight-review-core">
+  
+  <!-- Top Navigation Control Strip -->
+  <div class="card p-3 mb-4 bg-white border border-light-subtle rounded-4 shadow-sm">
+    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 text-start">
+      <div>
+        <span class="small-label text-primary tracking-wider d-block mb-1">Transaction Pipeline</span>
+        <h4 class="fw-extrabold text-dark m-0 tracking-tight">Review & Book Your Trip</h4>
+      </div>
+      <button class="btn btn-sm btn-outline-secondary rounded-pill px-4 py-2 fw-bold text-xs d-inline-flex align-items-center gap-2 transition-all shadow-sm" routerLink="/customer/inventories">
+        <i class="bi bi-arrow-left-short fs-6"></i> Change Selected Flight
+      </button>
+    </div>
+  </div>
+
+  @if (item) {
+    <div class="row g-4">
+      
+      <!-- Left Hand Side: Itinerary Processing Node -->
+      <div class="col-12 col-xl-7">
+        <div class="card p-4 shadow-sm border border-light-subtle rounded-4 bg-white bg-opacity-95 h-100 d-flex flex-column text-start glass-panel-light">
+          
+          <!-- Flight Brand Identification Frame -->
+          <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-start gap-3 border-bottom border-light pb-3 mb-4">
+            <div>
+              <h3 class="fw-extrabold text-dark m-0 tracking-tight">{{ item.airlineName }}</h3>
+              <span class="badge rounded-pill px-3 py-1.5 border fw-bold text-uppercase tracking-wider text-xs mt-2 d-inline-block"
+                    [ngClass]="item.isConnecting ? 'bg-warning-soft text-warning border-warning' : 'bg-primary-soft text-primary border-primary'">
+                <i class="bi" [ngClass]="item.isConnecting ? 'bi-diagram-3-fill' : 'bi-lightning-charge-fill'"></i>
+                {{ item.isConnecting ? 'Connecting Flight Route' : 'Non-Stop Direct Route' }}
+              </span>
+            </div>
+            <span class="badge bg-dark text-white px-3 py-2 rounded-3 font-monospace tracking-mono shadow-sm align-self-start text-uppercase text-xs">
+              <i class="bi bi-ticket-perforated me-1.5"></i>Flight {{ item.flightNumber }}
+            </span>
+          </div>
+
+          <!-- High-Contrast Segment Departure/Arrival Strip -->
+          <div class="row bg-light bg-opacity-70 p-4 rounded-4 text-center align-items-center g-3 border mx-0 mb-4">
+            <div class="col-12 col-sm-5 text-center text-sm-start">
+              <span class="small-label text-secondary d-block mb-1">Source Terminal</span>
+              <h4 class="fw-extrabold text-dark mb-1 tracking-tight">{{ item.departureAirport }}</h4>
+              <span class="text-muted small fw-bold font-sans d-inline-flex align-items-center gap-1">
+                <i class="bi bi-clock-history"></i> Departs: {{ item.startTime }}
+              </span>
+            </div>
+            
+            <div class="col-12 col-sm-2 d-flex flex-column align-items-center justify-content-center py-2">
+              <div class="vector-badge rounded-circle bg-primary-soft text-primary d-flex align-items-center justify-content-center shadow-sm" style="width: 40px; height: 40px;">
+                <i class="bi bi-airplane-fill rotate-90 fs-5"></i>
+              </div>
+              <span class="badge bg-secondary text-white rounded-pill px-2.5 py-1 font-monospace tracking-tight text-xs mt-2 shadow-sm">{{ item.numberOfHours }}h</span>
+            </div>
+            
+            <div class="col-12 col-sm-5 text-center text-sm-end">
+              <span class="small-label text-secondary d-block mb-1">Destination Target</span>
+              <h4 class="fw-extrabold text-dark mb-1 tracking-tight">{{ item.arrivalAirport }}</h4>
+              <span class="text-muted small fw-bold font-sans d-inline-flex align-items-center gap-1">
+                <i class="bi bi-clock"></i> Arrival: {{ item.endTime }}
+              </span>
+            </div>
+          </div>
+
+          @if (item.isConnecting && item.layoverDetails) {
+            <div class="alert alert-warning bg-warning-soft text-warning border-0 p-3 rounded-3 mb-4 d-flex align-items-start gap-2.5">
+              <i class="bi bi-exclamation-triangle-fill fs-5 mt-n1"></i>
+              <div class="small fw-medium line-spaced">
+                <b class="text-dark">Layover Information Matrix:</b> {{ item.layoverDetails }}
+              </div>
+            </div>
+          }
+
+          <!-- NEW: STATIC IN-FLIGHT AMENITIES PROVISIONING CARD MAP -->
+          <div class="mb-4 bg-white border border-light-subtle rounded-4 p-3 shadow-inner-sm">
+            <span class="small-label text-secondary d-block mb-3">Included Flight Amenities</span>
+            <div class="row g-3">
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-primary"><i class="bi bi-bag-check-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">7 KG Cabin Bag</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-success"><i class="bi bi-luggage-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">15 KG Checked Bag</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-warning"><i class="bi bi-cup-hot-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Hot Catering Food</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-info"><i class="bi bi-wifi fs-5"></i></div>
+                  <span class="text-dark small fw-bold">Onboard Wi-Fi Stream</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-secondary"><i class="bi bi-usb-c-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">USB Power Supply</span>
+                </div>
+              </div>
+              <div class="col-6 col-md-4">
+                <div class="d-flex align-items-center gap-2">
+                  <div class="text-danger"><i class="bi bi-tv-fill fs-5"></i></div>
+                  <span class="text-dark small fw-bold">HD Entertainment</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Interactive Seat Category Selection Roster -->
+          <div class="mb-4">
+            <h6 class="fw-bold text-dark mb-3 text-uppercase tracking-wide small-label">Select Your Seat Class Allocation</h6>
+            <div class="table-responsive rounded-3 border">
+              <table class="table table-hover align-middle text-center mb-0 data-table-node">
+                <thead>
+                  <tr class="bg-light">
+                    <th style="width: 12%">Select</th>
+                    <th class="text-start ps-3 py-2 small fw-bold text-secondary">TICKET TYPE</th>
+                    <th class="text-center py-2 small fw-bold text-secondary">AVAILABLE SEATS</th>
+                    <th class="text-end pe-4 py-2 small fw-bold text-secondary">PRICE PER SEAT</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (tier of item.seatTiers; track tier.seatType) {
+                    <tr (click)="selectSeatTier(tier.seatType)" class="item-transition-row">
+                      <td>
+                        <input 
+                          type="radio" 
+                          name="seatSelection" 
+                          class="form-check-input checkbox-custom"
+                          [value]="tier.seatType"
+                          [checked]="chosenSeatType === tier.seatType"
+                          (change)="selectSeatTier(tier.seatType)">
+                      </td>
+                      <td class="fw-bold text-dark text-start ps-3 text-uppercase font-sans text-xs tracking-wide">{{ tier.seatType }}</td>
+                      
+                      <td class="text-center">
+                        <span class="badge rounded-pill fw-bold px-3 py-1 text-xs"
+                              [ngClass]="tier.availableSeats > 20 ? 'bg-success-soft text-success border border-success-subtle' : 'bg-danger-soft text-danger border border-danger-subtle'">
+                          {{ tier.availableSeats }} vacancies left
+                        </span>
+                      </td>
+                      
+                      <td class="fw-extrabold text-primary text-end pe-4 fs-5 line-height-spaced">
+                        <!-- Prices bolded clearly across dynamic interpolations -->
+                        <strong>{{ tier.pricePerSeat | currency:'INR':'symbol':'1.0-0' }}</strong>
+                      </td>
+                    </tr>
+                  }
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Checkout Valuation Card Metrics Layout -->
+          @if (selectedPassengerIds.length > 0) {
+            <div class="bg-white p-3 rounded-4 mb-4 border border-light-subtle shadow-sm animate-fade-in">
+              <div class="d-flex justify-content-between align-items-center mb-2 text-secondary small font-sans fw-medium">
+                <span>Selected Passenger Count:</span>
+                <span class="fw-bold text-dark font-mono">x{{ selectedPassengerIds.length }}</span>
+              </div>
+              <div class="d-flex justify-content-between align-items-center border-top border-light pt-3 mt-1">
+                <span class="fw-bold text-secondary text-uppercase tracking-wider small-label">Estimated Total Price:</span>
+                <!-- Prices bolded clearly inside checkout block -->
+                <span class="fw-extrabold text-success fs-3"><strong>{{ calculateTotalBookingPrice | currency:'INR':'symbol':'1.0-0' }}</strong></span>
+              </div>
+            </div>
+          }
+
+          @if (bookingErrorMessage) {
+            <div class="alert alert-danger border-0 rounded-3 small p-3 mb-4 shadow-sm d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-circle-fill text-danger fs-5"></i>
+              <span class="fw-semibold text-dark">{{ bookingErrorMessage }}</span>
+            </div>
+          }
+
+          <!-- Order Execution Pipeline Trigger Button -->
+          <button 
+            class="btn btn-primary btn-lg w-100 fw-bold shadow-md py-3 text-uppercase tracking-wider rounded-3 btn-order-submit mt-auto d-flex align-items-center justify-content-center gap-2"
+            [disabled]="selectedPassengerIds.length === 0 || isLoading || !chosenSeatType"
+            (click)="executeBookingTransaction()">
+            @if (isLoading) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              Synchronizing Transaction With Bank Gateways...
+            } @else {
+              <i class="bi bi-credit-card-2-back-fill"></i> Proceed to Secure Payment
+            }
+          </button>
+        </div>
+      </div>
+
+      <!-- Right Hand Side: Dynamic Directory Subnode Panel -->
+      <div class="col-12 col-xl-5">
+        <div class="card border-0 rounded-4 bg-white bg-opacity-95 p-3 shadow-sm h-100">
+          <app-passenger-directory 
+            [showSelection]="true" 
+            (selectionChange)="onPassengerSelected($event)">
+          </app-passenger-directory>
+        </div>
+      </div>
+
+    </div>
+  }
+</div>

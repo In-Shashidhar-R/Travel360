@@ -1,0 +1,187 @@
+<!-- Enforcing symmetric outer page padding grids to provide maximum breathing room -->
+<div class="container-fluid px-2 px-md-4 py-4 animate-fade-in dashboard-portal-core">
+  
+  <!-- 1. HIGH-FIDELITY BRIGHT FROSTED BILLBOARD PANEL -->
+  <div class="card p-4 mb-4 border-0 rounded-4 text-dark glass-panel-light shadow-sm text-start">
+    <div class="row align-items-center g-4">
+      <div class="col-12 col-md-auto text-center text-md-start">
+        <div class="avatar-capsule rounded-circle bg-primary text-white d-flex align-items-center justify-content-center fw-extrabold text-uppercase mx-auto shadow" style="width: 68px; height: 64px; font-size: 1.6rem; border: 3px solid #ffffff;">
+          {{ user.name ? user.name.charAt(0) : 'U' }}
+        </div>
+      </div>
+      <div class="col-12 col-md text-center text-md-start ps-md-3">
+        <span class="small-label fw-bold text-primary text-uppercase tracking-wider">Explorer Matrix Dashboard</span>
+        <h2 class="fw-extrabold text-dark m-0 tracking-tight mt-1">Welcome back, {{ user.name }}</h2>
+        <div class="d-flex flex-wrap justify-content-center justify-content-md-start align-items-center gap-4 mt-2 text-secondary small font-sans fw-medium">
+          <span><i class="bi bi-envelope text-primary me-2"></i>{{ user.email }}</span>
+          <span><i class="bi bi-telephone text-primary me-2"></i>{{ user.phone || 'No active device logs' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. HIGH-SPACED BRIGHT KPI GRID -->
+  <div class="row g-4 text-start mb-4">
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 border-top border-4 border-primary rounded-4 bg-white p-4 shadow-sm shadow-hover">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="small-label text-uppercase text-secondary">Total Bookings</span>
+            <h3 class="fw-extrabold text-dark my-2 tracking-tight fs-2"><strong>{{ totalBookings }}</strong></h3>
+          </div>
+          <div class="icon-circle bg-primary-soft text-primary rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+            <i class="bi bi-journal-text fs-4"></i>
+          </div>
+        </div>
+        <span class="text-xs text-muted mt-2 d-block tracking-wide">All historical system entries</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 border-top border-4 border-success rounded-4 bg-white p-4 shadow-sm shadow-hover">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="small-label text-uppercase text-secondary">Confirmed Trips</span>
+            <h3 class="fw-extrabold text-success my-2 tracking-tight fs-2"><strong>{{ confirmedBookings }}</strong></h3>
+          </div>
+          <div class="icon-circle bg-success-soft text-success rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+            <i class="bi bi-check-circle fs-4"></i>
+          </div>
+        </div>
+        <span class="text-xs text-muted mt-2 d-block tracking-wide">Verified pipeline allocations</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 border-top border-4 border-danger rounded-4 bg-white p-4 shadow-sm shadow-hover">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="small-label text-uppercase text-secondary">Cancelled Bookings</span>
+            <h3 class="fw-extrabold text-danger my-2 tracking-tight fs-2"><strong>{{ cancelledBookings }}</strong></h3>
+          </div>
+          <div class="icon-circle bg-danger-soft text-danger rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+            <i class="bi bi-dash-circle fs-4"></i>
+          </div>
+        </div>
+        <span class="text-xs text-muted mt-2 d-block tracking-wide">Voided processing payloads</span>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-xl-3">
+      <div class="card h-100 border-0 border-top border-4 border-info rounded-4 bg-white p-4 shadow-sm shadow-hover">
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <span class="small-label text-uppercase text-secondary">Saved Companions</span>
+            <h3 class="fw-extrabold text-info my-2 tracking-tight fs-2"><strong>{{ passengerCount }}</strong></h3>
+          </div>
+          <div class="icon-circle bg-info-soft text-info rounded-3 d-flex align-items-center justify-content-center" style="width: 46px; height: 46px;">
+            <i class="bi bi-people fs-4"></i>
+          </div>
+        </div>
+        <span class="text-xs text-muted mt-2 d-block tracking-wide">Active co-passenger tables</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MAIN CONTENTS VIEW DIVISION METRICS -->
+  <div class="row g-4">
+    
+    <!-- Left Hand Pane: Spacious Itineraries Feed Stream -->
+    <div class="col-12 col-xl-7">
+      <div class="card border-0 rounded-4 bg-white p-4 shadow-sm h-100">
+        
+        <div class="d-flex flex-sm-row justify-content-between align-items-sm-center gap-3 border-bottom border-light pb-3 mb-4 text-start">
+          <div>
+            <h5 class="fw-extrabold text-dark mb-0 tracking-tight">Your Travel Itineraries</h5>
+            <small class="text-muted text-xs tracking-wide">Chronological stream of active resource manifests</small>
+          </div>
+          <button class="btn btn-sm btn-outline-primary fw-bold rounded-pill px-3 shadow-sm d-inline-flex align-items-center gap-2 transition-all" routerLink="/customer/bookings">
+            <i class="bi bi-collection-play"></i> View All Bookings
+          </button>
+        </div>
+        
+        @if (allBookings.length === 0) {
+          <div class="text-muted text-center py-5 bg-light bg-opacity-50 rounded-4 border border-dashed my-auto px-3 py-4">
+            <div class="icon-circle bg-white shadow-sm text-muted rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 56px; height: 56px;">
+              <i class="bi bi-compass fs-3 text-primary"></i>
+            </div>
+            <h6 class="fw-bold text-dark mb-1">No travel bookings discovered</h6>
+            <p class="text-muted text-xs mx-auto mb-0" style="max-width: 320px;">Ready to explore global network vectors? Initialize your first request.</p>
+          </div>
+        } @else {
+          <div class="overflow-y-auto pe-1 custom-scrollbar" style="max-height: 480px;">
+            @for (trip of allBookings; track trip.bookingId) {
+              <div class="card p-3 mb-3 border-0 border-start border-4 bg-white rounded-3 shadow-sm shadow-hover item-transition-row"
+                   [ngClass]="{
+                     'border-danger': trip.status === 'CANCELLED',
+                     'border-warning': trip.status === 'PENDING',
+                     'border-success': trip.status === 'CONFIRMED' || trip.status === 'PAID'
+                   }">
+                
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 text-start">
+                  <div class="d-flex align-items-start gap-3">
+                    <div class="vector-badge rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                         [ngClass]="{
+                           'bg-primary-soft text-primary': trip.itemType === 'FLIGHT',
+                           'bg-success-soft text-success': trip.itemType === 'HOTEL',
+                           'bg-danger-soft text-danger': trip.itemType === 'BUS',
+                           'bg-info-soft text-info': trip.itemType !== 'FLIGHT' && trip.itemType !== 'HOTEL' && trip.itemType !== 'BUS'
+                         }" style="width: 40px; height: 40px;">
+                      <i class="bi" [ngClass]="{
+                        'bi-airplane': trip.itemType === 'FLIGHT',
+                        'bi-building': trip.itemType === 'HOTEL',
+                        'bi-bus-front': trip.itemType === 'BUS',
+                        'bi-backpack': trip.itemType !== 'FLIGHT' && trip.itemType !== 'HOTEL' && trip.itemType !== 'BUS'
+                      }"></i>
+                    </div>
+                    <div class="ps-1">
+                      <h6 class="mb-1 fw-bold text-dark text-capitalize tracking-wide line-height-spaced">
+                        {{ trip.hotelName || trip.airlineName || trip.operatorName || (trip.chosenSeatType ? (trip.chosenSeatType + ' Class Seating Reservation') : 'Travel Package Booking Request') }}
+                      </h6>
+                      <small class="text-secondary d-inline-flex align-items-center gap-2 text-xs font-sans fw-medium mt-1">
+                        <i class="bi bi-calendar text-muted"></i>
+                        @if (trip.itemType === 'HOTEL' || trip.checkInDate) {
+                          Check-In: <span class="fw-bold text-dark">{{ trip.checkInDate }}</span>
+                          <i class="bi bi-arrow-right text-muted mx-1"></i> Out: <span class="fw-bold text-dark">{{ trip.checkOutDate }}</span>
+                        } @else {
+                          Travel Date: <span class="fw-bold text-dark">{{ trip.targetTravelDate }}</span>
+                        }
+                      </small>
+                    </div>
+                  </div>
+                  
+                  <div class="text-sm-end ms-sm-auto">
+                    <span class="badge rounded-pill px-3 py-1.5 border fw-bold tracking-wider text-uppercase text-xs"
+                          [ngClass]="{
+                            'bg-success-soft text-success border-success': trip.status === 'CONFIRMED' || trip.status === 'PAID',
+                            'bg-warning-soft text-warning border-warning': trip.status === 'PENDING',
+                            'bg-danger-soft text-danger border-danger': trip.status === 'CANCELLED'
+                          }">
+                      {{ trip.status }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Right Hand Pane: Spacious Embedded Companion Directory Subnode Container -->
+    <div class="col-12 col-xl-5">
+      <div class="card border-0 rounded-4 bg-white p-4 shadow-sm h-100">
+        <app-passenger-directory [showSelection]="false"></app-passenger-directory>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 4. FLOATING SYSTEM TRIGGER CONTROL ACTION -->
+  <div class="d-flex justify-content-center mt-5 mb-2">
+    <button class="btn btn-primary btn-lg rounded-pill px-5 py-3 fw-bold shadow-lg tracking-wide border-glow btn-action-trigger d-inline-flex align-items-center gap-2" routerLink="/customer/inventories">
+      <i class="bi bi-plus-lg"></i> Book New Service Manifest
+    </button>
+  </div>
+
+</div>

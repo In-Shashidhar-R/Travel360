@@ -1,0 +1,406 @@
+<div class="container-fluid px-0 analytics-sub-component">
+  @if (loading) {
+    <div class="text-center py-5 font-monospace text-secondary text-uppercase small loading-bar">
+      Synchronizing dynamic elements ledger values...
+    </div>
+  } @else if (errorMsg) {
+    <div class="alert alert-danger error-box m-3 d-flex align-items-center gap-2 border-0 rounded-3 small">
+      <i class="bi bi-exclamation-triangle-fill"></i> {{ errorMsg }}
+    </div>
+  } @else if (metrics) {
+    
+    <!-- 1. FILTER HEADER WORKSPACE CONTROL FRAME -->
+    <div class="card border-0 shadow-sm rounded-3 mb-4 p-4 bg-white">
+      <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+        <div>
+          <h4 class="fw-bold text-dark mb-1 tracking-tight">Finance Audit & KPI Ledger Workspace</h4>
+          <p class="text-muted small mb-0">Live database aggregations mapping dynamic month-wise resource configurations.</p>
+        </div>
+        
+        <div class="d-flex flex-row align-items-center gap-2 filter-controls-group flex-wrap">
+          <select class="form-select workspace-select" [value]="selectedMonth" (change)="onMonthChange($event)">
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
+          
+          <select class="form-select workspace-select" [value]="selectedYear" (change)="onYearChange($event)">
+            <option value="2026">2026</option>
+            <option value="2025">2025</option>
+            <option value="2024">2024</option>
+          </select>
+
+          <button class="btn btn-primary generate-report-btn d-flex align-items-center gap-2 shadow-sm" (click)="generateMonthReport()">
+            <i class="bi bi-arrow-clockwise"></i> Refresh
+          </button>
+          
+          <button class="btn btn-dark export-pdf-btn d-flex align-items-center gap-2 shadow-sm" (click)="exportExecutivePDF()">
+            <i class="bi bi-file-earmark-pdf-fill text-danger"></i> Generate PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. FOUR CORE SUMMARY KPI CARDS ROW -->
+    <div class="row g-3 mb-4">
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 border-top border-4 border-primary rounded-3 bg-white p-3 shadow-sm shadow-hover">
+          <div class="kpi-label text-uppercase fw-bold text-secondary small tracking-wider">COLLECTED REVENUE</div>
+          <div class="kpi-value fw-extrabold text-dark my-1 fs-3">
+            <strong>{{ metrics.totalRevenueCollected | currency:'INR':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div class="kpi-subtext text-muted small">Gross Paid Invoices Sum</div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 border-top border-4 border-danger rounded-3 bg-white p-3 shadow-sm shadow-hover">
+          <div class="kpi-label text-uppercase fw-bold text-secondary small tracking-wider">REFUNDS ISSUED</div>
+          <div class="kpi-value fw-extrabold text-dark my-1 fs-3">
+            <strong>{{ metrics.totalRefundsIssued | currency:'INR':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div class="kpi-subtext text-muted small">Sum of Refunded Amounts</div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 border-top border-4 border-warning rounded-3 bg-white p-3 shadow-sm shadow-hover">
+          <div class="kpi-label text-uppercase fw-bold text-secondary small tracking-wider">TOTAL SYSTEM ORDERS</div>
+          <div class="kpi-value fw-extrabold text-dark my-1 fs-3">{{ metrics.totalBookings }} Gross</div>
+          <div class="kpi-subtext text-muted small">Total Number of Bookings</div>
+        </div>
+      </div>
+
+      <div class="col-12 col-sm-6 col-xl-3">
+        <div class="card h-100 border-0 border-top border-4 border-success rounded-3 bg-white p-3 shadow-sm shadow-hover">
+          <div class="kpi-label text-uppercase fw-bold text-secondary small tracking-wider">NET PORTFOLIO</div>
+          <div class="kpi-value fw-extrabold text-success my-1 fs-3">
+            <strong>{{ (metrics.totalRevenueCollected - metrics.totalRefundsIssued) | currency:'INR':'symbol':'1.0-0' }}</strong>
+          </div>
+          <div class="kpi-subtext text-muted small">Net Profit</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. GRANULAR SECTOR BREAKDOWN TABLE & CHARTS SPLIT -->
+    <div class="row g-4 mb-4">
+      <div class="col-12 col-xl-7">
+        <div class="card border-0 shadow-sm rounded-3 p-0 h-100 bg-white">
+          <div class="p-4 pb-0">
+            <h6 class="fw-bold text-dark mb-1">Granular Revenue & Volume Breakdown (Sector-Wise)</h6>
+            <p class="text-muted small mb-3">Audit logs detailing processing order distributions across network streams.</p>
+          </div>
+          
+          <div class="table-responsive">
+            <table class="data-table-node w-100 mb-0">
+              <thead>
+                <tr class="bg-light">
+                  <th class="text-start ps-4 py-2 small fw-bold text-secondary">SERVICE SECTOR STREAM</th>
+                  <th class="text-center py-2 small fw-bold text-secondary">BOOKING COUNT</th>
+                  <th class="text-center py-2 small fw-bold text-secondary w-40">RATIO METRICS SHARE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td class="text-start ps-4 fw-semibold text-secondary py-3 border-bottom"><i class="bi bi-airplane-fill text-primary me-2"></i>FLIGHT</td>
+                  <td class="text-center fw-medium text-dark py-3 border-bottom">{{ getServiceCount('FLIGHT') }}</td>
+                  <td class="py-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2 pe-3">
+                      <div class="progress-bar-container flex-grow-1"><div class="progress-bar-fill fill-brand" [style.width.%]="getServicePercentage('FLIGHT')"></div></div>
+                      <span class="fw-bold text-secondary small text-end" style="width: 45px;">{{ getServicePercentage('FLIGHT') }}%</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-start ps-4 fw-semibold text-secondary py-3 border-bottom"><i class="bi bi-building-fill text-success me-2"></i>HOTEL</td>
+                  <td class="text-center fw-medium text-dark py-3 border-bottom">{{ getServiceCount('HOTEL') }}</td>
+                  <td class="py-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2 pe-3">
+                      <div class="progress-bar-container flex-grow-1"><div class="progress-bar-fill fill-brand" [style.width.%]="getServicePercentage('HOTEL')"></div></div>
+                      <span class="fw-bold text-secondary small text-end" style="width: 45px;">{{ getServicePercentage('HOTEL') }}%</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-start ps-4 fw-semibold text-secondary py-3 border-bottom"><i class="bi bi-bus-front-fill text-danger me-2"></i>BUS</td>
+                  <td class="text-center fw-medium text-dark py-3 border-bottom">{{ getServiceCount('BUS') }}</td>
+                  <td class="py-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2 pe-3">
+                      <div class="progress-bar-container flex-grow-1"><div class="progress-bar-fill fill-brand" [style.width.%]="getServicePercentage('BUS')"></div></div>
+                      <span class="fw-bold text-secondary small text-end" style="width: 45px;">{{ getServicePercentage('BUS') }}%</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="text-start ps-4 fw-semibold text-secondary py-3 border-bottom"><i class="bi bi-box-seam-fill text-info me-2"></i>TOUR_PACKAGE</td>
+                  <td class="text-center fw-medium text-dark py-3 border-bottom">{{ getServiceCount('TOUR_PACKAGE') }}</td>
+                  <td class="py-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2 pe-3">
+                      <div class="progress-bar-container flex-grow-1"><div class="progress-bar-fill fill-brand" [style.width.%]="getServicePercentage('TOUR_PACKAGE')"></div></div>
+                      <span class="fw-bold text-secondary small text-end" style="width: 45px;">{{ getServicePercentage('TOUR_PACKAGE') }}%</span>
+                    </div>
+                  </td>
+                </tr>
+                <tr class="bg-dark summary-accumulation-row">
+                  <td class="text-start ps-4 fw-bold text-white py-3">Total Accumulations</td>
+                  <td class="text-center fw-bold text-white py-3">{{ metrics.totalBookings }} Orders</td>
+                  <td class="text-info text-uppercase text-end fw-bold small pe-4 py-3">Core Sync Active Pipeline</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Workspace Donut Chart -->
+      <div class="col-12 col-xl-5">
+        <div class="card border-0 shadow-sm rounded-3 p-4 h-100 text-center bg-white">
+          <h6 class="fw-bold text-dark text-start mb-1">Execution Integrity Metrics</h6>
+          <p class="text-muted small text-start mb-4">Vector modeling representing system success vs loss ratios.</p>
+          
+          <div class="position-relative d-inline-flex align-items-center justify-content-center mx-auto mb-4" style="width: 120px; height: 120px;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 42 42" style="transform: rotate(-90deg); stroke-linecap: round;">
+              <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#e2e8f0" stroke-width="4.2"></circle>
+              <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#10b981" stroke-width="4.2" [attr.stroke-dasharray]="getSvgSegments().confirmedDash" [attr.stroke-dashoffset]="getSvgSegments().confirmedOffset"></circle>
+              <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#f59e0b" stroke-width="4.2" [attr.stroke-dasharray]="getSvgSegments().pendingDash" [attr.stroke-dashoffset]="getSvgSegments().pendingOffset"></circle>
+              <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#ef4444" stroke-width="4.2" [attr.stroke-dasharray]="getSvgSegments().cancelledDash" [attr.stroke-dashoffset]="getSvgSegments().cancelledOffset"></circle>
+            </svg>
+            <div class="position-absolute text-center d-flex flex-column align-items-center justify-content-center">
+              <span class="fw-extrabold text-dark fs-3 lh-1">{{ getSuccessIndexRate() }}%</span>
+              <span class="text-muted text-uppercase tracking-wider mt-1" style="font-size: 8px; font-weight: 700;">Success</span>
+            </div>
+          </div>
+
+          <div class="chart-legend-row d-flex flex-wrap justify-content-center gap-3 bg-light p-3 rounded-3 border">
+            <span class="legend-item"><span class="dot confirmed"></span> Confirmed ({{ metrics.confirmedBookings }})</span>
+            <span class="legend-item"><span class="dot pending"></span> Pending ({{ metrics.pendingBookings }})</span>
+            <span class="legend-item"><span class="dot cancelled"></span> Cancelled ({{ metrics.cancelledBookings }})</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <!-- ========================================================== -->
+  <!-- EXECUTIVE HIGH-FIDELITY PDF GENERATION TEMPLATE ENGINE     -->
+  <!-- ========================================================== -->
+  <!-- FIXED: Relocated off-screen via bottom placement to preserve DOM render pipelines for html2canvas -->
+  <div id="hiddenPrintReportWrapper" style="position: fixed; bottom: -3000px; left: 0; width: 760px; background-color: #ffffff; z-index: -9999; overflow: visible;">
+    <div style="width: 760px; font-family: 'Helvetica Neue', Arial, sans-serif; background-color: #ffffff; padding: 45px; color: #0f172a; box-sizing: border-box;">
+      
+      <!-- Report Header -->
+      <table style="width: 100%; border-bottom: 3px solid #0f172a; padding-bottom: 18px; margin-bottom: 28px; border-collapse: collapse;">
+        <tr>
+          <td style="vertical-align: middle;">
+            <span style="font-size: 9px; font-weight: 800; color: #2563eb; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 4px;">TRAVEL 360 ADMINISTRATIVE REGISTER</span>
+            <h2 style="font-weight: 800; color: #0f172a; margin: 0; font-size: 25px; letter-spacing: -0.5px; text-transform: uppercase;">Financial Audit Statement</h2>
+            <span style="font-size: 12px; color: #64748b; display: block; margin-top: 4px;">Statement Window: <strong style="color: #0f172a;">{{ getTargetMonthName() }} {{ selectedYear }}</strong></span>
+          </td>
+          <td style="vertical-align: middle; text-align: right;">
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 10px 16px; border-radius: 6px; display: inline-block; text-align: left;">
+              <span style="font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; display: block; letter-spacing: 0.5px;">Report Signature</span>
+              <span style="font-size: 13px; font-weight: 700; color: #0f172a; display: block; margin-top: 2px;">TS-2026-ACTIVE</span>
+              <span style="font-size: 10px; color: #94a3b8; display: block;">Generated: 2026-07-15</span>
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Financial Metrics Summary Grid -->
+      <div style="width: 100%; margin-bottom: 28px;">
+        <table style="width: 100%; border-collapse: separate; border-spacing: 14px 0; margin-left: -14px; margin-right: -14px;">
+          <tr>
+            <td style="width: 25%; border: 1px solid #e2e8f0; border-top: 4px solid #2563eb; padding: 16px; background-color: #f8fafc; border-radius: 4px; vertical-align: top;">
+              <span style="font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Collected Revenue</span>
+              <div style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 6px;"><strong>{{ metrics?.totalRevenueCollected | currency:'INR':'symbol':'1.0-0' }}</strong></div>
+            </td>
+            <td style="width: 25%; border: 1px solid #e2e8f0; border-top: 4px solid #ef4444; padding: 16px; background-color: #f8fafc; border-radius: 4px; vertical-align: top;">
+              <span style="font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Refunds Issued</span>
+              <div style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 6px;"><strong>{{ metrics?.totalRefundsIssued | currency:'INR':'symbol':'1.0-0' }}</strong></div>
+            </td>
+            <td style="width: 25%; border: 1px solid #e2e8f0; border-top: 4px solid #f59e0b; padding: 16px; background-color: #f8fafc; border-radius: 4px; vertical-align: top;">
+              <span style="font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Gross Orders</span>
+              <div style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 6px;">{{ metrics?.totalBookings }} Units</div>
+            </td>
+            <td style="width: 25%; border: 1px solid #e2e8f0; border-top: 4px solid #10b981; padding: 16px; background-color: #f8fafc; border-radius: 4px; vertical-align: top;">
+              <span style="font-size: 9px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;">Net Portfolio</span>
+              <div style="font-size: 19px; font-weight: 800; color: #10b981; margin-top: 6px;"><strong>{{ ((metrics?.totalRevenueCollected || 0) - (metrics?.totalRefundsIssued || 0)) | currency:'INR':'symbol':'1.0-0' }}</strong></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <!-- Split Columns Layout -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 28px;">
+        <tr>
+          <!-- Left Column: Sector Volume Distributions Table -->
+          <td style="width: 50%; vertical-align: top; padding-right: 24px;">
+            <h4 style="font-size: 11px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px;">
+              Granular Sector Volume Distributions
+            </h4>
+            <table style="width: 100%; border-collapse: collapse;">
+              <thead>
+                <tr style="background-color: #f1f5f9; border-bottom: 1px solid #e2e8f0;">
+                  <th style="padding: 8px 10px; text-align: left; font-size: 9px; font-weight: 700; color: #475569;">STREAM CLASSIFICATION</th>
+                  <th style="padding: 8px 10px; text-align: center; font-size: 9px; font-weight: 700; color: #475569; width: 70px;">COUNT</th>
+                  <th style="padding: 8px 10px; text-align: right; font-size: 9px; font-weight: 700; color: #475569; width: 70px;">SHARE</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 9px 10px; font-size: 11px; color: #334155; font-weight: 600;">FLIGHT Logistics</td>
+                  <td style="padding: 9px 10px; text-align: center; font-size: 11px; color: #0f172a;">{{ getServiceCount('FLIGHT') }}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-size: 11px; color: #2563eb; font-weight: 700;">{{ getServicePercentage('FLIGHT') }}%</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 9px 10px; font-size: 11px; color: #334155; font-weight: 600;">HOTEL Allocations</td>
+                  <td style="padding: 9px 10px; text-align: center; font-size: 11px; color: #0f172a;">{{ getServiceCount('HOTEL') }}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-size: 11px; color: #2563eb; font-weight: 700;">{{ getServicePercentage('HOTEL') }}%</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 9px 10px; font-size: 11px; color: #334155; font-weight: 600;">BUS Regional Transit</td>
+                  <td style="padding: 9px 10px; text-align: center; font-size: 11px; color: #0f172a;">{{ getServiceCount('BUS') }}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-size: 11px; color: #2563eb; font-weight: 700;">{{ getServicePercentage('BUS') }}%</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                  <td style="padding: 9px 10px; font-size: 11px; color: #334155; font-weight: 600;">TOUR_PACKAGE Managed</td>
+                  <td style="padding: 9px 10px; text-align: center; font-size: 11px; color: #0f172a;">{{ getServiceCount('TOUR_PACKAGE') }}</td>
+                  <td style="padding: 9px 10px; text-align: right; font-size: 11px; color: #2563eb; font-weight: 700;">{{ getServicePercentage('TOUR_PACKAGE') }}%</td>
+                </tr>
+                <tr style="background-color: #f8fafc; border-top: 1px solid #0f172a;">
+                  <td style="padding: 10px; font-size: 11px; font-weight: 700; color: #0f172a;">Consolidated Aggregate</td>
+                  <td style="padding: 10px; text-align: center; font-size: 11px; font-weight: 700; color: #0f172a;">{{ metrics?.totalBookings }}</td>
+                  <td style="padding: 10px; text-align: right; font-size: 10px; font-weight: 700; color: #64748b;">100% Share</td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+
+          <!-- Right Column: FIXED HIGH-FIDELITY COMPLIANT VECTOR SVG RING -->
+          <td style="width: 50%; vertical-align: top; padding-left: 24px; border-left: 1px solid #e2e8f0;">
+            <h4 style="font-size: 11px; font-weight: 800; color: #0f172a; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #cbd5e1; padding-bottom: 6px;">
+              Execution Integrity Parameters
+            </h4>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 16px;">
+              <tr>
+                <td style="width: 110px; vertical-align: middle; text-align: center;">
+                  <!-- FIXED: Added explicit relative box context and absolute table center layering -->
+                  <div style="position: relative; width: 100px; height: 100px; display: inline-block;">
+                    <!-- FIXED: Added explicit width, height, and XML namespace parameters so html2canvas renders perfectly -->
+                    <svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 42 42" style="transform: rotate(-90deg); display: block;">
+                      <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#e2e8f0" stroke-width="4.5"></circle>
+                      <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#10b981" stroke-width="4.5" [attr.stroke-dasharray]="getSvgSegments().confirmedDash" [attr.stroke-dashoffset]="getSvgSegments().confirmedOffset"></circle>
+                      <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#f59e0b" stroke-width="4.5" [attr.stroke-dasharray]="getSvgSegments().pendingDash" [attr.stroke-dashoffset]="getSvgSegments().pendingOffset"></circle>
+                      <circle cx="21" cy="21" r="15.9155" fill="transparent" stroke="#ef4444" stroke-width="4.5" [attr.stroke-dasharray]="getSvgSegments().cancelledDash" [attr.stroke-dashoffset]="getSvgSegments().cancelledOffset"></circle>
+                    </svg>
+                    <!-- FIXED: Absolute center mapping engineered via clean tabular alignment -->
+                    <div style="position: absolute; top: 0; left: 0; width: 100px; height: 100px; display: table;">
+                      <div style="display: table-cell; vertical-align: middle; text-align: center;">
+                        <span style="font-size: 16px; font-weight: 800; color: #0f172a; display: block; line-height: 1.1;">{{ getSuccessIndexRate() }}%</span>
+                        <span style="font-size: 7px; color: #64748b; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px; display: block; margin-top: 2px;">Success</span>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+                
+                <td style="vertical-align: middle; padding-left: 18px;">
+                  <div style="margin-bottom: 8px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; font-size: 11px;">
+                    <span style="color: #475569; font-weight: 600;">Confirmed:</span>
+                    <strong style="float: right; color: #10b981;">{{ metrics?.confirmedBookings }}</strong>
+                  </div>
+                  <div style="margin-bottom: 8px; border-bottom: 1px dashed #cbd5e1; padding-bottom: 4px; font-size: 11px;">
+                    <span style="color: #475569; font-weight: 600;">Pending Holds:</span>
+                    <strong style="float: right; color: #f59e0b;">{{ metrics?.pendingBookings }}</strong>
+                  </div>
+                  <div style="font-size: 11px;">
+                    <span style="color: #475569; font-weight: 600;">Voided Logs:</span>
+                    <strong style="float: right; color: #ef4444;">{{ metrics?.cancelledBookings }}</strong>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Visual Distribution Chart Representation Frame -->
+      <div style="border: 1px solid #e2e8f0; padding: 20px; border-radius: 6px; background-color: #f8fafc; margin-bottom: 20px;">
+        <span style="font-size: 10px; font-weight: 800; color: #0f172a; text-transform: uppercase; letter-spacing: 0.8px; display: block; margin-bottom: 14px;">Operational Infrastructure Distribution Stream Share</span>
+        
+        <div style="margin-bottom: 10px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 130px; font-size: 11px; font-weight: 700; color: #475569;">FLIGHT LOGISTICS</td>
+              <td>
+                <div style="background-color: #e2e8f0; border-radius: 20px; height: 10px; width: 100%; overflow: hidden;">
+                  <div style="background-color: #2563eb; height: 100%; border-radius: 20px;" [style.width.%]="getServicePercentage('FLIGHT')"></div>
+                </div>
+              </td>
+              <td style="width: 45px; font-size: 11px; font-weight: 800; color: #0f172a; text-align: right;">{{ getServicePercentage('FLIGHT') }}%</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 130px; font-size: 11px; font-weight: 700; color: #475569;">HOTEL STAY UNITS</td>
+              <td>
+                <div style="background-color: #e2e8f0; border-radius: 20px; height: 10px; width: 100%; overflow: hidden;">
+                  <div style="background-color: #10b981; height: 100%; border-radius: 20px;" [style.width.%]="getServicePercentage('HOTEL')"></div>
+                </div>
+              </td>
+              <td style="width: 45px; font-size: 11px; font-weight: 800; color: #0f172a; text-align: right;">{{ getServicePercentage('HOTEL') }}%</td>
+            </tr>
+          </table>
+        </div>
+
+        <div style="margin-bottom: 10px;">
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 130px; font-size: 11px; font-weight: 700; color: #475569;">BUS REGIONAL TRANSIT</td>
+              <td>
+                <div style="background-color: #e2e8f0; border-radius: 20px; height: 10px; width: 100%; overflow: hidden;">
+                  <div style="background-color: #ef4444; height: 100%; border-radius: 20px;" [style.width.%]="getServicePercentage('BUS')"></div>
+                </div>
+              </td>
+              <td style="width: 45px; font-size: 11px; font-weight: 800; color: #0f172a; text-align: right;">{{ getServicePercentage('BUS') }}%</td>
+            </tr>
+          </table>
+        </div>
+
+        <div>
+          <table style="width: 100%; border-collapse: collapse;">
+            <tr>
+              <td style="width: 130px; font-size: 11px; font-weight: 700; color: #475569;">MANAGED TOUR STREAMS</td>
+              <td>
+                <div style="background-color: #e2e8f0; border-radius: 20px; height: 10px; width: 100%; overflow: hidden;">
+                  <div style="background-color: #06b6d4; height: 100%; border-radius: 20px;" [style.width.%]="getServicePercentage('TOUR_PACKAGE')"></div>
+                </div>
+              </td>
+              <td style="width: 45px; font-size: 11px; font-weight: 800; color: #0f172a; text-align: right;">{{ getServicePercentage('TOUR_PACKAGE') }}%</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- Footer Disclaimer Frame -->
+      <div style="margin-top: 45px; text-align: center; border-top: 1px dashed #cbd5e1; padding-top: 18px; font-size: 9px; color: #94a3b8; letter-spacing: 0.5px; line-height: 1.4;">
+        This document represents an automated operational calculation compiled by Travel 360 Core Ledger Systems.<br>
+        <strong>Confidentiality Designation: Internal Administrative Ledger Auditing Use Only.</strong>
+      </div>
+
+    </div>
+  </div>
+
+</div>

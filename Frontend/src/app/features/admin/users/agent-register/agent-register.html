@@ -1,0 +1,166 @@
+<div class="card shadow-sm border border-light bg-white rounded-3">
+  <div class="card-header bg-white border-bottom p-3">
+    <h2 class="h5 fw-bold text-dark mb-0">Register Operational Support Agent</h2>
+  </div>
+
+  <div class="card-body p-4">
+    @if (submissionError) {
+      <div class="alert alert-danger shadow-sm mb-3 d-flex align-items-center gap-2">
+        <span class="fw-bold">Deployment Failure:</span> {{ submissionError }}
+      </div>
+    }
+    @if (successMessage()) {
+      <div class="alert alert-success shadow-sm mb-3 animate__animated animate__fadeIn">
+        {{ successMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="agentForm" (ngSubmit)="submitAgentForm()">
+      
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Travel Agent Name *</label>
+          <input type="text" class="form-control" formControlName="name" [class.is-invalid]="agentForm.get('name')?.invalid && agentForm.get('name')?.touched">
+          @if (agentForm.get('name')?.invalid && agentForm.get('name')?.touched) {
+            <div class="invalid-feedback">
+              @if (agentForm.get('name')?.errors?.['required']) { Agent assignment name is mandatory. }
+              @if (agentForm.get('name')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+            </div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Email *</label>
+          <input type="email" class="form-control" formControlName="email" [class.is-invalid]="agentForm.get('email')?.invalid && agentForm.get('email')?.touched">
+          @if (agentForm.get('email')?.touched && agentForm.get('email')?.errors) {
+            <div class="invalid-feedback">
+              @if (agentForm.get('email')?.errors?.['required']) { Agent email mapping is mandatory. }
+              @if (agentForm.get('email')?.errors?.['email']) { Improper structure for agent email context mapping. }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Password *</label>
+          <input type="password" class="form-control" formControlName="password" [class.is-invalid]="agentForm.get('password')?.invalid && agentForm.get('password')?.touched">
+          @if (agentForm.get('password')?.invalid && agentForm.get('password')?.touched) {
+            <div class="invalid-feedback">Initial passphrase configuration is required.</div>
+          }
+        </div>
+        <div class="col-12 col-md-6">
+          <label class="form-label fw-semibold text-secondary small">Contact Number *</label>
+          <input type="text" class="form-control" maxlength="10" inputmode="numeric" formControlName="phone" [class.is-invalid]="agentForm.get('phone')?.invalid && agentForm.get('phone')?.touched">
+          @if (agentForm.get('phone')?.touched && agentForm.get('phone')?.errors) {
+            <div class="invalid-feedback">
+              @if (agentForm.get('phone')?.errors?.['required']) { Phone number is required. }
+              @if (agentForm.get('phone')?.errors?.['pattern']) { Phone must be 10 digits and only numerical value is accepted. }
+            </div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Gender *</label>
+          <select class="form-select" formControlName="gender" [class.is-invalid]="agentForm.get('gender')?.invalid && agentForm.get('gender')?.touched">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Other">Other</option>
+          </select>
+          @if (agentForm.get('gender')?.invalid && agentForm.get('gender')?.touched) {
+            <div class="invalid-feedback">Gender selection is mandatory.</div>
+          }
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Date of Birth (Must be 18+)*</label>
+          <input type="date" class="form-control" [max]="maxDobDate" formControlName="dateOfBirth" [class.is-invalid]="agentForm.get('dateOfBirth')?.invalid && agentForm.get('dateOfBirth')?.touched">
+          @if (agentForm.get('dateOfBirth')?.touched && agentForm.get('dateOfBirth')?.errors) {
+            <div class="invalid-feedback">
+              @if (agentForm.get('dateOfBirth')?.errors?.['required']) { Date of Birth is required. }
+              @if (agentForm.get('dateOfBirth')?.errors?.['underaged']) { Agent must be 18 years of age or older. }
+            </div>
+          }
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Agent Experience (Years)</label>
+          <input type="number" class="form-control" formControlName="agentExperienceYears" [class.is-invalid]="agentForm.get('agentExperienceYears')?.invalid && agentForm.get('agentExperienceYears')?.touched">
+          @if (agentForm.get('agentExperienceYears')?.invalid && agentForm.get('agentExperienceYears')?.touched) {
+            <div class="invalid-feedback">Experience years cannot be negative.</div>
+          }
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Country *</label>
+          <select class="form-select" formControlName="country" [class.is-invalid]="agentForm.get('country')?.invalid && agentForm.get('country')?.touched" (change)="onSelectChange('country', $event)">
+            <option value="">Select Country</option>
+            @for (c of countries; track c.name) {
+              <option [value]="c.name">{{c.name}}</option>
+            }
+          </select>
+          @if (agentForm.get('country')?.invalid && agentForm.get('country')?.touched) {
+            <div class="invalid-feedback">Country selection is mandatory.</div>
+          }
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">State *</label>
+          <select class="form-select" formControlName="state" [class.is-invalid]="agentForm.get('state')?.invalid && agentForm.get('state')?.touched" (change)="onSelectChange('state', $event)">
+            <option value="">Select State</option>
+            @for (s of agentStates; track s.name) {
+              <option [value]="s.name">{{s.name}}</option>
+            }
+          </select>
+          @if (agentForm.get('state')?.invalid && agentForm.get('state')?.touched) {
+            <div class="invalid-feedback">State selection is mandatory.</div>
+          }
+        </div>
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">District</label>
+          <select class="form-select" formControlName="district" (change)="onSelectChange('district', $event)">
+            <option value="">Select District</option>
+            @for (d of agentDistricts; track d.name) {
+              <option [value]="d.name">{{d.name}}</option>
+            }
+          </select>
+        </div>
+      </div>
+
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">City *</label>
+          <select class="form-select" formControlName="city" [class.is-invalid]="agentForm.get('city')?.invalid && agentForm.get('city')?.touched">
+            <option value="">Select City</option>
+            @for (city of agentCities; track city) {
+              <option [value]="city">{{city}}</option>
+            }
+          </select>
+          @if (agentForm.get('city')?.invalid && agentForm.get('city')?.touched) {
+            <div class="invalid-feedback">City selection is mandatory.</div>
+          }
+        </div>
+        <div class="col-12 col-md-8">
+          <label class="form-label fw-semibold text-secondary small">Address</label>
+          <input type="text" class="form-control" formControlName="address" [class.is-invalid]="agentForm.get('address')?.invalid && agentForm.get('address')?.touched">
+          @if (agentForm.get('address')?.invalid && agentForm.get('address')?.touched) {
+            <div class="invalid-feedback">HTML tags (<, >) are explicitly blocked.</div>
+          }
+        </div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label fw-semibold text-secondary small">Agent Bio</label>
+        <input type="text" class="form-control" formControlName="agentBio" [class.is-invalid]="agentForm.get('agentBio')?.invalid && agentForm.get('agentBio')?.touched">
+        @if (agentForm.get('agentBio')?.invalid && agentForm.get('agentBio')?.touched) {
+          <div class="invalid-feedback">HTML tags (<, >) are explicitly blocked.</div>
+        }
+      </div>
+
+      <button type="submit" class="btn btn-success px-4 py-2 fw-semibold shadow-sm w-100" [disabled]="agentForm.invalid">
+        Register Agent
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,91 @@
+// Dynamic tokens mapping elements directly into Aura-Light System parameters
+$primary-soft: rgba(37, 99, 235, 0.06);
+$success-soft: rgba(16, 185, 129, 0.06);
+$danger-soft: rgba(239, 68, 68, 0.06);
+$warning-soft: rgba(245, 158, 11, 0.06);
+$info-soft: rgba(6, 182, 212, 0.06);
+$border-light: #e2e8f0;
+
+.requests-portal-core {
+  // Explicit Tracking Padding Typography Metrics Alignment
+  .small-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.06em !important;
+    text-transform: uppercase;
+  }
+  .text-xs { font-size: 0.75rem !important; }
+  .text-xxs { font-size: 0.68rem !important; letter-spacing: 0.3px; }
+  .line-spaced { line-height: 1.5 !important; }
+  .max-w-160 { max-width: 160px !important; }
+  .fs-9 { font-size: 0.65rem !important; }
+
+  // Context Soft Color Badge Variables
+  .bg-primary-soft { background-color: $primary-soft !important; }
+  .bg-success-soft { background-color: $success-soft !important; }
+  .bg-danger-soft { background-color: $danger-soft !important; }
+  .bg-warning-soft { background-color: $warning-soft !important; }
+  .bg-info-soft { background-color: $info-soft !important; }
+
+  // Rotate Plane Vector Badge Utility
+  .rotate-45 {
+    transform: rotate(45deg);
+    display: inline-block;
+  }
+
+  // Aura Frosted White Translucent Base Panel Scaffolding
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.03) !important;
+  }
+
+  .shadow-inner-sm {
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);
+  }
+
+  // Segment Table Typography Overrides
+  .data-table-node {
+    border-collapse: collapse;
+    th {
+      color: #64748b;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding: 0.95rem 1rem;
+    }
+    td {
+      padding: 1.05rem 1rem;
+      vertical-align: middle;
+    }
+  }
+
+  .item-transition-row {
+    transition: background-color 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    &:hover {
+      background-color: #f8fafc !important;
+    }
+  }
+
+  // Custom Modal Framing Dimension Constraints
+  .modal-container-canvas {
+    max-width: 780px !important;
+    width: 100%;
+  }
+
+  .opacity-75-hover {
+    transition: opacity 0.2s ease;
+    &:hover {
+      opacity: 0.65 !important;
+    }
+  }
+
+  // Right-aligned column boundary partitions layout adjustments
+  @media (min-width: 768px) {
+    .border-start-md {
+      border-left: 1px solid $border-light !important;
+    }
+  }
+}

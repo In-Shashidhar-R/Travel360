@@ -1,0 +1,107 @@
+<div class="card p-4 shadow-sm border border-light-subtle rounded-4 bg-white bg-opacity-95 text-start glass-panel-light passenger-directory-node">
+  
+  <!-- Header Title Strip -->
+  <div class="d-flex justify-content-between align-items-center border-bottom border-light pb-3 mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="icon-circle-sm bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <h5 class="fw-extrabold text-dark tracking-tight mb-0 fs-6">
+        {{ showSelection ? 'Select Travel Companions' : 'Passenger Directory Roster' }}
+      </h5>
+    </div>
+    
+    <!-- 🎯 FIXED: Icon-only configuration with an automated hover tooltip title -->
+    <button class="btn btn-xs rounded-circle p-0 d-inline-flex align-items-center justify-content-center transition-all shadow-xs"
+            [ngClass]="showPassengerForm ? 'btn-secondary text-white' : 'btn-outline-primary'"
+            [title]="showPassengerForm ? 'Close Panel' : 'Add Companion'"
+            (click)="toggleFormWindow()"
+            style="width: 32px; height: 32px;">
+      <i class="bi fs-5" [ngClass]="showPassengerForm ? 'bi-x-circle-fill' : 'bi-plus-circle-fill'"></i>
+    </button>
+  </div>
+
+  <!-- Global Operational Error Alerts Banner -->
+  @if (formErrorMessage) {
+    <div class="alert alert-danger bg-danger-soft text-danger border-0 p-3 rounded-3 mb-3 shadow-sm d-flex align-items-center gap-2.5 animate-fade-in">
+      <i class="bi bi-exclamation-octagon-fill fs-5"></i>
+      <span class="fw-semibold small">Validation Exception: {{ formErrorMessage }}</span>
+    </div>
+  }
+
+  <!-- Smooth Expandable Passenger Insertion Form -->
+  @if (showPassengerForm) {
+    <div class="p-3 bg-light bg-opacity-60 rounded-4 border border-light-subtle mb-4 shadow-inner-sm animate-fade-in">
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label text-xs fw-bold text-secondary mb-1">Full Name (As per Document)</label>
+          <div class="input-group">
+            <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-person-fill"></i></span>
+            <input type="text" class="form-control bg-white shadow-sm border-start-0" placeholder="E.g. Rajaram Shashidhar" [(ngModel)]="newPassenger.name">
+          </div>
+        </div>
+        <div class="col-12 col-sm-6">
+          <label class="form-label text-xs fw-bold text-secondary mb-1">Age</label>
+          <input type="number" class="form-control bg-white shadow-sm font-sans" placeholder="Age" [(ngModel)]="newPassenger.age">
+        </div>
+        <div class="col-12 col-sm-6">
+          <label class="form-label text-xs fw-bold text-secondary mb-1">Gender</label>
+          <select class="form-select bg-white shadow-sm font-sans" [(ngModel)]="newPassenger.gender">
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6">
+          <label class="form-label text-xs fw-bold text-secondary mb-1">Identity ID Verification Type</label>
+          <select class="form-select bg-white shadow-sm font-sans fw-semibold" [(ngModel)]="newPassenger.idProofType">
+            <option value="PASSPORT">Passport Document</option>
+            <option value="PAN">PAN Card Registration</option>
+            <option value="AADHAAR">Aadhaar National ID</option>
+            <option value="DRIVING_LICENSE">Driving License Matrix</option>
+          </select>
+        </div>
+        <div class="col-12 col-sm-6">
+          <label class="form-label text-xs fw-bold text-secondary mb-1">Document Identifier Number</label>
+          <input type="text" class="form-control bg-white shadow-sm font-monospace" placeholder="ID Code Characters" [(ngModel)]="newPassenger.idProofNumber">
+        </div>
+      </div>
+
+      <button class="btn btn-success rounded-3 w-100 mt-3 py-2 fw-bold text-uppercase tracking-wider text-xs shadow-sm border-0 btn-save-profile" (click)="addPassenger()">
+        <i class="bi bi-cloud-arrow-up-fill me-1.5 fs-6"></i> Save Profile Record
+      </button>
+    </div>
+  }
+
+  <!-- Directory Item Dynamic Scroller Track List -->
+  <div class="list-group list-group-flush custom-scrollbar-panel pe-1" style="max-height: 380px; overflow-y: auto;">
+    @for (p of savedPassengers; track p.profileId) {
+      <div class="list-group-item d-flex justify-content-between align-items-center px-2 py-3 border-bottom border-light transition-all item-transition-row">
+        <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+          
+          @if (showSelection) {
+            <div class="checkbox-wrapper me-1 flex-shrink-0">
+              <input 
+                class="form-check-input checkbox-custom mt-0 border" 
+                type="checkbox" 
+                [id]="'check-' + p.profileId"
+                (change)="togglePassenger(p.profileId!)">
+            </div>
+          }
+          
+          <label [for]="showSelection ? 'check-' + p.profileId : null" class="mb-0 flex-grow-1 text-truncate" [style.cursor]="showSelection ? 'pointer' : 'default'">
+            <span class="fw-extrabold text-dark d-block text-capitalize tracking-wide mb-0.5 text-truncate fs-7">{{ p.name }}</span>
+            <small class="text-secondary bg-light px-2.5 py-1 rounded-pill text-xxs font-sans fw-bold mt-1 d-inline-block border border-light-subtle">
+              <i class="bi bi-gender-ambiguous text-muted me-1"></i>{{ p.gender }} • Age: {{ p.age }} <span class="text-muted mx-1">|</span> <i class="bi bi-card-heading text-muted me-1"></i>{{ p.idProofType }}
+            </small>
+          </label>
+        </div>
+        
+        <button class="btn btn-sm btn-link text-danger border-0 p-1 ms-2 opacity-75-hover flex-shrink-0 transition-fade" title="Remove profile entry" (click)="deletePassenger(p.profileId)">
+          <i class="bi bi-trash3-fill fs-6"></i>
+        </button>
+      </div>
+    } @empty {
+      <div class="text-center py-4 text-muted text-xs font-sans tracking-wide">Your companion directory list roster is empty.</div>
+    }
+  </div>
+</div>

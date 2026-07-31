@@ -1,0 +1,415 @@
+<div class="card shadow-sm border border-light rounded-3 bg-white mb-4 mx-auto" style="max-width: 950px;">
+  <div class="card-header bg-white border-bottom p-3">
+    <h2 class="h5 fw-bold text-dark mb-0">Add Unified Inventory</h2>
+  </div>
+
+  <div class="card-body p-4">
+    
+    <!-- Local Success Alert Box -->
+    @if (successMessage()) {
+      <div class="alert alert-success shadow-sm mb-3 border-start border-4 border-success">
+        <i class="bi bi-check-circle-fill me-2"></i> {{ successMessage() }}
+      </div>
+    }
+
+    <!-- Local Error Alert Box -->
+    @if (errorMessage()) {
+      <div class="alert alert-danger shadow-sm mb-3 border-start border-4 border-danger">
+        <i class="bi bi-exclamation-octagon-fill me-2"></i> {{ errorMessage() }}
+      </div>
+    }
+
+    <form [formGroup]="inventoryForm" (ngSubmit)="submitInventoryForm()">
+      
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Inventory Service Category *</label>
+          <select class="form-select" formControlName="inventoryType" (change)="onInventoryTypeChange()" [class.is-invalid]="inventoryForm.get('inventoryType')?.touched && inventoryForm.get('inventoryType')?.invalid">
+            <option value="">-- Choose Category Type --</option>
+            <option value="FLIGHT">FLIGHT</option>
+            <option value="BUS">BUS</option>
+            <option value="HOTEL">HOTEL</option>
+            <option value="TOUR_PACKAGE">TOUR</option>
+          </select>
+          @if (inventoryForm.get('inventoryType')?.touched && inventoryForm.get('inventoryType')?.invalid) {
+            <div class="invalid-feedback">Service category is required.</div>
+          }
+        </div>
+
+        <div class="col-12 col-md-4">
+          <label class="form-label fw-semibold text-secondary small">Partner ID * </label>
+          <input type="number" class="form-control" formControlName="partnerId" placeholder="e.g., 9007199254740991" [class.is-invalid]="inventoryForm.get('partnerId')?.touched && inventoryForm.get('partnerId')?.invalid">
+          @if (inventoryForm.get('partnerId')?.touched && inventoryForm.get('partnerId')?.invalid) {
+            <div class="invalid-feedback">Valid Partner ID is required.</div>
+          }
+        </div>
+
+        <div class="col-12 col-md-4" *ngIf="inventoryForm.get('inventoryType')?.value !== 'TOUR_PACKAGE' && inventoryForm.get('inventoryType')?.value !== 'HOTEL'">
+          <label class="form-label fw-semibold text-secondary small">Base Price per Seat *</label>
+          <input type="number" class="form-control" formControlName="basePricePerSeat" step="0.01" [class.is-invalid]="inventoryForm.get('basePricePerSeat')?.touched && inventoryForm.get('basePricePerSeat')?.invalid">
+          @if (inventoryForm.get('basePricePerSeat')?.touched && inventoryForm.get('basePricePerSeat')?.invalid) {
+            <div class="invalid-feedback">Base price must be 0 or higher.</div>
+          }
+        </div>
+      </div>
+
+      <div *ngIf="inventoryForm.get('inventoryType')?.value">
+        <hr class="text-muted opacity-25 my-4">
+      </div>
+
+      <!-- ==================== FLIGHT INTERFACE ==================== -->
+      <div *ngIf="inventoryForm.get('inventoryType')?.value === 'FLIGHT'">
+        <h3 class="h6 fw-bold text-primary mb-3"><i class="bi bi-airplane-fill me-1.5"></i> Flight Inventory </h3>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Flight Code *</label>
+            <input type="text" class="form-control" formControlName="flightNumber" placeholder="AI-302" [class.is-invalid]="inventoryForm.get('flightNumber')?.touched && inventoryForm.get('flightNumber')?.invalid">
+            @if (inventoryForm.get('flightNumber')?.touched && inventoryForm.get('flightNumber')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('flightNumber')?.errors?.['required']) { Flight Code is mandatory. }
+                @if (inventoryForm.get('flightNumber')?.errors?.['pattern']) { Formatting structural characters (<, >, ?, !) are explicitly blocked. }
+              </div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Airline Name *</label>
+            <input type="text" class="form-control" formControlName="airlineName" placeholder="Air India" [class.is-invalid]="inventoryForm.get('airlineName')?.touched && inventoryForm.get('airlineName')?.invalid">
+            @if (inventoryForm.get('airlineName')?.touched && inventoryForm.get('airlineName')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('airlineName')?.errors?.['required']) { Airline Name is required. }
+                @if (inventoryForm.get('airlineName')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Departure Airport Code *</label>
+            <select class="form-select" formControlName="departureAirport" [class.is-invalid]="inventoryForm.get('departureAirport')?.touched && inventoryForm.get('departureAirport')?.invalid">
+              <option value="">-- Select Departure Airport --</option>
+              @for (air of airports; track air.code) {
+                <option [value]="air.code">{{ air.name }}</option>
+              }
+            </select>
+            @if (inventoryForm.get('departureAirport')?.touched && inventoryForm.get('departureAirport')?.invalid) {
+              <div class="invalid-feedback">Departure hub tracking code is mandatory.</div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Arrival Airport Code *</label>
+            <select class="form-select" formControlName="arrivalAirport" [class.is-invalid]="inventoryForm.get('arrivalAirport')?.touched && inventoryForm.get('arrivalAirport')?.invalid">
+              <option value="">-- Select Arrival Airport --</option>
+              @for (air of airports; track air.code) {
+                <option [value]="air.code">{{ air.name }}</option>
+              }
+            </select>
+            @if (inventoryForm.get('arrivalAirport')?.touched && inventoryForm.get('arrivalAirport')?.invalid) {
+              <div class="invalid-feedback">Destination hub tracking code is mandatory.</div>
+            }
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Scheduled Departure Time *</label>
+            <input type="text" class="form-control" formControlName="startTime" placeholder="HH:mm:ss" [class.is-invalid]="inventoryForm.get('startTime')?.touched && inventoryForm.get('startTime')?.invalid">
+            @if (inventoryForm.get('startTime')?.touched && inventoryForm.get('startTime')?.invalid) {
+              <div class="invalid-feedback">Valid launch timeline configuration statement required.</div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Scheduled Arrival Time *</label>
+            <input type="text" class="form-control" formControlName="endTime" placeholder="HH:mm:ss" [class.is-invalid]="inventoryForm.get('endTime')?.touched && inventoryForm.get('endTime')?.invalid">
+            @if (inventoryForm.get('endTime')?.touched && inventoryForm.get('endTime')?.invalid) {
+              <div class="invalid-feedback">Valid arrival completion timeline context required.</div>
+            }
+          </div>
+        </div>
+        <div class="row g-3 mb-3 align-items-center">
+          <div class="col-12 col-md-4 pt-3">
+            <div class="form-check form-switch">
+              <input type="checkbox" class="form-check-input" id="isConnectingSwitch" formControlName="isConnecting">
+              <label class="form-check-label fw-semibold text-dark small" for="isConnectingSwitch">Is Connecting Flight?</label>
+            </div>
+          </div>
+          <div class="col-12 col-md-8" *ngIf="inventoryForm.get('isConnecting')?.value">
+            <label class="form-label fw-semibold text-secondary small">Layover Specifications</label>
+            <input type="text" class="form-control" formControlName="layoverDetails" placeholder="2 Hours layover at BLR" [class.is-invalid]="inventoryForm.get('layoverDetails')?.touched && inventoryForm.get('layoverDetails')?.invalid">
+            @if (inventoryForm.get('layoverDetails')?.touched && inventoryForm.get('layoverDetails')?.invalid) {
+              <div class="invalid-feedback">HTML tags (<, >) are explicitly blocked within specs.</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== BUS INTERFACE ==================== -->
+      <div *ngIf="inventoryForm.get('inventoryType')?.value === 'BUS'">
+        <h3 class="h6 fw-bold text-danger mb-3"><i class="bi bi-bus-front me-1.5"></i> Bus Inventory</h3>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Bus Vehicle Plate Number *</label>
+            <input type="text" class="form-control" formControlName="busNumberPlate" placeholder="TN-01-AX-1234" [class.is-invalid]="inventoryForm.get('busNumberPlate')?.touched && inventoryForm.get('busNumberPlate')?.invalid">
+            @if (inventoryForm.get('busNumberPlate')?.touched && inventoryForm.get('busNumberPlate')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('busNumberPlate')?.errors?.['required']) { Vehicle identification code required. }
+                @if (inventoryForm.get('busNumberPlate')?.errors?.['pattern']) { Formatting structural characters (<, >, ?, !) are explicitly blocked. }
+              </div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Operator Agency Name *</label>
+            <input type="text" class="form-control" formControlName="operatorName" placeholder="SRS Travels" [class.is-invalid]="inventoryForm.get('operatorName')?.touched && inventoryForm.get('operatorName')?.invalid">
+            @if (inventoryForm.get('operatorName')?.touched && inventoryForm.get('operatorName')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('operatorName')?.errors?.['required']) { Operator identification name mandatory. }
+                @if (inventoryForm.get('operatorName')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Departure Terminal *</label>
+            <select class="form-select" formControlName="routeFrom" [class.is-invalid]="inventoryForm.get('routeFrom')?.touched && inventoryForm.get('routeFrom')?.invalid">
+              <option value="">-- Select Departure Terminal --</option>
+              @for (term of busTerminals; track term) {
+                <option [value]="term">{{ term }}</option>
+              }
+            </select>
+            @if (inventoryForm.get('routeFrom')?.touched && inventoryForm.get('routeFrom')?.invalid) {
+              <div class="invalid-feedback">Route entry terminal coordinate tracking required.</div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Destination Terminal *</label>
+            <select class="form-select" formControlName="routeTo" [class.is-invalid]="inventoryForm.get('routeTo')?.touched && inventoryForm.get('routeTo')?.invalid">
+              <option value="">-- Select Destination Terminal --</option>
+              @for (term of busTerminals; track term) {
+                <option [value]="term">{{ term }}</option>
+              }
+            </select>
+            @if (inventoryForm.get('routeTo')?.touched && inventoryForm.get('routeTo')?.invalid) {
+              <div class="invalid-feedback">Route termination target identifier required.</div>
+            }
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Departure Timing *</label>
+            <input type="text" class="form-control" formControlName="startTime" placeholder="HH:mm:ss" [class.is-invalid]="inventoryForm.get('startTime')?.touched && inventoryForm.get('startTime')?.invalid">
+            @if (inventoryForm.get('startTime')?.touched && inventoryForm.get('startTime')?.invalid) {
+              <div class="invalid-feedback">Launch timeline configuration required.</div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Arrival Timing *</label>
+            <input type="text" class="form-control" formControlName="endTime" placeholder="HH:mm:ss" [class.is-invalid]="inventoryForm.get('endTime')?.touched && inventoryForm.get('endTime')?.invalid">
+            @if (inventoryForm.get('endTime')?.touched && inventoryForm.get('endTime')?.invalid) {
+              <div class="invalid-feedback">Arrival completion context required.</div>
+            }
+          </div>
+        </div>
+
+        <div class="p-3 bg-light border border-light rounded-3 mb-3" formArrayName="routeStops">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4 class="h6 fw-bold text-secondary mb-0"><i class="bi bi-map me-1"></i> Route Intermediate Stops</h4>
+            <button type="button" class="btn btn-sm btn-outline-primary fw-bold" (click)="addRouteStopControl()">
+              <i class="bi bi-plus-lg"></i> Add Stop
+            </button>
+          </div>
+          <div class="row g-2 align-items-end mb-2" *ngFor="let stop of routeStops.controls; let i = index" [formGroupName]="i">
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-muted mb-1">Stop Name *</label>
+              <select class="form-select form-select-sm" formControlName="stopName" [class.is-invalid]="stop.get('stopName')?.touched && stop.get('stopName')?.invalid">
+                <option value="">-- Choose Stop Terminal --</option>
+                @for (term of busTerminals; track term) {
+                  <option [value]="term">{{ term }}</option>
+                }
+              </select>
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label small text-muted mb-1">Stop Type *</label>
+              <input type="text" class="form-control form-control-sm" formControlName="stopType" placeholder="WAYPOINT" [class.is-invalid]="stop.get('stopType')?.touched && stop.get('stopType')?.invalid">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-muted mb-1">Scheduled Time *</label>
+              <input type="text" class="form-control form-control-sm" formControlName="scheduledTime" placeholder="HH:mm:ss" [class.is-invalid]="stop.get('scheduledTime')?.touched && stop.get('scheduledTime')?.invalid">
+            </div>
+            <div class="col-12 col-md-1 text-end">
+              <button type="button" class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center" style="height: 31px;" (click)="removeRouteStopControl(i)">
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dynamic Seat Matrix Selection System -->
+      <div *ngIf="inventoryForm.get('inventoryType')?.value === 'FLIGHT' || inventoryForm.get('inventoryType')?.value === 'BUS'" 
+           class="p-3 bg-light border border-light border-start border-4 border-primary rounded-3 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="h6 fw-bold text-dark mb-0"><i class="bi bi-ui-checks-grid me-1"></i> Seat Tiers Capacity </h4>
+          <button type="button" class="btn btn-sm btn-outline-primary fw-bold" (click)="addSeatTierControl()">
+            <i class="bi bi-plus-lg"></i> Add Seat Type
+          </button>
+        </div>
+        <div formArrayName="seatTiers">
+          <div class="row g-2 align-items-end mb-2" *ngFor="let tier of seatTiers.controls; let i = index" [formGroupName]="i">
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-muted mb-1">Seat Type Class Variant *</label>
+              <select class="form-select form-select-sm" formControlName="seatType" [class.is-invalid]="tier.get('seatType')?.touched && tier.get('seatType')?.invalid">
+                <option value="">-- Select Type --</option>
+                <option *ngFor="let bt of (inventoryForm.get('inventoryType')?.value === 'BUS' ? busSeatTypes : [])" [value]="bt">{{bt}}</option>
+                <option *ngFor="let ft of (inventoryForm.get('inventoryType')?.value === 'FLIGHT' ? flightSeatTypes : [])" [value]="ft">{{ft}}</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-3">
+              <label class="form-label small text-muted mb-1">Price Multiplier *</label>
+              <input type="number" class="form-control form-control-sm" formControlName="priceMultiplier" step="0.1" [class.is-invalid]="tier.get('priceMultiplier')?.touched && tier.get('priceMultiplier')?.invalid">
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label small text-muted mb-1">Total Seats *</label>
+              <input type="number" class="form-control form-control-sm" formControlName="totalSeatsAllocated" [class.is-invalid]="tier.get('totalSeatsAllocated')?.touched && tier.get('totalSeatsAllocated')?.invalid">
+            </div>
+            <div class="col-12 col-md-1 text-end">
+              <button type="button" class="btn btn-sm btn-outline-danger w-100 d-flex align-items-center justify-content-center" style="height: 31px;" (click)="removeSeatTierControl(i)">
+                <i class="bi bi-trash3-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== HOTEL INTERFACE ==================== -->
+      <div *ngIf="inventoryForm.get('inventoryType')?.value === 'HOTEL'">
+        <h3 class="h6 fw-bold text-success mb-3"><i class="bi bi-building me-1.5"></i> Hotel Inventory </h3>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Hotel Name *</label>
+            <input type="text" class="form-control" formControlName="hotelName" placeholder="Taj Connemara" [class.is-invalid]="inventoryForm.get('hotelName')?.touched && inventoryForm.get('hotelName')?.invalid">
+            @if (inventoryForm.get('hotelName')?.touched && inventoryForm.get('hotelName')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('hotelName')?.errors?.['required']) { Property description title required. }
+                @if (inventoryForm.get('hotelName')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+              </div>
+            }
+          </div>
+          <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold text-secondary small">Room Type *</label>
+            <input type="text" class="form-control" formControlName="roomType" placeholder="LUXURY_SUITE" [class.is-invalid]="inventoryForm.get('roomType')?.touched && inventoryForm.get('roomType')?.invalid">
+            @if (inventoryForm.get('roomType')?.touched && inventoryForm.get('roomType')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('roomType')?.errors?.['required']) { Room tier variant description tag required. }
+                @if (inventoryForm.get('roomType')?.errors?.['pattern']) { Characters (<, >, ?, !) are explicitly blocked. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold text-secondary small">Total Rooms Allocation *</label>
+            <input type="number" class="form-control" formControlName="totalRooms" [class.is-invalid]="inventoryForm.get('totalRooms')?.touched && inventoryForm.get('totalRooms')?.invalid">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold text-secondary small">Base Price Per Night *</label>
+            <input type="number" class="form-control" formControlName="basePricePerRoom" step="0.01" [class.is-invalid]="inventoryForm.get('basePricePerRoom')?.touched && inventoryForm.get('basePricePerRoom')?.invalid">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold text-secondary small">Hotel Rating (1-5)</label>
+            <input type="number" class="form-control" formControlName="hotelRating" min="1" max="5" [class.is-invalid]="inventoryForm.get('hotelRating')?.touched && inventoryForm.get('hotelRating')?.invalid">
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label fw-semibold text-secondary small">Address *</label>
+            <input type="text" class="form-control" formControlName="addressLocation" placeholder="Street/Area" [class.is-invalid]="inventoryForm.get('addressLocation')?.touched && inventoryForm.get('addressLocation')?.invalid">
+            @if (inventoryForm.get('addressLocation')?.touched && inventoryForm.get('addressLocation')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('addressLocation')?.errors?.['required']) { Street address parameter mapping is mandatory. }
+                @if (inventoryForm.get('addressLocation')?.errors?.['pattern']) { HTML tags (<, >) are explicitly blocked. }
+              </div>
+            }
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label fw-semibold text-secondary small">Country *</label>
+            <select class="form-select" formControlName="country" (change)="onHotelLocationCascade('country', $event)" [class.is-invalid]="inventoryForm.get('country')?.touched && inventoryForm.get('country')?.invalid">
+              <option value="">Select Country</option>
+              @for (c of countries; track c.name) {
+                <option [value]="c.name">{{ c.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label fw-semibold text-secondary small">State *</label>
+            <select class="form-select" formControlName="state" (change)="onHotelLocationCascade('state', $event)" [class.is-invalid]="inventoryForm.get('state')?.touched && inventoryForm.get('state')?.invalid">
+              <option value="">Select State</option>
+              @for (s of hotelStates; track s.name) {
+                <option [value]="s.name">{{ s.name }}</option>
+              }
+            </select>
+          </div>
+          <div class="col-12 col-sm-6 col-md-3">
+            <label class="form-label fw-semibold text-secondary small">District *</label>
+            <select class="form-select" formControlName="district" (change)="onHotelLocationCascade('district', $event)" [class.is-invalid]="inventoryForm.get('district')?.touched && inventoryForm.get('district')?.invalid">
+              <option value="">Select District</option>
+              @for (d of hotelDistricts; track d.name) {
+                <option [value]="d.name">{{ d.name }}</option>
+              }
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TOUR PACKAGE INTERFACE ==================== -->
+      <div *ngIf="inventoryForm.get('inventoryType')?.value === 'TOUR_PACKAGE'">
+        <h3 class="h6 fw-bold text-secondary mb-3"><i class="bi bi-backpack-fill me-1.5"></i> Tour Package Inventory </h3>
+        <div class="row g-3 mb-3">
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold text-secondary small"> Package Name *</label>
+            <input type="text" class="form-control" formControlName="packageName" placeholder="Ooty Special" [class.is-invalid]="inventoryForm.get('packageName')?.touched && inventoryForm.get('packageName')?.invalid">
+            @if (inventoryForm.get('packageName')?.touched && inventoryForm.get('packageName')?.invalid) {
+              <div class="invalid-feedback">
+                @if (inventoryForm.get('packageName')?.errors?.['required']) { Package tracking designation context required. }
+                @if (inventoryForm.get('packageName')?.errors?.['pattern']) { Name cannot contain numbers or special characters (<, >, ?, !). }
+              </div>
+            }
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold text-secondary small">Base Price Per Person ($) *</label>
+            <input type="number" class="form-control" formControlName="basePricePerPersonForPackage" step="0.01" [class.is-invalid]="inventoryForm.get('basePricePerPersonForPackage')?.touched && inventoryForm.get('basePricePerPersonForPackage')?.invalid">
+          </div>
+          <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold text-secondary small">Duration (Days) *</label>
+            <input type="number" class="form-control" formControlName="durationDays" [class.is-invalid]="inventoryForm.get('durationDays')?.touched && inventoryForm.get('durationDays')?.invalid">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">Travel Agent Id *</label>
+          <input type="number" class="form-control" formControlName="travelAgentId" style="max-width: 400px;" placeholder="e.g., 4001" [class.is-invalid]="inventoryForm.get('travelAgentId')?.touched && inventoryForm.get('travelAgentId')?.invalid">
+        </div>
+        <div class="mb-3">
+          <label class="form-label fw-semibold text-secondary small">Package Description *</label>
+          <textarea class="form-control" formControlName="fullItineraryDetails" rows="4" style="min-height: 100px; resize: vertical;" placeholder="Day 1: Arrival, Day 2: Sightseeing..." [class.is-invalid]="inventoryForm.get('fullItineraryDetails')?.touched && inventoryForm.get('fullItineraryDetails')?.invalid"></textarea>
+          @if (inventoryForm.get('fullItineraryDetails')?.touched && inventoryForm.get('fullItineraryDetails')?.invalid) {
+            <div class="invalid-feedback">
+              @if (inventoryForm.get('fullItineraryDetails')?.errors?.['required']) { Complete itinerary itinerary logging details required. }
+              @if (inventoryForm.get('fullItineraryDetails')?.errors?.['pattern']) { HTML tags (<, >) are explicitly blocked. }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Inline Frontend Warning Banner -->
+      <div *ngIf="inventoryForm.touched && inventoryForm.invalid" 
+           class="alert alert-danger d-flex align-items-center gap-2 border-start border-4 border-danger shadow-sm py-2 px-3 small my-3">
+        <i class="bi bi-exclamation-triangle-fill h5 mb-0"></i>
+        <div class="fw-bold">Missing or incorrect data detected. Review all required (*) fields before committing.</div>
+      </div>
+
+      <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold mt-3 shadow-sm text-uppercase" 
+              *ngIf="inventoryForm.get('inventoryType')?.value" 
+              [disabled]="inventoryForm.invalid">
+        Add Inventory
+      </button>
+    </form>
+  </div>
+</div>

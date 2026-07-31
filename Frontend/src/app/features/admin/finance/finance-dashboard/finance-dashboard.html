@@ -1,0 +1,31 @@
+<div class="w-100 d-flex flex-column">
+  <ul class="nav nav-tabs border-bottom-2 mb-4 gap-1">
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="activeSubTab === 'analytics' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="switchSubTab('analytics')">
+        <i class="bi bi-bar-chart-line-fill me-2"></i> Performance Analytics
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="activeSubTab === 'invoices' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="switchSubTab('invoices')">
+        <i class="bi bi-file-earmark-text me-2"></i> Invoices Book
+      </button>
+    </li>
+    <li class="nav-item">
+      <button class="nav-link fw-semibold px-4 py-2 d-flex align-items-center" 
+              [ngClass]="activeSubTab === 'payments' ? 'active text-primary border-bottom border-3 border-primary bg-light' : 'text-secondary bg-transparent border-0'" 
+              (click)="switchSubTab('payments')">
+        <i class="bi bi-cash-stack me-2"></i> Payments Logs
+      </button>
+    </li>
+  </ul>
+
+  <div class="w-100 container-fluid p-0">
+    @if (activeSubTab === 'analytics') { <app-finance-analytics></app-finance-analytics> }
+    @if (activeSubTab === 'invoices') { <app-finance-invoices></app-finance-invoices> }
+    @if (activeSubTab === 'payments') { <app-finance-payments></app-finance-payments> }
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary shadow-sm sticky-top px-3">
+  <div class="container-fluid d-flex align-items-center justify-content-between">
+    
+    <!-- Unified Administrative Brand Flag -->
+    <a class="navbar-brand fw-bold text-primary m-0" routerLink="/compliance/audit-logs">
+      <span class="text-white">Compliance</span>Canvas
+    </a>
+    
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#complianceNavbarContent">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Top Navigation System Container Links -->
+    <div class="collapse navbar-collapse justify-content-between" id="complianceNavbarContent">
+      
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-1">
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/compliance/audit-logs"
+             routerLinkActive="btn-primary text-white" 
+             [routerLinkActiveOptions]="{exact: true}">Audit Logs</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/compliance/analytics"
+             routerLinkActive="btn-primary text-white">Analytics</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-sm px-3 text-center transition-all nav-btn-custom d-flex align-items-center h-100 text-white-50 btn-link text-decoration-none" 
+             routerLink="/compliance/complaints"
+             routerLinkActive="btn-primary text-white">Complaints</a>
+        </li>
+      </ul>
+      
+      <!-- Right Aligned User Verification Control Hub -->
+      <div class="d-flex align-items-center gap-3">
+        <div class="dropdown">
+          <div class="d-flex align-items-center gap-2 px-3 py-1 bg-secondary bg-opacity-25 rounded-pill dropdown-toggle text-decoration-none" 
+               data-bs-toggle="dropdown" aria-expanded="false" style="cursor: pointer;">
+            <div class="bg-success rounded-circle animate-pulse" style="width: 8px; height: 8px;"></div>
+            <span class="navbar-text p-0 text-light small fw-medium text-nowrap">{{ currentUserName }}</span>
+          </div>
+          <ul class="dropdown-menu dropdown-menu-end shadow border border-secondary bg-dark mt-2 p-1">
+            <li>
+              <button class="dropdown-item text-danger small d-flex align-items-center gap-2 py-2 rounded" (click)="logout()">
+                <i class="bi bi-box-arrow-right"></i> Sign Out
+              </button>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<div class="container-fluid p-4 admin-workspace-canvas-wrapper bg-light min-vh-100">
+  <router-outlet></router-outlet>
+</div>

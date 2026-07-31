@@ -1,0 +1,328 @@
+<div class="modal fade show d-block" style="background: rgba(15, 23, 42, 0.35); backdrop-filter: blur(6px); overflow-y: auto;" role="dialog">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-container-canvas">
+    <div class="modal-content border-0 shadow-xl rounded-4 bg-white">
+      
+      <!-- Modal Header Viewport -->
+      <div class="modal-header bg-white text-dark p-3 px-4 border-bottom border-light-subtle rounded-top-4">
+        <div class="d-flex align-items-center gap-2">
+          <div class="icon-circle-sm bg-primary-soft text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+            <i class="bi bi-file-earmark-text-fill"></i>
+          </div>
+          <h5 class="modal-title fw-extrabold text-dark tracking-tight mb-0 fs-5">Reservation Ledger Details</h5>
+        </div>
+        <!-- 🎯 FIXED: Replaced standard background-image class with a clean text icon to prevent double X bugs -->
+        <button type="button" class="btn bg-transparent border-0 text-secondary p-0 d-inline-flex align-items-center justify-content-center transition-all opacity-75-hover" style="width: 32px; height: 32px;" aria-label="Close" (click)="onClose.emit()">
+          <i class="bi bi-x-lg fs-5"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body Context -->
+      <div class="modal-body p-4 bg-light-slate">
+        
+        @if (isLoading && !selectedBooking) {
+          <div class="text-center py-5">
+            <div class="spinner-border text-primary mb-3" role="status"></div>
+            <p class="text-muted small-label tracking-wider m-0">Synchronizing system ledger layers...</p>
+          </div>
+        } @else if (selectedBooking) {
+          
+          @if (errorMessage) { 
+            <div class="alert alert-danger border-0 rounded-3 small p-3 mb-4 shadow-sm d-flex align-items-center justify-content-between">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-exclamation-octagon-fill text-danger me-2 fs-5"></i>
+                <span class="fw-semibold text-dark">System Exception: {{ errorMessage }}</span>
+              </div>
+              <button type="button" class="btn-close" (click)="errorMessage = ''" aria-label="Close"></button>
+            </div> 
+          }
+
+          @if (selectedBooking.status === 'PENDING') {
+            <div class="alert alert-warning bg-warning-soft text-warning border-0 p-3 rounded-4 mb-4 d-flex align-items-start gap-2.5 shadow-sm">
+              <i class="bi bi-credit-card-2-back-fill fs-5 mt-n1"></i>
+              <div class="small fw-semibold line-spaced text-dark">
+                Payment Action Required: <span class="fw-normal text-secondary">This transaction registry is locked. Settle invoice dues to complete your reservation.</span>
+              </div>
+            </div>
+          }
+
+          <!-- 1. CONSOLIDATED CORE MANIFEST CARD HEADER BLOCK -->
+          <div class="card p-4 border border-light-subtle rounded-4 bg-white mb-4 shadow-sm text-start">
+            <div class="row align-items-center g-3">
+              <div class="col-12 col-md-8">
+                
+                <!-- Bus Category Segment mapping -->
+                @if (selectedBooking.itemType === 'BUS') {
+                  <span class="badge rounded-pill bg-danger-soft text-danger border border-danger-subtle px-3 py-1.5 fw-bold text-uppercase tracking-wider text-xs mb-2">
+                    <i class="bi bi-bus-front-fill me-1"></i> BUS Regional Transit
+                  </span>
+                  <h4 class="fw-extrabold text-dark tracking-tight my-1 fs-4">
+                    {{ selectedBooking.pickupLocation }} <i class="bi bi-arrow-right text-muted mx-1"></i> {{ selectedBooking.dropoffLocation }} 
+                  </h4>
+                  <small class="text-muted d-block font-sans fw-medium mt-1 text-xs line-spaced">
+                    <i class="bi bi-buildings me-1"></i>Fleet Operator: <b>{{ selectedBooking.partnerName || selectedBooking.inventoryContext?.partnerName }}</b>
+                    {{ selectedBooking.inventoryContext?.busNumberPlate ? ' • Registration ID: ' + selectedBooking.inventoryContext.busNumberPlate : '' }}
+                    <span class="d-block mt-1 font-monospace text-primary tracking-tight">
+                      <i class="bi bi-clock-history me-1"></i>Timeline Window: {{ selectedBooking.inventoryContext?.startTime }} - {{ selectedBooking.inventoryContext?.endTime }} {{ selectedBooking.inventoryContext?.numberOfHours ? '(' + selectedBooking.inventoryContext.numberOfHours + ' hrs)' : '' }}
+                    </span>
+                  </small>
+                } 
+                
+                <!-- Flight Category Segment mapping -->
+                @if (selectedBooking.itemType === 'FLIGHT') {
+                  <span class="badge rounded-pill bg-primary-soft text-primary border border-primary-subtle px-3 py-1.5 fw-bold text-uppercase tracking-wider text-xs mb-2">
+                    <i class="bi bi-airplane-fill rotate-45 me-1"></i> FLIGHT Global Logistics
+                  </span> 
+                  <h4 class="fw-extrabold text-dark tracking-tight my-1 fs-4">
+                    {{ selectedBooking.inventoryContext?.departureAirport || 'Source Node' }} <i class="bi bi-arrow-right text-muted mx-1"></i> {{ selectedBooking.inventoryContext?.arrivalAirport || 'Destination Hub' }}
+                  </h4>
+                  <small class="text-muted d-block font-sans fw-medium mt-1 text-xs line-spaced">
+                    <i class="bi bi-buildings me-1"></i>Carrier Fleet: <b>{{ selectedBooking.partnerName || selectedBooking.inventoryContext?.airlineName }}</b> 
+                    @if (selectedBooking.inventoryContext?.flightNumber) { • Flight Code: {{ selectedBooking.inventoryContext.flightNumber }} }
+                    <span class="d-block mt-1 font-monospace text-primary tracking-tight">
+                      <i class="bi bi-clock-history me-1"></i>Timeline Window: {{ selectedBooking.inventoryContext?.startTime }} - {{ selectedBooking.inventoryContext?.endTime }} {{ selectedBooking.inventoryContext?.numberOfHours ? '(' + selectedBooking.inventoryContext.flightNumber + ' hrs)' : '' }}
+                    </span>
+                  </small>
+                } 
+                
+                <!-- Hotel Category Segment mapping -->
+                @if (selectedBooking.itemType === 'HOTEL') {
+                  <span class="badge rounded-pill bg-success-soft text-success border border-success-subtle px-3 py-1.5 fw-bold text-uppercase tracking-wider text-xs mb-2">
+                    <i class="bi bi-building-fill me-1"></i> HOTEL Accommodations
+                  </span>
+                  <h4 class="fw-extrabold text-dark tracking-tight my-1 fs-4">
+                    {{ selectedBooking.hotelName || selectedBooking.inventoryContext?.hotelName || 'Premium Property' }}
+                  </h4>
+                  <small class="text-muted d-block font-sans fw-medium mt-1 text-xs line-spaced">
+                    <i class="bi bi-geo-alt-fill text-secondary me-1"></i>Address Matrix: {{ selectedBooking.inventoryContext?.addressLocation || selectedBooking.inventoryContext?.location || 'Property Location Address' }}{{ selectedBooking.inventoryContext?.district ? ', ' + selectedBooking.inventoryContext.district : '' }}{{ selectedBooking.inventoryContext?.state ? ', ' + selectedBooking.inventoryContext.state : '' }}
+                    @if (selectedBooking.inventoryContext?.country) {
+                      <span class="d-block mt-1"><i class="bi bi-globe-americas me-1 text-secondary"></i>Region Country: <b>{{ selectedBooking.inventoryContext.country }}</b></span>
+                    }
+                  </small>
+                } 
+                
+                <!-- Package Category Fallback mapping -->
+                @if (selectedBooking.itemType !== 'BUS' && selectedBooking.itemType !== 'FLIGHT' && selectedBooking.itemType !== 'HOTEL') {
+                  <span class="badge rounded-pill bg-info-soft text-info border border-info-subtle px-3 py-1.5 fw-bold text-uppercase tracking-wider text-xs mb-2">
+                    <i class="bi bi-backpack-fill me-1"></i> PACKAGE Curated Vacation
+                  </span> 
+                  <h4 class="fw-extrabold text-dark tracking-tight my-1 fs-4">
+                    {{ selectedBooking.inventoryContext?.packageName || 'Reserved Operational Package' }}
+                  </h4>
+                  <small class="text-muted d-block font-sans fw-medium mt-1 text-xs line-spaced">
+                    <i class="bi bi-briefcase-fill text-secondary me-1"></i>Organized by: <b>{{ selectedBooking.partnerName || selectedBooking.inventoryContext?.partnerName || 'Travel 360 Core Guides' }}</b>
+                    @if (selectedBooking.inventoryContext?.durationDays) { 
+                      • Duration: <span class="badge bg-light text-dark font-sans border-0 font-semibold px-2 py-0.5">{{ selectedBooking.inventoryContext.durationDays }} Days</span> 
+                    }
+                  </small>
+                }
+
+                <div class="mt-3 text-start border-top border-light pt-2">
+                  <span class="text-muted font-monospace xs-text d-inline-flex align-items-center gap-1">
+                    <i class="bi bi-tag-fill text-secondary"></i> Allocation Tier: <b>{{ selectedBooking.inventoryContext?.roomType || selectedBooking.chosenSeatType || 'Standard Class Selection' }}</b>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Calculated Total Net Price Column -->
+              <div class="col-12 col-md-4 text-md-end border-start-md ps-md-4 py-2 d-flex flex-row flex-md-column justify-content-between h-100 pricing-display-aside">
+                <span class="text-muted text-uppercase tracking-wider small-label d-block mb-1">Total Booked Value</span>
+                <h3 class="fw-extrabold text-success tracking-tight m-0 fs-3">
+                  <strong>{{ originalBookingPriceBeforeCancel | currency:'INR':'symbol':'1.0-0' }}</strong>
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- 2. FLATTENED REFUNDS PROCESSING LEDGER MATRIX -->
+          @if (selectedBookingRefunds.length > 0) {
+            <div class="card p-4 mb-4 border-0 border-start border-4 border-danger bg-danger-soft text-start rounded-4 shadow-sm animate-fade-in">
+              <h6 class="fw-bold text-danger pb-2 border-bottom border-danger-subtle mb-3 d-inline-flex align-items-center gap-2 text-uppercase tracking-wide small-label">
+                <i class="bi bi-wallet2 fs-5"></i> Refund Processing Records
+              </h6>
+              
+              <div class="font-monospace text-dark flex-grow-1 flex-column d-flex gap-2">
+                @for (refund of selectedBookingRefunds; track refund.invoiceId) {
+                  <div class="d-flex justify-content-between align-items-center py-1 border-bottom border-dashed border-danger-subtle pb-1 fs-7 fw-medium">
+                    <span><i class="bi bi-receipt text-secondary me-1.5"></i>Invoice Node #{{ refund.invoiceId }} <small class="text-muted">({{ refund.generatedDate }})</small></span>
+                    <span class="text-danger fw-bold">- {{ refund.amount | currency:'INR':'symbol':'1.0-0' }}</span>
+                  </div>
+                }
+              </div>
+
+              <div class="d-flex justify-content-between align-items-center fw-extrabold text-dark border-top border-danger border-opacity-20 pt-3 mt-2 font-sans">
+                <span class="text-uppercase tracking-wider small-label text-secondary">Total Amount Reverted:</span>
+                <span class="text-danger fs-4 fw-extrabold"><strong>{{ totalRefundedAmount | currency:'INR':'symbol':'1.0-0' }}</strong></span>
+              </div>
+            </div>
+          }
+
+          <!-- 3. FLATTENED CONTEXT SCHEDULE METRICS GRID -->
+          <div class="card p-4 mb-4 bg-white border border-light-subtle rounded-4 text-start shadow-sm">
+            <h6 class="fw-bold text-dark border-bottom border-light pb-2 mb-3 d-inline-flex align-items-center gap-2 text-uppercase tracking-wide small-label">
+              <i class="bi bi-calendar3-range text-secondary fs-5"></i> Schedule Context Metrics
+            </h6>
+            <div class="row g-3 text-dark font-sans fw-medium small text-start">
+              @if (selectedBooking.itemType === 'HOTEL') {
+                <div class="col-12 col-sm-6"><i class="bi bi-calendar-check text-muted me-2"></i>Check-In Settlement: <b>{{ selectedBooking.checkInDate }}</b></div>
+                <div class="col-12 col-sm-6"><i class="bi bi-calendar-x text-muted me-2"></i>Check-Out Settlement: <b>{{ selectedBooking.checkOutDate }}</b></div>
+                <div class="col-12"><i class="bi bi-door-open text-muted me-2"></i>Allocated Rooms Count: <b>{{ selectedBooking.requestedRooms }} Room(s)</b></div>
+              } @else {
+                <div class="col-12 col-sm-6"><i class="bi bi-calendar-date text-muted me-2"></i>Target Travel Execution: <b>{{ selectedBooking.targetTravelDate || selectedBooking.travelDate }}</b></div>
+                <div class="col-12 col-sm-6"><i class="bi bi-people-fill text-muted me-2"></i>Total Passenger Count: <b>x{{ selectedBooking.requestedSeats || 1 }} Ticket(s)</b></div>
+              }
+              <div class="col-12 border-top border-light pt-2 mt-2">
+                <i class="bi bi-activity text-muted me-2"></i>Platform Processing State: 
+                <span class="badge rounded-pill px-2.5 py-1 text-uppercase text-xs font-sans tracking-wide border ms-1 bg-light text-secondary">{{ selectedBooking.status }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4. DYNAMIC TOUR ITINERARY EXPANSION ACCORDION -->
+          @if ((selectedBooking.itemType === 'TOUR_PACKAGE' || selectedBooking.itemType === 'PACKAGE') && selectedBooking.inventoryContext) {
+            <div class="card p-4 mb-4 bg-white border border-light-subtle rounded-4 text-start shadow-sm animate-fade-in">
+              <h6 class="fw-bold text-dark border-bottom border-light pb-2 mb-3 d-inline-flex align-items-center gap-2 text-uppercase tracking-wide small-label">
+                <i class="bi bi-sliders text-secondary fs-5"></i> Tour Itinerary Roadmap Details
+              </h6>
+              
+              @if (selectedBooking.inventoryContext?.fullItineraryDetails) {
+                <div class="bg-light bg-opacity-70 p-3 rounded-3 border border-light-subtle font-sans text-secondary xs-text line-spaced" style="white-space: pre-line; word-break: break-word; line-height: 1.6;">
+                  {{ selectedBooking.inventoryContext.fullItineraryDetails }}
+                </div>
+              }
+            </div>
+          }
+
+          <!-- 5. TRAVELER MANIFEST CHECKLIST PANEL VIEW -->
+          @if (selectedBooking.passengers?.length > 0) {
+            <div class="mb-4 text-start animate-fade-in">
+              <h6 class="fw-bold text-dark border-bottom border-light pb-2 mb-3 d-inline-flex align-items-center gap-2 text-uppercase tracking-wide small-label">
+                <i class="bi bi-person-check-fill text-secondary fs-5"></i> Traveler Manifest Checklist
+              </h6>
+              
+              <div class="list-group border border-light-subtle shadow-sm rounded-4 overflow-hidden">
+                @for (p of selectedBooking.passengers; track p.idProofNumber) {
+                  <label class="list-group-item d-flex justify-content-between align-items-center p-3 item-transition-row transition-all border-bottom border-light">
+                    <div class="d-flex align-items-center gap-3">
+                      
+                      @if (selectedBooking.status === 'CONFIRMED' && p.status !== 'CANCELLED') {
+                        <input type="checkbox" class="form-check-input checkbox-custom border m-0" [checked]="passengerCancellationMap[p.idProofNumber]" (change)="togglePassengerSelection(p.idProofNumber)">
+                      } @else { 
+                        <span class="text-danger d-inline-flex align-items-center flex-shrink-0"><i class="bi bi-x-circle-fill fs-5"></i></span> 
+                      }
+                      
+                      <div class="ps-1">
+                        <span class="fw-extrabold text-dark small d-block tracking-wide" [class.text-decoration-line-through]="p.status === 'CANCELLED' || selectedBooking.status === 'CANCELLED'">{{ p.name }}</span>
+                        <small class="text-muted font-monospace xs-text d-block mt-0.5"><i class="bi bi-fingerprint me-1"></i>Ref ID Key: [Aadhaar Redacted]</small>
+                      </div>
+                    </div>
+                    
+                    <span class="badge rounded-pill px-3 py-1.5 border fw-bold tracking-wider text-uppercase text-xs" 
+                          [ngClass]="(p.status === 'CANCELLED' || selectedBooking.status === 'CANCELLED') ? 'bg-danger-soft text-danger border-danger-subtle' : 'bg-success-soft text-success border-success-subtle'">
+                      {{ selectedBooking.status === 'CANCELLED' ? 'CANCELLED' : (p.status || selectedBooking.status) }}
+                    </span>
+                  </label>
+                }
+              </div>
+            </div>
+          }
+
+          <!-- 6. INTEGRATED CLIENT COMPLAINT DISPUTE SUBMISSION BOARD -->
+          <div class="card p-3 mb-4 border border-warning-subtle rounded-4 bg-light bg-opacity-60 text-start text-dark shadow-inner-sm">
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-2 p-1">
+              <span class="text-dark small fw-bold font-sans"><i class="bi bi-shield-exclamation text-warning me-2 fs-5"></i>Having structural issues regarding this processing order booking?</span>
+              <button type="button" class="btn btn-sm px-4 py-2 rounded-pill fw-bold text-xs text-uppercase tracking-wider shadow-sm transition-all" 
+                      [ngClass]="showComplaintForm ? 'btn-secondary text-white' : 'btn-outline-danger'" 
+                      (click)="showComplaintForm = !showComplaintForm">
+                {{ showComplaintForm ? 'Hide Form Panel' : 'Raise Formal Complaint' }}
+              </button>
+            </div>
+
+            @if (showComplaintForm) {
+              <div class="mt-3 pt-3 border-top border-warning-subtle border-dashed animate-fade-in">
+                @if (complaintSuccess) { 
+                  <div class="alert alert-success border-0 rounded-3 small p-2.5 text-center fw-bold shadow-sm d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-patch-check-fill fs-5"></i> {{ complaintSuccess }}
+                  </div> 
+                } @else {
+                  <div class="mb-3">
+                    <label class="form-label text-xs fw-bold text-secondary mb-1">Subject Summary</label>
+                    <input type="text" class="form-control bg-white shadow-sm" placeholder="E.g., Flight segment cancellation delays or incorrect room assignment" [(ngModel)]="complaintSubject">
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label text-xs fw-bold text-secondary mb-1">Detailed Context Description</label>
+                    <textarea class="form-control bg-white shadow-sm font-sans" rows="3" placeholder="Provide absolute descriptions matching data logs context..." [(ngModel)]="complaintDescription"></textarea>
+                  </div>
+                  
+                  @if (complaintError) { 
+                    <div class="alert alert-danger border-0 rounded-3 small p-2 mb-3 shadow-sm d-inline-flex align-items-center gap-2">
+                      <i class="bi bi-exclamation-octagon-fill fs-5"></i> {{ complaintError }}
+                    </div> 
+                  }
+                  
+                  <div class="d-flex justify-content-end gap-2 mt-3 border-top border-light pt-2">
+                    <button type="button" class="btn btn-sm btn-light border rounded-3 px-3 py-2 small fw-bold text-xs" [disabled]="isComplaintSubmitting" (click)="showComplaintForm = false">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-danger rounded-3 px-4 py-2 text-uppercase tracking-wider fw-bold text-xs shadow-sm" [disabled]="isComplaintSubmitting || !complaintSubject.trim() || !complaintDescription.trim()" (click)="executeComplaintSubmission()">Submit Complaint</button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+          <!-- 7. CHRONOLOGICAL DISPUTE LOGS TRACKING TIMELINE -->
+          @if (activeBookingComplaints.length > 0) {
+            <div class="card p-4 mb-4 bg-white border border-light-subtle rounded-4 text-start shadow-sm animate-fade-in">
+              <h6 class="fw-bold border-bottom border-light pb-2 mb-3 text-uppercase tracking-wide small-label text-secondary">
+                <i class="bi bi-chat-square-text-fill text-muted me-1.5"></i> Raised Complaint History ({{ activeBookingComplaints.length }})
+              </h6>
+              <div class="list-group list-group-flush d-flex flex-column gap-3">
+                @for (comp of activeBookingComplaints; track comp.complaintId) {
+                  <div class="pb-2 border-bottom border-light-subtle text-start">
+                    <div class="d-flex justify-content-between align-items-center mb-1.5 fw-bold font-sans">
+                      <span class="text-dark fw-extrabold small tracking-wide">{{ comp.subject }}</span>
+                      <span class="badge text-xs px-3 py-1 border rounded-pill tracking-wider text-uppercase" 
+                            [ngClass]="{'bg-warning-soft text-warning border-warning-subtle': comp.status === 'PENDING', 'bg-success-soft text-success border-success-subtle': comp.status === 'RESOLVED'}">
+                        {{ comp.status }}
+                      </span>
+                    </div>
+                    <p class="text-muted mb-2 line-spaced xs-text">{{ comp.description }}</p>
+                    @if (comp.resolutionNote) { 
+                      <div class="bg-success bg-opacity-10 text-success border border-success-subtle p-2.5 rounded-3 xs-text line-spaced font-sans">
+                        <i class="bi bi-reply-all-fill me-1.5"></i><b>Administrative Resolution Response Note:</b> {{ comp.resolutionNote }}
+                      </div> 
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Modal Footer Interface -->
+      <div class="modal-footer bg-light p-3 px-4 d-flex justify-content-between align-items-center rounded-bottom-4 border-top">
+        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-4 py-2 fw-bold text-xs shadow-sm" (click)="onClose.emit()">Close Window</button>
+        
+        <div class="d-flex gap-2">
+          @if (selectedBooking?.status === 'PENDING') {
+            <button type="button" class="btn btn-sm btn-success rounded-pill fw-bold px-4 py-2 shadow-sm text-uppercase text-xs tracking-wide" (click)="redirectToPaymentGate()">
+              <i class="bi bi-credit-card-2-front-fill me-1.5"></i> Complete Payment
+            </button>
+          }
+          @if (selectedBooking?.status === 'CONFIRMED') {
+            @let activeCount = selectedBooking.requestedSeats;
+            @if (hasSelectedPassengersForCancellation && selectedPassengersCount >= activeCount) {
+              <button type="button" class="btn btn-sm btn-danger rounded-pill fw-bold text-uppercase tracking-wider text-xs px-4 py-2 shadow-sm" [disabled]="isActionProcessing" (click)="executeEntireBookingCancellation()">Cancel Entire Booking</button>
+            } @else if (hasSelectedPassengersForCancellation) {
+              <button type="button" class="btn btn-sm btn-warning text-white rounded-pill fw-bold text-uppercase tracking-wider text-xs px-4 py-2 shadow-sm" [disabled]="isActionProcessing" (click)="executePartialPassengerCancellation()">Cancel Selected ({{ selectedPassengersCount }})</button>
+            } @else {
+              <button type="button" class="btn btn-sm btn-danger rounded-pill fw-bold text-uppercase tracking-wider text-xs px-4 py-2 shadow-sm" [disabled]="isActionProcessing" (click)="executeEntireBookingCancellation()">Cancel Entire Booking</button>
+            }
+          } @else if (selectedBooking?.status === 'CANCELLED') {
+            <button type="button" class="btn btn-sm btn-secondary rounded-pill fw-bold px-4 py-2 text-uppercase text-xs shadow-sm" disabled>Reservation Cancelled</button>
+          }
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>

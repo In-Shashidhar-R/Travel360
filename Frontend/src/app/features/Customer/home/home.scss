@@ -1,0 +1,78 @@
+/* --- Shared Variable Colors --- */
+$primary-soft: rgba(37, 99, 235, 0.06);
+$success-soft: rgba(16, 185, 129, 0.06);
+$danger-soft: rgba(239, 68, 68, 0.06);
+$info-soft: rgba(6, 182, 212, 0.06);
+
+.dashboard-portal-core {
+  /* --- Explicit Padding Between Words and Micro Labels --- */
+  .small-label {
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.08em !important;
+    text-transform: uppercase;
+  }
+
+  .text-xs { font-size: 0.75rem !important; }
+  .line-height-spaced { line-height: 1.45 !important; }
+
+  /* --- Context Soft Color Vectors --- */
+  .bg-primary-soft { background-color: $primary-soft !important; }
+  .bg-success-soft { background-color: $success-soft !important; }
+  .bg-danger-soft { background-color: $danger-soft !important; }
+  .bg-info-soft { background-color: $info-soft !important; }
+
+  /* --- Frosted Bright Glass Overlays --- */
+  .glass-panel-light {
+    background: rgba(255, 255, 255, 0.85) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5) !important;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.04) !important;
+  }
+
+  /* --- Spacious Layout Transformations --- */
+  .shadow-hover {
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+    border: 1px solid #e2e8f0 !important;
+    
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.06), 0 10px 10px -5px rgba(15, 23, 42, 0.04) !important;
+    }
+  }
+
+  .item-transition-row {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #f1f5f9 !important;
+    
+    &:hover {
+      background-color: #f8fafc !important;
+      transform: translateX(4px);
+    }
+  }
+
+  /* --- Premium Giant Button Mechanics --- */
+  .btn-action-trigger {
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3) !important;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 30px rgba(37, 99, 235, 0.45) !important;
+    }
+  }
+
+  /* --- Custom Scrollers --- */
+  .custom-scrollbar {
+    &::-webkit-scrollbar { width: 5px; }
+    &::-webkit-scrollbar-track { background: transparent; }
+    &::-webkit-scrollbar-thumb {
+      background: rgba(148, 163, 184, 0.25);
+      border-radius: 10px;
+      &:hover { background: rgba(148, 163, 184, 0.45); }
+    }
+  }
+}

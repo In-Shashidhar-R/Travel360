@@ -1,0 +1,65 @@
+<div class="card border-0 shadow-sm rounded-3 p-4">
+  <div class="mb-4">
+    <h5 class="fw-bold text-dark mb-1">Cash Flows Ledger Statement Matrix</h5>
+    <p class="text-muted small mb-0">Tracking automated gateway transaction responses synced from database nodes.</p>
+  </div>
+
+  <!-- WORKSPACE CONTROL REGION -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <label class="form-label text-uppercase fw-bold text-secondary font-monospace small mb-1">Filter Flow Type</label>
+      <select class="form-select border-light-subtle shadow-sm" [value]="typeFilter" (change)="onTypeFilterChange($event)">
+        <option value="ALL">All Flows Matrix</option>
+        <option value="CREDIT">+ CREDIT</option>
+        <option value="DEBIT">- DEBIT</option>
+      </select>
+    </div>
+    <div class="col-md-8">
+      <label class="form-label text-uppercase fw-bold text-secondary font-monospace small mb-1">Search Transaction Index</label>
+      <input type="text" class="form-control border-light-subtle shadow-sm" placeholder="Search by Txn ID, Gateway name or Method Type..." [value]="searchQuery" (input)="onSearchQueryChange($event)">
+    </div>
+  </div>
+
+  @if (loading) {
+    <div class="text-center py-4 text-muted font-monospace small">Extracting transaction matrices...</div>
+  } @else {
+    <div class="table-responsive">
+      <table class="table align-middle custom-ledger-table mb-0">
+        <thead>
+          <tr>
+            <th>TXN ID</th>
+            <th>FLOW MECHANICS</th>
+            <th>SETTLED AMOUNT</th>
+            <th>PAYMENT METHOD</th>
+            <th>EXECUTION GATEWAY</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (p of getFilteredPayments(); track p.paymentId) {
+            <tr>
+              <td class="fw-semibold text-dark">#{{ p.paymentId }}</td>
+              <td class="fw-bold" [ngClass]="p.paymentType === 'CREDIT' ? 'text-success' : 'text-danger'">
+                {{ p.paymentType === 'CREDIT' ? '+ CREDIT' : '- DEBIT' }}
+              </td>
+              <td class="fw-bold text-dark">₹{{ p.amount | number:'1.2-2' }}</td>
+              <td>
+                <span class="badge bg-light text-primary border px-2 py-1 text-uppercase small font-monospace">
+                  {{ p.method || 'UPI' }}
+                </span>
+              </td>
+              <td>
+                <span class="badge text-uppercase px-2 py-1 font-monospace text-secondary bg-light border">
+                  {{ p.status || 'RAZORPAY' }}
+                </span>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5" class="text-center py-4 text-muted small">No payment data entries found matching parameters.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>
